@@ -1,0 +1,2 @@
+1: turtlebot3_description at https://github.com/ROBOTIS-GIT/turtlebot3/tree/main/turtlebot3_description
+    All contents of nuturtle_description/meshes and nuturtle_description/meshes are modified from this source
