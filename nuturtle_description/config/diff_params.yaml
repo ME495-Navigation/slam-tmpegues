@@ -1,0 +1,8 @@
+/**:
+  ros__parameters:
+    wheel_radius: 0.033  # Wheel diameter is 66 mm
+    track_width: 0.16  # Wheel centers are 160 mm apart
+    motor_cmd_max: 256  # Provided by Matt
+    motor_cmd_per_rad_sec: 0.024  # Provided by Matt
+    encoder_ticks_per_rad: 4096  # 2^12, provided by Matt
+    collision_radius: 0.11  # Provided by Matt
