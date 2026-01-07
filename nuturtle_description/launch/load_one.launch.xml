@@ -2,10 +2,12 @@
     <arg name="use_rviz" default="True" description="True will open rviz, False will not open rviz"/>
     <arg name="use_jsp" default="True" description="True will use joint_state_publisher, False will not use joint_state_publisher"/>
     <arg name="color" default="purple" description="What color do you want your turtle to be?">
+        <!-- ##### Begin_Citation [3] ##### -->
         <choice value="purple"/>
         <choice value="red"/>
         <choice value="green"/>
         <choice value="blue"/>
+        <!-- #####  End_Citation [3]  ##### -->
     </arg>
 
     <node pkg="robot_state_publisher" exec="robot_state_publisher" namespace="$(var color)">

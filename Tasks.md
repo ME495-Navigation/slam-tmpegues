@@ -11,12 +11,14 @@ Task A.1
 Task A.2
 *   Need to figure out comments in the xacros
 ```
+<!-- ##### Begin_Citation [1] ##### -->
 <!-- This file was taken from ROBOTIS-GIT's turtlebot3 repo on github (Citation #1) -->
 <!-- It has been modified to do the following -->
 <!-- * Add this comment -->
 <!-- * Remove dependency on the turtlebot3 package by changing file references to this nuturtle_description packge-->
 <!-- * Modified collision of base_link to be a cylinder -->
 <!-- * Wheel radius, track width, and overall collision now read from diff_params.yaml-->
+<!-- #####  End_Citation [1]  ##### -->
 ```
 Task A.3
 

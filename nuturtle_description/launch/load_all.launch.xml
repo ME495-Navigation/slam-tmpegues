@@ -1,7 +1,10 @@
 <launch>
     <arg name="use_rviz" default="True" description="True will open rviz, False will not open rviz"/>
 
+    <!-- ##### Begin_Citation [4] ##### -->
+         <!-- Citation is only for the on_exit="shutdown", for I simply could not find how to do that -->
     <node pkg="rviz2" exec="rviz2" on_exit="shutdown" args="-d $(find-pkg-share nuturtle_description)/config/basic_all.rviz" if="$(var use_rviz)"/>
+    <!-- #####  End_Citation [4]  ##### -->
 
     <!-- 1. Publish an initial tf for nusim/world to all of the base_links -->
     <node pkg="tf2_ros" exec="static_transform_publisher" namespace="purple"
