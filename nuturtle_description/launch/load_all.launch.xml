@@ -1,0 +1,36 @@
+<launch>
+    <arg name="use_rviz" default="True" description="True (default) will open rviz, False will not open rviz"/>
+
+    <node pkg="rviz2" exec="rviz2" args="-d $(find-pkg-share nuturtle_description)/config/basic_all.rviz" if="$(var use_rviz)"/>
+
+    <!-- 1. Publish an initial tf for nusim/world to all of the base_links -->
+    <node pkg="tf2_ros" exec="static_transform_publisher"
+x        args="--y -1.0 --frame-id nusim/world --child-frame purple/base_link" />
+    <!-- <node pkg="tf2_ros" exec="static_transform_publisher" name="wrist_cam_tf_publisher"
+        args="0.25 0 0 0 0 0 nusim/world red/base_link" />
+    <node pkg="tf2_ros" exec="static_transform_publisher" name="wrist_cam_tf_publisher"
+        args="-0.5 0 0 0 0 0 nusim/world blue/base_link" />
+    <node pkg="tf2_ros" exec="static_transform_publisher" name="wrist_cam_tf_publisher"
+        args="0 0.5 0 0 0 0 nusim/world green/base_link" /> -->
+
+    <!-- 2. Launch the urdfs -->
+    <include file="$(find-pkg-share nuturtle_description)/launch/load_one.launch.xml">
+        <arg name="use_rviz" value="False"/>
+        <arg name="color" value="purple"/>
+    </include>
+    <!-- <include file="$(find-pkg-share nuturtle_description)/launch/load_one.launch.xml">
+        <arg name="use_rviz" value="False"/>
+        <arg name="color" value="red"/>
+    </include>
+        <include file="$(find-pkg-share nuturtle_description)/launch/load_one.launch.xml">
+        <arg name="use_rviz" value="False"/>
+        <arg name="color" value="blue"/>
+    </include>
+        <include file="$(find-pkg-share nuturtle_description)/launch/load_one.launch.xml">
+        <arg name="use_rviz" value="False"/>
+        <arg name="color" value="green"/>
+    </include> -->
+
+
+
+</launch>

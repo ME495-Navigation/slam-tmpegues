@@ -1,7 +1,7 @@
     <launch>
-    <arg name="use_rviz" default="True" description="True (default) will open rviz, False will not open rviz"/>
-    <arg name="use_jsp" default="True" description="True (detault) will use joint_state_publisher, False will not use joint_state_publisher"/>
-    <arg name="color" default="purple" description="What color do you want your turtle to be? (purple, red, gree, blue)">
+    <arg name="use_rviz" default="True" description="True will open rviz, False will not open rviz"/>
+    <arg name="use_jsp" default="True" description="True will use joint_state_publisher, False will not use joint_state_publisher"/>
+    <arg name="color" default="purple" description="What color do you want your turtle to be?">
         <choice value="purple"/>
         <choice value="red"/>
         <choice value="green"/>
