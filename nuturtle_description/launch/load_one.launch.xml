@@ -1,13 +1,19 @@
     <launch>
-    <arg name="use_rviz" default="'true'" description="'true' (default) will open rviz, 'false' will not open rviz"/>
-    <arg name="use_jsp" default="'true'" description="'true' (detault) will use joint_state_publisher, 'false' will not use joint_state_publisher"/>
+    <arg name="use_rviz" default="True" description="True (default) will open rviz, False will not open rviz"/>
+    <arg name="use_jsp" default="True" description="True (detault) will use joint_state_publisher, False will not use joint_state_publisher"/>
+    <arg name="color" default="purple" description="What color do you want your turtle to be? (purple, red, gree, blue)">
+        <choice value="purple"/>
+        <choice value="red"/>
+        <choice value="green"/>
+        <choice value="blue"/>
+    </arg>
 
-
-    <node pkg="robot_state_publisher" exec="robot_state_publisher">
-        <param name="robot_description" value="$(command '$(exec-in-pkg xacro xacro) $(find-pkg-share nuturtle_description)/urdf/turtlebot3_burger.urdf.xacro')" />
+    <node pkg="robot_state_publisher" exec="robot_state_publisher" namespace="$(var color)">
+        <param name="frame_prefix" value="$(var color)/"/>
+        <param name="robot_description" value="$(command '$(exec-in-pkg xacro xacro) $(find-pkg-share nuturtle_description)/urdf/turtlebot3_burger.urdf.xacro color:=$(var color)')" />
     </node>
 
-    <node pkg="joint_state_publisher" exec="joint_state_publisher" if="$(eval '$(var use_jsp)==\'true\'')"/>
-    <node pkg="rviz2" exec="rviz2" args="-d $(find-pkg-share nuturtle_description)/config/load_one.rviz" if="$(eval '$(var use_rviz)==\'true\'')"/>
+    <node pkg="joint_state_publisher" exec="joint_state_publisher" namespace="$(var color)" if="$(var use_jsp)"/>
+    <node pkg="rviz2" exec="rviz2" args="-d $(find-pkg-share nuturtle_description)/config/load_one_$(var color).rviz" namespace="$(var color)" if="$(var use_rviz)"/>
 
 </launch>
