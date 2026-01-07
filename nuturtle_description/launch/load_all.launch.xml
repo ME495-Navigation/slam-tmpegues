@@ -1,11 +1,17 @@
 <launch>
     <arg name="use_rviz" default="True" description="True (default) will open rviz, False will not open rviz"/>
 
-    <node pkg="rviz2" exec="rviz2" args="-d $(find-pkg-share nuturtle_description)/config/basic_all.rviz" if="$(var use_rviz)"/>
+    <node pkg="rviz2" exec="rviz2" on_exit="shutdown" args="-d $(find-pkg-share nuturtle_description)/config/basic_all.rviz" if="$(var use_rviz)"/>
 
     <!-- 1. Publish an initial tf for nusim/world to all of the base_links -->
-    <node pkg="tf2_ros" exec="static_transform_publisher"
-x        args="--y -1.0 --frame-id nusim/world --child-frame purple/base_link" />
+    <node pkg="tf2_ros" exec="static_transform_publisher">
+        <param name="y" value ="-1.0"/>
+        <param name="frame-id" value ="nusim/world"/>
+        <param name="child-frame-id" value ="purple/base_footprint"/>
+
+
+        <!-- args=" (double dash)y -1.0 (double dash)frame-id nusim/world (double dash)child-frame purple/base_footprint"  -->
+    </node>
     <!-- <node pkg="tf2_ros" exec="static_transform_publisher" name="wrist_cam_tf_publisher"
         args="0.25 0 0 0 0 0 nusim/world red/base_link" />
     <node pkg="tf2_ros" exec="static_transform_publisher" name="wrist_cam_tf_publisher"

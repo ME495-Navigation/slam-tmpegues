@@ -14,6 +14,6 @@
     </node>
 
     <node pkg="joint_state_publisher" exec="joint_state_publisher" namespace="$(var color)" if="$(var use_jsp)"/>
-    <node pkg="rviz2" exec="rviz2" args="-d $(find-pkg-share nuturtle_description)/config/load_one_$(var color).rviz" namespace="$(var color)" if="$(var use_rviz)"/>
+    <node pkg="rviz2" exec="rviz2" on_exit="shutdown" args="-d $(find-pkg-share nuturtle_description)/config/load_one_$(var color).rviz" namespace="$(var color)" if="$(var use_rviz)"/>
 
 </launch>
