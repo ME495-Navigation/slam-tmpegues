@@ -16,4 +16,6 @@ Task A.2
 Task A.3
 Task A.4
 Task A.5
+Task A.6
+    Can I hide the arguments from included launchfiles from when you do ros2 launch ... ... -s?
 
