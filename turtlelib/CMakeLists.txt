@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(project_name) # TODO
+project(turtlelib) # TODO
 
 # https://eigen.tuxfamily.org/dox/TopicCMakeGuide.html
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
@@ -23,28 +23,12 @@ if(${DOXYGEN_FOUND} AND ${BUILD_DOCS})
 endif()
 
 
-include(CTest)
-
-# CTest sets BUILD_TESTING to on. To disable tests add -DBUILD_TESTING=OFF when invoking cmake
-if(BUILD_TESTING)
-    # Find the Unit testing framework. In this example, Catch2
-    find_package(Catch2 3 REQUIRED)
-
-    # A test is just an executable that is linked against the unit testing library
-    add_executable(my_test_exe tests/mytest.cpp)
-    target_link_libraries(my_test_exe Catch2::Catch2WithMain AnyOtherLibrariesAsNeeded)
-
-    # register the test with CTest, telling it what executable to run
-    add_test(NAME the_test_name COMMAND my_test_exe)
-endif()
-
-
 # Create a library.  Can specify if it is shared or static but usually
 # you don't need or want to.
 # name is the name of the library without the extension or lib prefix
 # name creates a cmake "target" (in this case the target is called "libname"
 
-add_library(turtlelib src/libfile1.cpp src/libfile2.cpp)
+add_library(turtlelib src/geometry2d.cpp include/turtlelib/angle.hpp )
 
 # Use target_include_directories so that #include"mylibrary/header.hpp" works
 # The use of the <BUILD_INTERFACE> and <INSTALL_INTERFACE> is because when
@@ -58,6 +42,21 @@ target_include_directories(turtlelib
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>
     $<INSTALL_INTERFACE:include/>)
 
+include(CTest)
+
+# CTest sets BUILD_TESTING to on. To disable tests add -DBUILD_TESTING=OFF when invoking cmake
+if(BUILD_TESTING)
+    # Find the Unit testing framework. In this example, Catch2
+    find_package(Catch2 3 REQUIRED)
+
+    # A test is just an executable that is linked against the unit testing library
+    add_executable(my_test_exe tests/test_angle.cpp)
+    target_link_libraries(my_test_exe Catch2::Catch2WithMain turtlelib)
+
+    # register the test with CTest, telling it what executable to run
+    add_test(NAME the_test_name COMMAND my_test_exe)
+endif()
+
 target_compile_options(turtlelib PUBLIC -Wall -Wextra -pedantic)
 
 
@@ -65,12 +64,12 @@ target_compile_features(turtlelib PUBLIC cxx_std_23)
 
 # Create an executable from the following source code files
 # The Name of the executable creates a cmake "target"
-add_executable(Name src/Name_main.cpp)
+add_executable(Name src/converter.cpp)
 
 target_link_libraries(Name Eigen3::Eigen turtlelib)
 
 # install the include files by copying the whole include directory
-install(DIRECTORY include/mylibrary DESTINATION include)
+install(DIRECTORY include/turtlelib DESTINATION include)
 
 install(TARGETS Name turtlelib EXPORT project_name-targets)
 

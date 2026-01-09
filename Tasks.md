@@ -30,4 +30,5 @@ Task A.6
 * Can I hide the arguments from included launchfiles from when you do `ros2 launch ... ... -s`?
 
 Task B.1
-* Aboslutely incomplete and incorrect.
+Task B.2
+* Figure out the issue with cin not finishing itself up when enter pressed
