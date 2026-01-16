@@ -50,11 +50,18 @@ if(BUILD_TESTING)
     find_package(Catch2 3 REQUIRED)
 
     # A test is just an executable that is linked against the unit testing library
-    add_executable(my_test_exe tests/test_angle.cpp)
-    target_link_libraries(my_test_exe Catch2::Catch2WithMain turtlelib)
-
+    add_executable(angle_test tests/test_angle.cpp)
+    target_link_libraries(angle_test Catch2::Catch2WithMain turtlelib)
     # register the test with CTest, telling it what executable to run
-    add_test(Converter the_test_name COMMAND my_test_exe)
+    add_test(NAME check_angles COMMAND angle_test)
+
+    # A test is just an executable that is linked against the unit testing library
+    add_executable(geometry2d_test tests/test_geometry2d.cpp)
+    target_link_libraries(geometry2d_test Catch2::Catch2WithMain turtlelib)
+    # register the test with CTest, telling it what executable to run
+    add_test(NAME check_geometry2d COMMAND geometry2d_test)
+
+
 endif()
 
 target_compile_options(turtlelib PUBLIC -Wall -Wextra -pedantic)
@@ -66,7 +73,9 @@ target_compile_features(turtlelib PUBLIC cxx_std_23)
 # The Name of the executable creates a cmake "target"
 add_executable(Converter src/converter.cpp)
 
-target_link_libraries(Converter Eigen3::Eigen turtlelib)
+
+# TODO: What actually is Eigen?
+target_link_libraries(Converter turtlelib)
 
 # install the include files by copying the whole include directory
 install(DIRECTORY include/turtlelib DESTINATION include)

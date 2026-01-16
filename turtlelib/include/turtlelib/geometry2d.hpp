@@ -6,6 +6,8 @@
 
 // NOTE: Put additional include files here
 
+#include<format>
+
 // Note: <iosfwd> contains forward definitions for iostream objects
 // allowing implementation of custom iostream operators without
 // requiring the inclusion of <iostream>, which is a big header file
@@ -114,7 +116,7 @@ class std::formatter<turtlelib::Point2D, CharT>
 /// All double format-spec specifiers apply to each number in the vector
 /// The vector is output as [x, y]
 template<class CharT>
-class std::formatter<turtlelib::Point2D, CharT>
+class std::formatter<turtlelib::Vector2D, CharT>
 {
 };
 #endif
