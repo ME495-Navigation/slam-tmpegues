@@ -16,6 +16,15 @@ namespace turtlelib
         return is;
     }
 
+    std::istream & operator>>(std::istream &is, Vector2D &v)
+    {
+        // For now, I'll just restrict input to only "x y" right now and come back to this later to
+        // allow "[x, y]" and add error handling
+        is >> v.x >> v.y;
+
+        return is;
+    }
+
     Vector2D operator-(const Point2D & head, const Point2D & tail)
     {
         // vector is head - tail
@@ -34,5 +43,12 @@ namespace turtlelib
 
         return new_pt;
     }
+
+    std::ostream & operator<<(std::ostream &os, const Vector2D &v)
+    {
+        os << "[" <<  v.x << ", " << v.y << "]";
+        return os; // TODO: do I need to return?
+    }
+
 
 }
