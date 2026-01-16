@@ -54,7 +54,7 @@ if(BUILD_TESTING)
     target_link_libraries(my_test_exe Catch2::Catch2WithMain turtlelib)
 
     # register the test with CTest, telling it what executable to run
-    add_test(NAME the_test_name COMMAND my_test_exe)
+    add_test(Converter the_test_name COMMAND my_test_exe)
 endif()
 
 target_compile_options(turtlelib PUBLIC -Wall -Wextra -pedantic)
@@ -64,14 +64,14 @@ target_compile_features(turtlelib PUBLIC cxx_std_23)
 
 # Create an executable from the following source code files
 # The Name of the executable creates a cmake "target"
-add_executable(Name src/converter.cpp)
+add_executable(Converter src/converter.cpp)
 
-target_link_libraries(Name Eigen3::Eigen turtlelib)
+target_link_libraries(Converter Eigen3::Eigen turtlelib)
 
 # install the include files by copying the whole include directory
 install(DIRECTORY include/turtlelib DESTINATION include)
 
-install(TARGETS Name turtlelib EXPORT project_name-targets)
+install(TARGETS Converter turtlelib EXPORT project_name-targets)
 
 
 install(EXPORT project_name-targets

@@ -13,11 +13,13 @@ std::pair<double, std::string> get_input()
     {
         if (failed)
         {
-            std::print("Invalid input: please enter <angle> <deg|rad>, (CTRL-D to exit)\n");
+            std::print("\nInvalid input: please enter <angle> <deg|rad>, (CTRL-D to exit)\n");
             failed = false;
         }
 
         std::cin >> angle >> unit;
+
+        // Deal with ctrl-d, then bad inputs (not a number for angle, not a str for unit)
         if (std::cin.eof())
         {
             unit = "break";
@@ -41,6 +43,10 @@ std::pair<double, std::string> get_input()
             return {angle, unit};
             ;
         }
+        else
+        {
+            failed = true;
+        }
     }
 
 }
@@ -49,6 +55,8 @@ void convert_and_print(double angle, std::string unit)
 {
     double converted_normal_angle{0.0};
     std::string other_unit;
+
+    std::print("{} {} is ", angle, unit);
 
     if (unit == "deg")
     {
@@ -63,7 +71,7 @@ void convert_and_print(double angle, std::string unit)
         converted_normal_angle = turtlelib::rad2deg(angle);
         other_unit = "deg";
     }
-    std::print("{} {} is {} {}.\n\n", angle, unit, converted_normal_angle, other_unit);
+    std::print("{} {}.\n\n", converted_normal_angle, other_unit);
 }
 
 int main()

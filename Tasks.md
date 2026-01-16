@@ -1,13 +1,8 @@
 Task 0.1
-
 Task 0.2
-
 Task 0.3
-
 Task 0.4
-
 Task A.1
-
 Task A.2
 *   Need to figure out comments in the xacros
 ```
@@ -21,14 +16,12 @@ Task A.2
 <!-- #####  End_Citation [1]  ##### -->
 ```
 Task A.3
-
 Task A.4
-
 Task A.5
-
 Task A.6
 * Can I hide the arguments from included launchfiles from when you do `ros2 launch ... ... -s`?
 
 Task B.1
 Task B.2
-* Figure out the issue with cin not finishing itself up when enter pressed
+Task B.3
+* Right now, I only accept "x y", not "(x, y)", and with no error handing.
