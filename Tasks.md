@@ -24,4 +24,4 @@ Task A.6
 Task B.1
 Task B.2
 Task B.3
-* Right now, I only accept "x y", not "(x, y)", and with no error handing.
+* Need to write test for point reading with parentheses

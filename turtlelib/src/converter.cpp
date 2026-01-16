@@ -18,13 +18,13 @@ std::pair<double, std::string> get_input()
         }
 
         std::cin >> angle >> unit;
-
-        // Deal with ctrl-d, then bad inputs (not a number for angle, not a str for unit)
+        // Deal with ctrl-d
         if (std::cin.eof())
         {
             unit = "break";
             return {angle, unit};
         }
+        // Then deal with bad inputs (not a number for angle, not a str for unit)
         else if (std::cin.fail())
         {
            std::cin.clear();
@@ -48,7 +48,6 @@ std::pair<double, std::string> get_input()
             failed = true;
         }
     }
-
 }
 
 void convert_and_print(double angle, std::string unit)
