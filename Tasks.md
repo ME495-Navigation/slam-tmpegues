@@ -23,5 +23,5 @@ Task A.6
 
 Task B.1
 Task B.2
-Task B.3
-* Need to write test for point reading with parentheses
+Task B.4
+* How to write test for the >> Vector and Point ?

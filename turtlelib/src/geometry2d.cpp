@@ -2,6 +2,8 @@
 #include <iostream>
 #include <sstream>
 #include <cctype>
+#include <print>
+#include <cmath>
 
 #include"turtlelib/geometry2d.hpp"
 
@@ -9,14 +11,17 @@ namespace turtlelib
 {
     std::istream & operator>>(std::istream & is, Point2D & p)
     {
+
         // For now, I'll just restrict input to only "x y" right now and come back to this later to
         // allow "(x, y)" and add error handling
-        if (not std::cin.peek() == 40)
+        if (std::cin.peek() != 40)
         {
+            std::print("regular input");
             is >> p.x >> p.y;
         }
         else
         {
+            std::print("par input");
             std::string x_str; // Needs to be a string so I can catch the comma
             std::cin >> x_str;
             x_str.erase(0, 1);
@@ -39,12 +44,37 @@ namespace turtlelib
         return is;
     }
 
-    std::istream & operator>>(std::istream &is, Vector2D &v)
+    std::istream &operator>>(std::istream &is, Vector2D &v)
     {
-        // For now, I'll just restrict input to only "x y" right now and come back to this later to
-        // allow "[x, y]" and add error handling
-        is >> v.x >> v.y;
 
+        // For now, I'll just restrict input to only "x y" right now and come back to this later to
+        // allow "(x, y)" and add error handling
+        if (std::cin.peek() != 91) // 91 = []
+        {
+            std::print("regular input");
+            is >> v.x >> v.y;
+        }
+        else
+        {
+            std::print("par input");
+            std::string x_str; // Needs to be a string so I can catch the comma
+            std::cin >> x_str;
+            x_str.erase(0, 1);
+            if (x_str.back() == 44) // 44 is value for ,
+            {
+                x_str.pop_back();
+                v.x = std::stod(x_str);
+
+                std::string y_str;
+                std::cin >> y_str;
+
+                if (y_str.back() == 93) // 41 is value for ]
+                {
+                    y_str.pop_back();
+                    v.y = std::stod(y_str);
+                }
+            }
+        }
         return is;
     }
 
@@ -73,5 +103,12 @@ namespace turtlelib
         return os; // TODO: do I need to return?
     }
 
-
+    Vector2D normalize(Vector2D in)
+    {
+        auto length = std::sqrt((std::pow(in.x, 2) + std::pow(in.y, 2)));
+        turtlelib::Vector2D normalized;
+        normalized.x = in.x/length;
+        normalized.y = in.y/length;
+        return normalized;
+    }
 }
