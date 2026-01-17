@@ -107,9 +107,16 @@ namespace turtlelib
 template<class CharT>
 class std::formatter<turtlelib::Point2D, CharT>
 {
+    // static_assert(std::formattable<turtlelib::Point2D>);
+    // constexpr auto parse(auto &parse_ctx);
 
+    // auto format(const MyType &t, auto &fmt_ctx) const;
 
-
+    // std::formatter<T, CharT> T_formatter; // Member variable
+    // constexpr auto parse(auto &parse_ctx)
+    // {
+    //     return T_formatter.parse(parse_ctx);
+    // }
 };
 
 /// \brief A formatter for Vector2D

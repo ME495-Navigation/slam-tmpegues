@@ -24,4 +24,4 @@ Task A.6
 Task B.1
 Task B.2
 Task B.4
-* How to write test for the >> Vector and Point ?
+* I think my >> Point2D leaves the stream messy. Do I need to clear the stream when it succesfully reads a point?

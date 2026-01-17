@@ -72,15 +72,19 @@ target_compile_features(turtlelib PUBLIC cxx_std_23)
 # Create an executable from the following source code files
 # The Name of the executable creates a cmake "target"
 add_executable(Converter src/converter.cpp)
+add_executable(Tester src/tester.cpp)
+
 
 
 # TODO: What actually is Eigen?
 target_link_libraries(Converter turtlelib)
+target_link_libraries(Tester turtlelib)
+
 
 # install the include files by copying the whole include directory
 install(DIRECTORY include/turtlelib DESTINATION include)
 
-install(TARGETS Converter turtlelib EXPORT project_name-targets)
+install(TARGETS Converter Tester turtlelib EXPORT project_name-targets)
 
 
 install(EXPORT project_name-targets

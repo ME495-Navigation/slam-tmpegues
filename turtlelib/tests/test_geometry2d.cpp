@@ -2,19 +2,36 @@
 #include "turtlelib/geometry2d.hpp"
 #include <cmath>
 
-// TEST_CASE("Create points and with format 'x y' and '(x, y)'", "std::istream & operator>>")
-// {
-//     std::print("test0");
+TEST_CASE("Create points and with format 'x y' and '(x, y)'", "std::istream & operator>>")
+{
+    std::stringstream stream {"1 1\n"};
+    turtlelib::Point2D pt1;
+    stream >> pt1;
+    REQUIRE(pt1.x == 1.0);
+    REQUIRE(pt1.y == 1.0);
 
-//     std::stringstream stream {"1 1\n"};
-//     turtlelib::Point2D pt1;
-//     std::print("test1");
-//     stream >> pt1;
-//     std::print("test2");
 
-//     REQUIRE(pt1.x == 0.0);
-//     REQUIRE(pt1.y == 0.0);
-// }
+    std::stringstream stream2 {"(-5.35, 10.78)\n"};
+    turtlelib::Point2D pt2;
+    stream2 >> pt2;
+    REQUIRE(pt2.x == -5.35);
+    REQUIRE(pt2.y == 10.78);
+}
+
+TEST_CASE("Create vectors and with format 'x y' and '[x, y]", "std::istream & operator>>")
+{
+    std::stringstream stream3 {"1 1\n"};
+    turtlelib::Vector2D vc1;
+    stream3 >> vc1;
+    REQUIRE(vc1.x == 1.0);
+    REQUIRE(vc1.y == 1.0);
+
+    std::stringstream stream2{"[-5.35, 10.78\n"};
+    turtlelib::Vector2D vc2;
+    stream2 >> vc2;
+    REQUIRE(vc2.x == -5.35);
+    REQUIRE(vc2.y == 10.78);
+}
 
 TEST_CASE("Subtract points to make vectors", "Vector2D operator-")
 {

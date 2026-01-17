@@ -2,8 +2,9 @@
 #include <iostream>
 #include <sstream>
 #include <cctype>
-#include <print>
 #include <cmath>
+
+#include <print>
 
 #include"turtlelib/geometry2d.hpp"
 
@@ -12,71 +13,39 @@ namespace turtlelib
     std::istream & operator>>(std::istream & is, Point2D & p)
     {
 
-        // For now, I'll just restrict input to only "x y" right now and come back to this later to
-        // allow "(x, y)" and add error handling
-        if (std::cin.peek() != 40)
+        // If we can break it into 2 numbers, do it
+        if (is.peek() != 40)
         {
-            std::print("regular input");
             is >> p.x >> p.y;
         }
-        else
+        else // if the first character is (, then assume it's properly formatted as (x, y)
         {
-            std::print("par input");
-            std::string x_str; // Needs to be a string so I can catch the comma
-            std::cin >> x_str;
-            x_str.erase(0, 1);
-            if (x_str.back() == 44) // 44 is value for ,
-            {
-                x_str.pop_back();
-                p.x = std::stod(x_str);
+            is.get();
+            is >> p.x;
 
-                std::string y_str;
-                std::cin >> y_str;
-
-                if (y_str.back() == 41) // 41 is value for )
-                {
-                    y_str.pop_back();
-                    p.y = std::stod(y_str);
-                }
-            }
-
+            is.get();
+            is >> p.y;
         }
         return is;
     }
 
     std::istream &operator>>(std::istream &is, Vector2D &v)
     {
-
-        // For now, I'll just restrict input to only "x y" right now and come back to this later to
-        // allow "(x, y)" and add error handling
-        if (std::cin.peek() != 91) // 91 = []
-        {
-            std::print("regular input");
-            is >> v.x >> v.y;
-        }
-        else
-        {
-            std::print("par input");
-            std::string x_str; // Needs to be a string so I can catch the comma
-            std::cin >> x_str;
-            x_str.erase(0, 1);
-            if (x_str.back() == 44) // 44 is value for ,
+            // If we can break it into 2 numbers, do it
+            if (is.peek() != 91)
             {
-                x_str.pop_back();
-                v.x = std::stod(x_str);
-
-                std::string y_str;
-                std::cin >> y_str;
-
-                if (y_str.back() == 93) // 41 is value for ]
-                {
-                    y_str.pop_back();
-                    v.y = std::stod(y_str);
-                }
+                is >> v.x >> v.y;
             }
+            else // if the first character is [, then assume it's properly formatted as [x, y]
+            {
+                is.get();
+                is >> v.x;
+
+                is.get();
+                is >> v.y;
+            }
+            return is;
         }
-        return is;
-    }
 
     Vector2D operator-(const Point2D & head, const Point2D & tail)
     {
