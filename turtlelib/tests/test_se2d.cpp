@@ -59,4 +59,66 @@ TEST_CASE("Create transforms", "Transform2D")
     REQUIRE(tf3.tw.y == 2);
 }
 
-TEST_CASE("Transform a point")
+TEST_CASE("Transform a point", "Transform2D")
+{
+    // origin with no transformation
+    turtlelib::Transform2D tf;
+    turtlelib::Point2D pt;
+    auto pt2 = tf(pt);
+    REQUIRE(pt2.x == pt.x);
+    REQUIRE(pt2.y == pt.y);
+
+    // origin with pure rotation
+    double rot = turtlelib::deg2rad(45);
+    turtlelib::Transform2D tf2(rot);
+    auto pt3 = tf2(pt2);
+    REQUIRE(pt3.x == pt2.x);
+    REQUIRE(pt3.y == pt2.y);
+
+    // origin with pure translation
+    turtlelib::Vector2D oo;
+    oo.x = 1;
+    oo.y = -1;
+    turtlelib::Transform2D tf4(oo);
+    auto pt4 = tf4(pt3);
+    REQUIRE(pt4.x == oo.x);
+    REQUIRE(pt4.y == oo.y);
+
+    // from this point, translate and rotate
+    turtlelib::Transform2D tf5(oo, rot);
+    auto pt5 = tf5(pt4);
+    REQUIRE(pt5.x == 1+std::sqrt(2));
+    REQUIRE(pt5.y == -1);
+}
+
+TEST_CASE("Transform a vector", "Transform2D")
+{
+    // origin with no transformation
+    turtlelib::Transform2D tf;
+    turtlelib::Vector2D vc;
+    auto vc2 = tf(vc);
+    REQUIRE(vc2.x == vc.x);
+    REQUIRE(vc2.y == vc.y);
+
+    // origin with pure rotation
+    double rot = turtlelib::deg2rad(45);
+    turtlelib::Transform2D tf2(rot);
+    auto vc3 = tf2(vc2);
+    REQUIRE(vc3.x == vc2.x);
+    REQUIRE(vc3.y == vc2.y);
+
+    // origin with pure translation
+    turtlelib::Vector2D oo;
+    oo.x = 1;
+    oo.y = -1;
+    turtlelib::Transform2D tf4(oo);
+    auto vc4 = tf4(vc3);
+    REQUIRE(vc4.x == oo.x);
+    REQUIRE(vc4.y == oo.y);
+
+    // from this point, translate and rotate
+    turtlelib::Transform2D tf5(oo, rot);
+    auto vc5 = tf5(vc4);
+    REQUIRE(vc5.x == 1 + std::sqrt(2));
+    REQUIRE(vc5.y == -1);
+}

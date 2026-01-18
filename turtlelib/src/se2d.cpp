@@ -13,18 +13,14 @@ namespace turtlelib
         // If first character is <, get rid of it
         if (is.peek() == '<')
         {
-            std::print("detected <\n");
             is.get();
         }
         else
         {
-            std::print("no detected <\n");
         }
         // Then read first number
         is >> tw.omega;
         is.get(); // Purge the space
-
-        std::print("peek1: {}\n", is.peek());
 
         // Check if next character is r or d
         if (is.peek() == 'r') // remove the string, but do nothing else. Keep all units in rad/sec
@@ -43,7 +39,6 @@ namespace turtlelib
         // Check for commas between every other character
         if (is.peek() == ',')
         {
-            std::cout << "detected ,1\n";
             is.get();
         }
 
@@ -51,7 +46,6 @@ namespace turtlelib
 
         if (is.peek() == ',')
         {
-            std::cout << "detected ,2\n";
             is.get();
         }
 
@@ -59,10 +53,8 @@ namespace turtlelib
 
         if (is.peek() == '>')
         {
-            std::cout << "detected >\n";
             is.get();
         }
-        std::print("lastpeek: {}\n\n", is.peek());
         return is;
     }
 
@@ -104,5 +96,29 @@ namespace turtlelib
         tw.y = trans.y;
     }
 
+    Point2D Transform2D::operator()(Point2D p) const
+    {
+        // Rotate then translate the point
+        Point2D new_pt;
+        new_pt.x = std::cos(tw.omega) * p.x - std::sin(tw.omega) * p.y;
+        new_pt.y = std::cos(tw.omega) * p.y + std::sin(tw.omega) * p.x;
 
+        new_pt.x += tw.x;
+        new_pt.y += tw.y;
+
+        return new_pt;
+    }
+
+    Vector2D Transform2D::operator()(Vector2D v) const
+    {
+        // This is exactly the same math as doing a point above
+        Vector2D new_vc;
+        new_vc.x = std::cos(tw.omega) * v.x - std::sin(tw.omega) * v.y;
+        new_vc.y = std::cos(tw.omega) * v.y + std::sin(tw.omega) * v.x;
+
+        new_vc.x += tw.x;
+        new_vc.y += tw.y;
+
+        return new_vc;
+    }
 }
