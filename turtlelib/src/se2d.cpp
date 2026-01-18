@@ -160,4 +160,17 @@ namespace turtlelib
     //     return rhs ; //
     // }
 
+    Vector2D Transform2D::translation() const
+    {
+        Vector2D new_vc;
+        new_vc.x = tw.x;
+        new_vc.y = tw.y;
+        return new_vc;
+    }
+
+    double Transform2D::rotation() const
+    {
+        return tw.omega;
+    }
+
 }
