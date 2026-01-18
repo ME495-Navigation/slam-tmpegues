@@ -1,10 +1,5 @@
-#include <iosfwd>
-#include <iostream>
 #include <sstream>
-#include <cctype>
 #include <cmath>
-
-#include <print>
 
 #include"turtlelib/geometry2d.hpp"
 
