@@ -33,9 +33,13 @@ namespace turtlelib
     /// \returns the istream is with the twist characters removed
     std::istream & operator>>(std::istream & is, Twist2D & tw);
 
+    /// \brief output a 2 dimensional twist as <zrotation, xcomponent, ycomponent>
+    /// \param os - stream to output to
+    /// \param v - the twist to print
+    std::ostream &operator<<(std::ostream &os, const Twist2D &tw);
 
-    /// \brief a rigid body transformation in 2 dimensions
-    class Transform2D
+        /// \brief a rigid body transformation in 2 dimensions
+        class Transform2D
     {
     public:
         /// \brief Create an identity transformation

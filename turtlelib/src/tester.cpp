@@ -7,16 +7,47 @@
 
 int main()
 {
-    while (true)
+    bool end = false;
+    while (not end)
     {
-        std::print("\n");
-        turtlelib::Twist2D tw;
-        std::print("initial twist: {} _ {} _ {} \nProvide twist:", tw.omega, tw.x, tw.y);
-        std::cin >> tw;
+        std::print("(t)wist, (v)ector, (p)oint?, or (e)nd: ");
+        char choice {'e'};
+        std::cin >> choice;
+        std::cin.get();
+        switch (choice)
+        {
+            case 'p':
+            {
+                turtlelib::Point2D pt;
+                std::cout << "Initial point: " << pt << "\nInput:";
+                std::cin >> pt;
+                std::cout << "New point: " << pt << "\n";
+                break;
+            }
+            case 'v':
+            {
+                turtlelib::Vector2D vc;
+                std::cout << "Initial vector: " << vc << "\nInput:";
+                std::cin >> vc;
+                std::cout << "New vector: " << vc << "\n";
+                break;
+            }
+            case 't':
+            {
+                turtlelib::Twist2D tw;
+                std::print("Initial twist: <{}, {}, {}>\nInput:", tw.omega, tw.x, tw.y);
+                std::cin >> tw;
+                std::cout << "New twist: " << tw << "\n";
+                break;
+            }
+            case 'e':
+            {
+                end = true;
+            }
 
-        std::print("new_twist twist: {} _ {} _ {} \n", tw.omega, tw.x, tw.y);
-        if (tw.x == 0)
-            return 0;
+        }
+
+
 
     }
     return 0;

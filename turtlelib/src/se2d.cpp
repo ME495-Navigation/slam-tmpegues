@@ -12,7 +12,12 @@ namespace turtlelib
         // If first character is <, get rid of it
         if (is.peek() == '<')
         {
+            std::print("detected <\n");
             is.get();
+        }
+        else
+        {
+            std::print("no detected <\n");
         }
         // Then read first number
         is >> tw.omega;
@@ -37,6 +42,7 @@ namespace turtlelib
         // Check for commas between every other character
         if (is.peek() == ',')
         {
+            std::cout << "detected ,1\n";
             is.get();
         }
 
@@ -44,6 +50,7 @@ namespace turtlelib
 
         if (is.peek() == ',')
         {
+            std::cout << "detected ,2\n";
             is.get();
         }
 
@@ -51,9 +58,16 @@ namespace turtlelib
 
         if (is.peek() == '>')
         {
+            std::cout << "detected >\n";
             is.get();
         }
-
+        std::print("lastpeek: {}\n\n", is.peek());
         return is;
+    }
+
+    std::ostream &operator<<(std::ostream &os, const Twist2D & tw)
+    {
+        os << "<" << tw.omega << ", " << tw.x << ", " << tw.y << '>' ;
+        return os; // TODO: do I need to return?
     }
 }
