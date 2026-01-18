@@ -8,36 +8,36 @@ namespace turtlelib
     std::istream & operator>>(std::istream & is, Point2D & p)
     {
 
-        // If we can break it into 2 numbers, do it
-        if (is.peek() != 40)
-        {
-            is >> p.x >> p.y;
-        }
-        else // if the first character is (, then assume it's properly formatted as (x, y)
-        {
-            is.get();
-            is >> p.x;
 
-            is.get();
+        if (is.peek() == '(')
+        {// if the first character is (, then assume it's properly formatted as (x, y)
+            is.get(); // purge the (
+            is >> p.x;
+            is.get(); // purge the ,
             is >> p.y;
+            is.get(); // purge the )
+        }
+        else
+        {// If we can break it into 2 numbers, do it
+            is >> p.x >> p.y;
         }
         return is;
     }
 
     std::istream &operator>>(std::istream &is, Vector2D &v)
     {
-            // If we can break it into 2 numbers, do it
-            if (is.peek() != 91)
-            {
-                is >> v.x >> v.y;
-            }
-            else // if the first character is [, then assume it's properly formatted as [x, y]
-            {
-                is.get();
-                is >> v.x;
 
-                is.get();
+            if (is.peek() == '[')
+            { // if the first character is [, then assume it's properly formatted as [x, y]
+                is.get(); // Purge [
+                is >> v.x;
+                is.get(); // Purge ,
                 is >> v.y;
+                is.get(); // Purge ]
+            }
+            else
+            { // If we can break it into 2 numbers, do it
+                is >> v.x >> v.y;
             }
             return is;
         }
