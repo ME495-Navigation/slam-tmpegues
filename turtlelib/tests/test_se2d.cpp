@@ -122,3 +122,6 @@ TEST_CASE("Transform a vector", "Transform2D")
     REQUIRE(vc5.x == 1 + std::sqrt(2));
     REQUIRE(vc5.y == -1);
 }
+
+// TODO: need test for transforming a Twist2D
+

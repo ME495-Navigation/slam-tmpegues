@@ -121,4 +121,18 @@ namespace turtlelib
 
         return new_vc;
     }
+
+    Twist2D Transform2D::operator()(Twist2D v ) const
+    {
+        // I think the only thing we need to deal with here is just the translation bit
+        // TODO: check if this is correct. Also check how do I just use the function above instead of copy pasting it
+
+        Vector2D new_vc;
+        new_vc.x = std::cos(tw.omega) * v.x - std::sin(tw.omega) * v.y;
+        new_vc.y = std::cos(tw.omega) * v.y + std::sin(tw.omega) * v.x;
+
+        new_vc.x += tw.x;
+        new_vc.y += tw.y;
+
+        }
 }
