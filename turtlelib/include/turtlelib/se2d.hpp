@@ -98,10 +98,7 @@ namespace turtlelib
 
         // /// \brief see std::formatter for the Transform2D
         // template<class CharT>
-        // friend struct std::formatter<Transform2D, CharT>;
-
-
-
+        // friend struct std::formatter;
     };
 
 
