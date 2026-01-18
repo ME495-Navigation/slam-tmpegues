@@ -134,5 +134,20 @@ namespace turtlelib
         new_vc.x += tw.x;
         new_vc.y += tw.y;
 
-        }
+    }
+
+    Transform2D Transform2D::inv() const
+    {
+        // TODO: check. This seems too easy
+
+        auto new_rot = tw.omega * -1;
+        Vector2D new_vc;
+        new_vc.x = -1;
+        new_vc.y = -1;
+
+        Transform2D new_tf(new_vc, new_rot);
+
+    return new_tf;
+    }
+
 }
