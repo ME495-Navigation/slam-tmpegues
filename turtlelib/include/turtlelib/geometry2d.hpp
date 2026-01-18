@@ -85,6 +85,11 @@ namespace turtlelib
     /// to have exposure to code that does not have std::format available.
     std::ostream & operator<<(std::ostream & os, const Vector2D & v);
 
+    /// \brief output a 2 dimensional point as (xcomponent, ycomponent)
+    /// \param os - stream to output to
+    /// \param v - the point to print
+    std::ostream &operator<<(std::ostream &os, const Point2D & p);
+
     /// \brief input a 2 dimensional vector
     ///   You should be able to read vectors entered as follows:
     ///   "[x, y]" or "x y" (not including the "")

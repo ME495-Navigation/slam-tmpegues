@@ -67,6 +67,12 @@ namespace turtlelib
         return os; // TODO: do I need to return?
     }
 
+    std::ostream &operator<<(std::ostream &os, const Point2D & p)
+    {
+        os << "(" << p.x << ", " << p.y << ")";
+        return os; // TODO: do I need to return?
+    }
+
     Vector2D normalize(Vector2D in)
     {
         auto length = std::sqrt((std::pow(in.x, 2) + std::pow(in.y, 2)));
