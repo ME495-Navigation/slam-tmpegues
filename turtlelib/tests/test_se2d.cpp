@@ -27,3 +27,36 @@ TEST_CASE("Create a twist with format 'w x y' and 'x <unit> x y' and <w x y>, wi
     REQUIRE(tw3.x == 3.0);
     REQUIRE(tw3.y == 2.0);
 }
+
+TEST_CASE("Create transforms", "Transform2D")
+{
+    // Check that default constructor is correct
+    turtlelib::Transform2D tf;
+    REQUIRE(tf.tw.omega == 0);
+    REQUIRE(tf.tw.x == 0);
+    REQUIRE(tf.tw.y == 0);
+
+    // Check that rotate constructor is correct
+    double rotate {1};
+    turtlelib::Transform2D tf2(rotate);
+    REQUIRE(tf2.tw.omega == 1);
+    REQUIRE(tf2.tw.x == 0);
+    REQUIRE(tf2.tw.y == 0);
+
+    // Check trans constructor
+    turtlelib::Vector2D vc;
+    vc.x = 1;
+    vc.y = 2;
+    turtlelib::Transform2D tf3(vc);
+    REQUIRE(tf3.tw.omega == 0);
+    REQUIRE(tf3.tw.x == 1);
+    REQUIRE(tf3.tw.y == 2);
+
+    // Check rot and trans
+    turtlelib::Transform2D tf4(vc, rotate);
+    REQUIRE(tf2.tw.omega == 1);
+    REQUIRE(tf3.tw.x == 1);
+    REQUIRE(tf3.tw.y == 2);
+}
+
+TEST_CASE("Transform a point")

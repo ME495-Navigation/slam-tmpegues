@@ -1,4 +1,5 @@
 #include <sstream>
+#include <cmath>
 
 #include "turtlelib/se2d.hpp"
 #include "turtlelib/angle.hpp"
@@ -70,4 +71,38 @@ namespace turtlelib
         os << "<" << tw.omega << ", " << tw.x << ", " << tw.y << '>' ;
         return os; // TODO: do I need to return?
     }
+
+    Transform2D::Transform2D()
+    {
+        // Twist2D tw;
+        tw.omega = 0;
+        tw.x = 0;
+        tw.y = 0;
+    }
+
+    Transform2D::Transform2D(Vector2D trans)
+    {
+        // Twist2D tw;
+        tw.omega = 0;
+        tw.x = trans.x;
+        tw.y = trans.y;
+    }
+
+    Transform2D::Transform2D(double radians)
+    {
+        // Twist2D tw;
+        tw.omega = radians;
+        tw.x = 0;
+        tw.y = 0;
+    }
+
+    Transform2D::Transform2D(Vector2D trans, double radians)
+    {
+        // Twist2D tw;
+        tw.omega = radians;
+        tw.x = trans.x;
+        tw.y = trans.y;
+    }
+
+
 }

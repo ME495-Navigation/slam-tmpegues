@@ -41,7 +41,11 @@ namespace turtlelib
         /// \brief a rigid body transformation in 2 dimensions
         class Transform2D
     {
+    private:
+        ;
+
     public:
+        Twist2D tw;
         /// \brief Create an identity transformation
         Transform2D();
 
@@ -95,6 +99,8 @@ namespace turtlelib
         // /// \brief see std::formatter for the Transform2D
         // template<class CharT>
         // friend struct std::formatter<Transform2D, CharT>;
+
+
 
     };
 
