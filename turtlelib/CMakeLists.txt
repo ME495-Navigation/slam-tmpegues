@@ -28,7 +28,7 @@ endif()
 # name is the name of the library without the extension or lib prefix
 # name creates a cmake "target" (in this case the target is called "libname"
 
-add_library(turtlelib src/geometry2d.cpp include/turtlelib/angle.hpp )
+add_library(turtlelib src/geometry2d.cpp src/se2d.cpp)
 
 # Use target_include_directories so that #include"mylibrary/header.hpp" works
 # The use of the <BUILD_INTERFACE> and <INSTALL_INTERFACE> is because when
@@ -50,16 +50,17 @@ if(BUILD_TESTING)
     find_package(Catch2 3 REQUIRED)
 
     # A test is just an executable that is linked against the unit testing library
-    add_executable(angle_test tests/test_angle.cpp)
-    target_link_libraries(angle_test Catch2::Catch2WithMain turtlelib)
-    # register the test with CTest, telling it what executable to run
-    add_test(NAME check_angles COMMAND angle_test)
+    add_executable(test_turtlelib
+                   tests/test_angle.cpp
+                   tests/test_geometry2d.cpp
+                   tests/test_se2d.cpp)
 
-    # A test is just an executable that is linked against the unit testing library
-    add_executable(geometry2d_test tests/test_geometry2d.cpp)
-    target_link_libraries(geometry2d_test Catch2::Catch2WithMain turtlelib)
+
+    target_link_libraries(test_turtlelib Catch2::Catch2WithMain turtlelib)
     # register the test with CTest, telling it what executable to run
-    add_test(NAME check_geometry2d COMMAND geometry2d_test)
+    add_test(NAME check_turtlelib COMMAND test_turtlelib)
+
+
 
 
 endif()
@@ -72,19 +73,19 @@ target_compile_features(turtlelib PUBLIC cxx_std_23)
 # Create an executable from the following source code files
 # The Name of the executable creates a cmake "target"
 add_executable(Converter src/converter.cpp)
-add_executable(Tester src/tester.cpp)
+add_executable(Manual_tester src/tester.cpp)
 
 
 
 # TODO: What actually is Eigen?
 target_link_libraries(Converter turtlelib)
-target_link_libraries(Tester turtlelib)
+target_link_libraries(Manual_tester turtlelib)
 
 
 # install the include files by copying the whole include directory
 install(DIRECTORY include/turtlelib DESTINATION include)
 
-install(TARGETS Converter Tester turtlelib EXPORT project_name-targets)
+install(TARGETS Converter Manual_tester turtlelib EXPORT project_name-targets)
 
 
 install(EXPORT project_name-targets

@@ -2,11 +2,9 @@
 #define TURTLELIB_SE2_INCLUDE_GUARD_HPP
 /// \file
 /// \brief Two-dimensional rigid body transformations.
-
-
-#include<iosfwd>
 /// NOTE: Include other needed headers here
 
+#include "turtlelib/geometry2d.hpp"
 
 namespace turtlelib
 {
@@ -90,9 +88,9 @@ namespace turtlelib
         /// \return the angular displacement, in radians
         double rotation() const;
 
-        /// \brief see std::formatter for the Transform2D
-        template<class CharT>
-        friend struct std::formatter<Transform2D, CharT>;
+        // /// \brief see std::formatter for the Transform2D
+        // template<class CharT>
+        // friend struct std::formatter<Transform2D, CharT>;
 
     };
 
@@ -115,31 +113,31 @@ namespace turtlelib
 
 }
 
-/// \brief A formatter for Transform2D
-/// Creates a string representation of a Transform2D
-/// as "{<angle> [<unit>], <x> <y>}"
-/// An R at the beginning of the format-spec makes [<unit>] rad
-/// A D  at the beginning of the format-spec makes [<unit>] deg
-/// No R or D means no unit is printed but the angle is in radians.
-///
-/// After the optional "unit specifier" all double
-/// format-spec values are accepted and apply to all numbers that
-/// are put into the string
-template<class CharT>
-std::formatter<Transform2D, CharT>
-{
-};
+// /// \brief A formatter for Transform2D
+// /// Creates a string representation of a Transform2D
+// /// as "{<angle> [<unit>], <x> <y>}"
+// /// An R at the beginning of the format-spec makes [<unit>] rad
+// /// A D  at the beginning of the format-spec makes [<unit>] deg
+// /// No R or D means no unit is printed but the angle is in radians.
+// ///
+// /// After the optional "unit specifier" all double
+// /// format-spec values are accepted and apply to all numbers that
+// /// are put into the string
+// template<class CharT>
+// std::formatter<Transform2D, CharT>
+// {
+// };
 
-/// \brief print the Twist2D as "<w [<unit>], x, y>"
-/// An R at the beginning of the format-spec makes [<unit>] rad/s
-/// A  D at the beginning of the format-spec makes [<unit>] deg/s
-/// No R or D means no unit is printed but the w is taken to be in rad/s
-///
-/// After the optional "unit specifier" all double
-/// format-spec values are accepted and apply to all numbers inserted
-/// into the string.
-template<class CharT>
-std::formatter<Twist2D, CharT>
-{
-};
+// /// \brief print the Twist2D as "<w [<unit>], x, y>"
+// /// An R at the beginning of the format-spec makes [<unit>] rad/s
+// /// A  D at the beginning of the format-spec makes [<unit>] deg/s
+// /// No R or D means no unit is printed but the w is taken to be in rad/s
+// ///
+// /// After the optional "unit specifier" all double
+// /// format-spec values are accepted and apply to all numbers inserted
+// /// into the string.
+// template<class CharT>
+// std::formatter<Twist2D, CharT>
+// {
+// };
 #endif

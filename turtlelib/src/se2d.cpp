@@ -1,34 +1,59 @@
-#include <iosfwd>
-#include <iostream>
+#include <sstream>
 
-std::istream &operator>>(std::istream &is, Point2D &p)
+#include "turtlelib/se2d.hpp"
+#include "turtlelib/angle.hpp"
+
+#include <print>
+
+namespace turtlelib
 {
-
-    // For now, I'll just restrict input to only "x y" right now and come back to this later to
-    // allow "(x, y)" and add error handling
-    if (std::cin.peek() != 40)
+    std::istream & operator>>(std::istream &is, Twist2D &tw)
     {
-        is >> p.x >> p.y;
-    }
-    else
-    {
-        std::string x_str; // Needs to be a string so I can catch the comma
-        std::cin >> x_str;
-        x_str.erase(0, 1);
-        if (x_str.back() == 44) // 44 is value for ,
+        // If first character is <, get rid of it
+        if (is.peek() == '<')
         {
-            x_str.pop_back();
-            p.x = std::stod(x_str);
-
-            std::string y_str;
-            std::cin >> y_str;
-
-            if (y_str.back() == 41) // 41 is value for )
-            {
-                y_str.pop_back();
-                p.y = std::stod(y_str);
-            }
+            is.get();
         }
+        // Then read first number
+        is >> tw.omega;
+        is.get(); // Purge the space
+
+        std::print("peek1: {}\n", is.peek());
+
+        // Check if next character is r or d
+        if (is.peek() == 'r') // remove the string, but do nothing else. Keep all units in rad/sec
+        {
+
+            std::string str;
+            is >> str;
+        }
+        else if (is.peek() == 'd') // remove the string, then convert deg/s to rad/s
+        {
+            std::string str;
+            is >> str;
+            tw.omega = deg2rad(tw.omega);
+        }
+
+        // Check for commas between every other character
+        if (is.peek() == ',')
+        {
+            is.get();
+        }
+
+        is >> tw.x;
+
+        if (is.peek() == ',')
+        {
+            is.get();
+        }
+
+        is >> tw.y;
+
+        if (is.peek() == '>')
+        {
+            is.get();
+        }
+
+        return is;
     }
-    return is;
 }
