@@ -15,9 +15,7 @@ namespace turtlelib
         {
             is.get();
         }
-        else
-        {
-        }
+
         // Then read first number
         is >> tw.omega;
         is.get(); // Purge the space
@@ -134,6 +132,12 @@ namespace turtlelib
         new_vc.x += tw.x;
         new_vc.y += tw.y;
 
+        Twist2D new_tw;
+        new_tw.omega = tw.omega + v.omega;
+        new_tw.x = new_vc.x;
+        new_tw.y = new_vc.y;
+
+        return new_tw;
     }
 
     Transform2D Transform2D::inv() const
@@ -173,4 +177,95 @@ namespace turtlelib
         return tw.omega;
     }
 
+    std::istream &operator>>(std::istream &is, Transform2D &tf)
+    {
+        // If first character is '{', get rid of it and the following '<'
+        if (is.peek() == '{')
+        {
+            is.get(); // purge {
+            is.get(); // purge <
+        }
+
+        double angle {0.0};
+        is >> angle;
+
+        if (is.peek() == '>')
+        {
+            is.get(); // purge >
+            if (is.peek() == ' ')
+            {
+                is.get(); // Purge the ' ' space if we will be getting a unit.
+                          // If we're not getting a unit, then the peek would be a comma.
+            }
+        }
+        std::print("Peek 1: {}\n", static_cast<char>(is.peek()));
+        switch (is.peek()) // either we get a '<', indicating that we're being given a unit,
+                           // or a ',' or  ' ', or a digit indicating we aren't.
+                           // Anything else is a problem.
+        {
+            case ' ': // this means that unit was not given and we can assume radians
+            case ',': // this means that unit was not given and we can assume radians
+            {
+
+                tf.tw.omega = angle;
+                break;
+            }
+            case '<': // this means we need to check the unit
+            {
+                std::print("in the unit case\n");
+                is.get(); // Purge the <
+                if (is.peek() == 'r') // We have radians again, but we need to purge the string
+                {
+                    tf.tw.omega = angle;
+                    std::string str;
+                    is >> str;
+                    is.get(); // Purge the ' ' space
+                }
+                else if (is.peek() == 'd') // Convert from deg to rad, then purge string
+                {
+                    tf.tw.omega = deg2rad(angle);
+                    std::string str;
+                    is >> str;
+                    is.get(); // Purge the ' ' space
+                }
+                break;
+            }
+        }
+        std::print("Peek 2: {}\n", static_cast<char>(is.peek()));
+        if (is.peek() == ',')
+        {
+            is.get(); // purge ,
+            is.get(); // purge ' ' space
+        }
+
+        if (is.peek() == '<')
+        {
+            is.get(); // purge <
+        }
+
+        is >> tf.tw.x;
+
+        if (is.peek() == '>')
+        {
+            is.get(); // purge >
+            is.get(); // purge ,
+            is.get(); // purge ' ' space
+        }
+
+        if (is.peek() == '<')
+        {
+            is.get(); // purge <
+        }
+
+
+        is >> tf.tw.y;
+
+        if (is.peek() == '>')
+        {
+            is.get(); // purge >
+            is.get(); // purge }
+        }
+
+        return is;
+    }
 }

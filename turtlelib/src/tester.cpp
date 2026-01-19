@@ -10,7 +10,7 @@ int main()
     bool end = false;
     while (not end)
     {
-        std::print("(t)wist, (v)ector, (p)oint?, or (e)nd: ");
+        std::print("t(r)ansform, (t)wist, (v)ector, (p)oint?, or (e)nd: ");
         char choice {'e'};
         std::cin >> choice;
         std::cin.get();
@@ -40,7 +40,16 @@ int main()
                 std::cout << "New twist: " << tw << "\n";
                 break;
             }
-            case 'e':
+            case 'r':
+            {
+                turtlelib::Transform2D tr;
+                std::print("Initial transform twist: ");
+                std::cout << tr.tw << "\nInput: ";
+                std::cin >> tr;
+                std::cout << "New transform twist: " << tr.tw << "\n";
+                break;
+            }
+            default:
             {
                 end = true;
             }
