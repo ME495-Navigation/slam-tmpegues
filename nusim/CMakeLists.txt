@@ -14,15 +14,15 @@ find_package(ament_cmake REQUIRED)
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
 
-  # find_package(rclcpp REQUIRED)
-  # find_package(std_srvs REQUIRED)
+  find_package(rclcpp REQUIRED)
+  find_package(std_srvs REQUIRED)
 
-  # add_executable(nusim src/nusim.cpp)
-  # target_link_libraries(nusim PUBLIC rclcpp::rclcpp ${std_srvs_TARGETS})
+  add_executable(nusim src/nusim.cpp)
+  target_link_libraries(nusim PUBLIC rclcpp::rclcpp ${std_srvs_TARGETS})
 
-  # install(TARGETS
-  #   nusim
-  #   DESTINATION lib/${PROJECT_NAME})
+  install(TARGETS
+    nusim
+    DESTINATION lib/${PROJECT_NAME})
 
 
   # the following line skips the linter which checks for copyrights

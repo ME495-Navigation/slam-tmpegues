@@ -3,9 +3,9 @@
 <launch>`
     <arg name="config_file" default="basic_world.yaml" description="What yaml file to load obstacle and turtlebot initial positions from."/>
 
-    <!-- <node pkg="nusim" exec="nusim">
+    <node pkg="nusim" exec="nusim">
         <param from="$(find-pkg-share nusim)/config/$(var config_file)"/>
-    </node> -->
+    </node>
 
     <node pkg="rviz2" exec="rviz2" on_exit="shutdown" args="-d $(find-pkg-share nusim)/config/nusim.rviz" />
     <!-- I don't have a rviz config file yet, so not putting that in yet.
