@@ -154,15 +154,15 @@ namespace turtlelib
     return new_tf;
     }
 
-    // Transform2D & Transform2D::operator*=(const Transform2D & rhs)
-    // {  //TODO: how to return
-    //     // I think we just add all the values together?
-    //     tw.omega += rhs.tw.omega;
-    //     tw.x += rhs.tw.x;
-    //     tw.y = rhs.tw.y;
+    Transform2D & Transform2D::operator*=(const Transform2D & rhs)
+    {  //TODO: how to return
+        // I think we just add all the values together?
+        tw.omega += rhs.tw.omega;
+        tw.x += rhs.tw.x;
+        tw.y = rhs.tw.y;
 
-    //     return rhs ; //
-    // }
+        return *this; //
+    }
 
     Vector2D Transform2D::translation() const
     {
@@ -267,5 +267,10 @@ namespace turtlelib
         }
 
         return is;
+    }
+
+    Transform2D operator*(Transform2D lhs, const Transform2D &rhs)
+    {
+        return lhs*=rhs;
     }
 }
