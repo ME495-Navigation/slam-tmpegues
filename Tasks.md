@@ -23,5 +23,17 @@ Task A.6
 
 Task B.1
 Task B.2
+Task B.3
+* Formatters not done
 Task B.4
-* I think my >> Point2D leaves the stream messy. Do I need to clear the stream when it succesfully reads a point?
+Task B.5
+* Formatters not done
+* Most things really need to be tested, but I've at least got a start for everything.
+Task B.6
+* Probably like half done
+Task B.7
+* Skipping
+Task B.8
+* Skipping
+Task B.9
+* Skipping
