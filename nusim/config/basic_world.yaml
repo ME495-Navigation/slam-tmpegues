@@ -1,4 +1,12 @@
+/**:
+  ros__parameters:
+    obstacles.x: [-0.4, 0.7, 0.5]
+    obstacles.y: [-0.7, -0.8, 0.8]
+    obstacles.r: 0.038
 
+    x0: -0.6
+    y0: 0.3
+    theta0: 1.28
 
 # Obstacles at
   # x: (-0.4, 0.7, 0.5)
