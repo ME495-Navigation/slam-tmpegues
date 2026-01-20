@@ -64,42 +64,47 @@ namespace turtlelib
 
     Transform2D::Transform2D()
     {
-        // Twist2D tw;
-        tw.omega = 0;
-        tw.x = 0;
-        tw.y = 0;
+        ; // Default values for twist and costh and sinth are for an identity transform
     }
 
     Transform2D::Transform2D(Vector2D trans)
     {
-        // Twist2D tw;
-        tw.omega = 0;
         tw.x = trans.x;
         tw.y = trans.y;
+
+        x = trans.x;
+        y = trans.y;
+        // Default values for tw.omega, theta, costh, sinth are correct for no rotation
     }
 
     Transform2D::Transform2D(double radians)
     {
-        // Twist2D tw;
         tw.omega = radians;
-        tw.x = 0;
-        tw.y = 0;
+        // Default values for tw.x and tw.y are correct for no translation
+        theta = radians;
+        costh = std::cos(radians);
+        sinth = std::sin(radians);
     }
 
     Transform2D::Transform2D(Vector2D trans, double radians)
     {
-        // Twist2D tw;
         tw.omega = radians;
         tw.x = trans.x;
         tw.y = trans.y;
+
+        theta = radians;
+        x = trans.x;
+        y = trans.y;
+        costh = std::cos(radians);
+        sinth = std::sin(radians);
     }
 
     Point2D Transform2D::operator()(Point2D p) const
     {
         // Rotate then translate the point
         Point2D new_pt;
-        new_pt.x = std::cos(tw.omega) * p.x - std::sin(tw.omega) * p.y;
-        new_pt.y = std::cos(tw.omega) * p.y + std::sin(tw.omega) * p.x;
+        new_pt.x = costh * p.x - sinth * p.y;
+        new_pt.y = costh * p.y + sinth * p.x;
 
         new_pt.x += tw.x;
         new_pt.y += tw.y;
@@ -109,33 +114,20 @@ namespace turtlelib
 
     Vector2D Transform2D::operator()(Vector2D v) const
     {
-        // This is exactly the same math as doing a point above
+        // Transforming a vector only rotates it
         Vector2D new_vc;
-        new_vc.x = std::cos(tw.omega) * v.x - std::sin(tw.omega) * v.y;
-        new_vc.y = std::cos(tw.omega) * v.y + std::sin(tw.omega) * v.x;
-
-        new_vc.x += tw.x;
-        new_vc.y += tw.y;
+        new_vc.x = costh * v.x - sinth * v.y;
+        new_vc.y = costh * v.y + sinth * v.x;
 
         return new_vc;
     }
 
     Twist2D Transform2D::operator()(Twist2D v ) const
     {
-        // I think the only thing we need to deal with here is just the translation bit
-        // TODO: check if this is correct. Also check how do I just use the function above instead of copy pasting it
-
-        Vector2D new_vc;
-        new_vc.x = std::cos(tw.omega) * v.x - std::sin(tw.omega) * v.y;
-        new_vc.y = std::cos(tw.omega) * v.y + std::sin(tw.omega) * v.x;
-
-        new_vc.x += tw.x;
-        new_vc.y += tw.y;
-
         Twist2D new_tw;
-        new_tw.omega = tw.omega + v.omega;
-        new_tw.x = new_vc.x;
-        new_tw.y = new_vc.y;
+        new_tw.omega = v.omega;
+        new_tw.x = costh*v.x - sinth*v.y + tw.y*v.omega;
+        new_tw.y = costh*v.y + sinth*v.x - tw.x*v.omega;
 
         return new_tw;
     }
@@ -144,12 +136,11 @@ namespace turtlelib
     {
         // TODO: check. This seems too easy
 
-        auto new_rot = tw.omega * -1;
         Vector2D new_vc;
-        new_vc.x = -1;
-        new_vc.y = -1;
+        new_vc.x = -x*costh-y*sinth;
+        new_vc.y = -y*costh+x*sinth;
 
-        Transform2D new_tf(new_vc, new_rot);
+        Transform2D new_tf(new_vc, -theta);
 
     return new_tf;
     }

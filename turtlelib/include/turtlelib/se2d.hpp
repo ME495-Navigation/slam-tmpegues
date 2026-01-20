@@ -46,6 +46,12 @@ namespace turtlelib
 
     public:
         Twist2D tw;
+        double theta {0.0};
+        double x {0.0};
+        double y {0.0};
+        double costh {1.0};
+        double sinth {0.0};
+
         /// \brief Create an identity transformation
         Transform2D();
 
