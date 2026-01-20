@@ -4,6 +4,10 @@
 #include "visualization_msgs/msg/marker.hpp"
 #include "visualization_msgs/msg/marker_array.hpp"
 
+#include "tf2/LinearMath/Quaternion.hpp"
+#include "tf2_ros/transform_broadcaster.h"
+#include "geometry_msgs/msg/transform_stamped.hpp"
+
 // #include "std_msgs/msg/uint64.hpp"
 
 using Empty = std_srvs::srv::Empty;
@@ -87,6 +91,20 @@ public:
             wall_pub_->publish(marker);
         }
         // wall_array_pub_->publish(marker_array);
+
+        // Create parameters x0, y0, theta0 for initial pose of red turtle
+            // default all to 0.0
+            // relative to nusim/world frame
+        this->declare_parameter("x0", 0.0); // TODO: check removing the this->
+        double x0 = this->get_parameter("x0").as_double();
+
+        this->declare_parameter("y0", 0.0); // TODO: check removing the this->
+        double y0 = this->get_parameter("y0").as_double();
+
+        this->declare_parameter("theta0", 0.0); // TODO: check removing the this->
+        double theta0 = this->get_parameter("theta0").as_double();
+
+        std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;
     };
 
 
@@ -99,31 +117,54 @@ private:
 
 std::shared_ptr<nusim_node> my_node = nullptr;
 
+auto x{my_node->x0};
+auto y{my_node->y0};
+auto theta{my_node->theta0};
+
+
 auto reset_cb(
     [[maybe_unused]] const std::shared_ptr<Empty::Request> request,
     [[maybe_unused]] const std::shared_ptr<Empty::Response> response) -> void
 {
     RCLCPP_INFO(my_node->get_logger(), "Reset acknowledged, but can't do anything get");
+    x = my_node->get_parameter("x0").as_double();
+    y = my_node->get_parameter("y0").as_double();
+    theta = my_node->get_parameter("theta0").as_double();
 };
 
-// Create parameters x0, y0, theta0 for initial pose of red turtle
-    // default all to 0.0
-    // relative to nusim/world frame
+auto pub_redbase() -> void
+{
+    geometry_msgs::msg::TransformStamped red_pose;
+    red_pose.header.stamp = my_node->get_clock()->now();
+    red_pose.header.frame_id = "~/world";
+    red_pose.child_frame_id = "red/base_footprint";
 
+    red_pose.transform.translation.x = x;
+    red_pose.transform.translation.y = y;
+    red_pose.transform.translation.z = 0.1; // TODO: correct this height
+
+    tf2::Quaternion rot;
+    rot.setRPY(0, 0, theta);
+    red_pose.transform.rotation.x = rot.x();
+    red_pose.transform.rotation.y = rot.y();
+    red_pose.transform.rotation.z = rot.z();
+    red_pose.transform.rotation.w = rot.w();
+
+    my_node->tf_broadcaster_->sendTransform(red_pose);
+}
 
 // Obstacles
-    // Not specified how to get this to work
-    // Parameters
-        // obstacles.x is a list of x coordinates, float64
-        // obstacles.y is a list of y coordinates, float64
-        // obstacles.r is the radius (all abstacles are the same radius)
-    // All obstacles are .25 m tall
-    // All obstacles are red
-    // Publish visualization_msgs/MarkerArray on ~/real_obstacles
-        // PUblish in the red namespace of Marker message
+// Not specified how to get this to work
+// Parameters
+// obstacles.x is a list of x coordinates, float64
+// obstacles.y is a list of y coordinates, float64
+// obstacles.r is the radius (all abstacles are the same radius)
+// All obstacles are .25 m tall
+// All obstacles are red
+// Publish visualization_msgs/MarkerArray on ~/real_obstacles
+// PUblish in the red namespace of Marker message
 
-
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
     rclcpp::init(argc, argv);
     my_node = std::make_shared<nusim_node>();

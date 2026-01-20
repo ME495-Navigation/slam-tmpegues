@@ -21,6 +21,11 @@ if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
 
   find_package(rclcpp REQUIRED)
+  find_package(tf2 REQUIRED)
+  find_package(tf2_ros REQUIRED)
+
+
+
 
   find_package(std_srvs REQUIRED)
   find_package(std_msgs REQUIRED)
@@ -30,7 +35,15 @@ if(BUILD_TESTING)
 
 
   add_executable(nusim src/nusim.cpp)
-  target_link_libraries(nusim PUBLIC rclcpp::rclcpp ${std_srvs_TARGETS} ${std_msgs_TARGETS} ${visualization_msgs_TARGETS} ${geometry_msgs_TARGETS})
+  target_link_libraries(nusim
+                        PUBLIC
+                        rclcpp::rclcpp
+                        tf2::tf2
+                        tf2_ros::tf2_ros
+                        ${std_srvs_TARGETS}
+                        ${std_msgs_TARGETS}
+                        ${visualization_msgs_TARGETS}
+                        ${geometry_msgs_TARGETS})
 
   install(TARGETS
     nusim
