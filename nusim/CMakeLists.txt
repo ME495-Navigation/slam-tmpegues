@@ -16,9 +16,13 @@ if(BUILD_TESTING)
 
   find_package(rclcpp REQUIRED)
   find_package(std_srvs REQUIRED)
+  find_package(visualization_msgs REQUIRED)
+  find_package(geometry_msgs REQUIRED)
+
+
 
   add_executable(nusim src/nusim.cpp)
-  target_link_libraries(nusim PUBLIC rclcpp::rclcpp ${std_srvs_TARGETS})
+  target_link_libraries(nusim PUBLIC rclcpp::rclcpp ${std_srvs_TARGETS} ${visualization_msgs_TARGETS} ${geometry_msgs_TARGETS})
 
   install(TARGETS
     nusim

@@ -11,6 +11,9 @@
 
   <depend>rclcpp</depend>
   <depend>std_srvs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>geometry_msgs</depend>
+
 
   <exec_depend>ros2launch</exec_depend>
   <exec_depend>nuturtle_description</exec_depend>
