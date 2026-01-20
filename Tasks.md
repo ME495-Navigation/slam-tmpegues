@@ -39,3 +39,19 @@ Task B.9
 * Skipping
 
 Task C.1
+Tasl C.2
+* Created timer
+* Did not create ~/timestep publisher
+* Did not create ~/reset service
+Task C.3
+* Skipping
+Task C.4
+* Attempted, and the topic showed up once on rqt_graph, but does not work
+Task C.5
+* Skipping
+Task C.6
+* Rviz opens with a config that shows:
+    * Fixed Frame `nusim/world`
+    * RobotModel in red (not correctly placed yet)
+    * MarkerArray on topic nusim/real_walls
+    * Shows axes `nusim_world`
