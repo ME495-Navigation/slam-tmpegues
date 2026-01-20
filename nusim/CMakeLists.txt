@@ -10,19 +10,27 @@ find_package(ament_cmake REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
+find_package(rclcpp REQUIRED)
+
+find_package(std_srvs REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
 
   find_package(rclcpp REQUIRED)
+
   find_package(std_srvs REQUIRED)
+  find_package(std_msgs REQUIRED)
   find_package(visualization_msgs REQUIRED)
   find_package(geometry_msgs REQUIRED)
 
 
 
   add_executable(nusim src/nusim.cpp)
-  target_link_libraries(nusim PUBLIC rclcpp::rclcpp ${std_srvs_TARGETS} ${visualization_msgs_TARGETS} ${geometry_msgs_TARGETS})
+  target_link_libraries(nusim PUBLIC rclcpp::rclcpp ${std_srvs_TARGETS} ${std_msgs_TARGETS} ${visualization_msgs_TARGETS} ${geometry_msgs_TARGETS})
 
   install(TARGETS
     nusim

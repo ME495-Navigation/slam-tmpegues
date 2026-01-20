@@ -4,7 +4,7 @@
 #include "visualization_msgs/msg/marker.hpp"
 #include "visualization_msgs/msg/marker_array.hpp"
 
-#include "std_msgs/msg/string.hpp"
+// #include "std_msgs/msg/uint64.hpp"
 
 using Empty = std_srvs::srv::Empty;
 using MarkerArray = visualization_msgs::msg::MarkerArray;
@@ -20,6 +20,8 @@ public:
         // Create ~/reset service, type std/srv/Empty
         // Resets simulation
         // Right now, just resets the ~/timestep to 0
+        //   auto timestep = std_msgs::msg::UInt64();
+        //   timestep.data = 0
         // At next task, the position of the robot should be reset to x0, y0, theta0
         // Read the parameters at that time, not the values at initialization
 
@@ -90,11 +92,19 @@ public:
 
 private:
     rclcpp::TimerBase::SharedPtr timer_;
+    // rclcpp::Publisher<std_msgs::msg::UInt64>::SharedPtr timestep_pub_;
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr wall_array_pub_;
     rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr wall_pub_;
 };
 
 std::shared_ptr<nusim_node> my_node = nullptr;
+
+auto reset_cb(
+    [[maybe_unused]] const std::shared_ptr<Empty::Request> request,
+    [[maybe_unused]] const std::shared_ptr<Empty::Response> response) -> void
+{
+    RCLCPP_INFO(my_node->get_logger(), "Reset acknowledged, but can't do anything get");
+};
 
 // Create parameters x0, y0, theta0 for initial pose of red turtle
     // default all to 0.0
@@ -117,7 +127,7 @@ int main(int argc, char * argv[])
 {
     rclcpp::init(argc, argv);
     my_node = std::make_shared<nusim_node>();
-    // auto toggle_service = my_node->create_service<Empty>("toggle", toggle_cb);
+    auto reset_service = my_node->create_service<Empty>("~/reset", reset_cb);
     rclcpp::spin(my_node);
     rclcpp::shutdown();
     return 0;

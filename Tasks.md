@@ -42,7 +42,9 @@ Task C.1
 Tasl C.2
 * Created timer
 * Did not create ~/timestep publisher
-* Did not create ~/reset service
+    * fatal error: std_msgs/msg/uint64.hpp: No such file or directory
+* Created reset service
+    * It doesn't reset the timestep since I haven't created that yet
 Task C.3
 * Skipping
 Task C.4
