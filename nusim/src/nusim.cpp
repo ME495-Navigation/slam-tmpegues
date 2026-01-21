@@ -20,6 +20,19 @@ public:
     : Node("nusim")
 
     {
+        // Create parameters x0, y0, theta0 for initial pose of red turtle
+        // default all to 0.0
+        // relative to nusim/world frame
+        // this->declare_parameter("x0", 0.0); // TODO: check removing the this->
+        // double x = this->get_parameter("x0").as_double();
+
+        // this->declare_parameter("y0", 0.0); // TODO: check removing the this->
+        // double y = this->get_parameter("y0").as_double();
+
+        // this->declare_parameter("theta0", 0.0); // TODO: check removing the this->
+        // double theta = this->get_parameter("theta0").as_double();
+
+        std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;
 
         // Create ~/reset service, type std/srv/Empty
         // Resets simulation
@@ -29,16 +42,7 @@ public:
         // At next task, the position of the robot should be reset to x0, y0, theta0
         // Read the parameters at that time, not the values at initialization
 
-        // Create parameter 'rate', default 100 Hz
-        this->declare_parameter("rate", 100); // TODO: check removing the this->
-        int rate = this->get_parameter("rate").as_int();
 
-        auto timer_callback = [this]() -> void { // TODO: Check removing the -> void, moving the whole lambda
-            RCLCPP_INFO(this->get_logger(), "Tick Tock"); // TODO: check using RCLCPP_DEBUG_STREAM
-            // this->wall_pub_->publish(this->marker);
-        };
-        auto timer_period {std::chrono::milliseconds(1000/rate)};
-        timer_ = this->create_wall_timer(timer_period, timer_callback);
 
         // Walls
         // Create parameters arena_x_length, arena_y_length
@@ -53,73 +57,151 @@ public:
         // Walls are red
         // use visualization_msgs/MarkerArray on topic ~/real_walls
             // Check qos from assignment 2
-        rclcpp::QoS marker_qos(10);
-        marker_qos.durability(rclcpp::DurabilityPolicy::TransientLocal);
-        auto wall_pub_ = this->create_publisher<visualization_msgs::msg::Marker>("~/real_walls", marker_qos);
+        auto marker_qos = rclcpp::QoS(rclcpp::KeepLast(10)).transient_local();
+        //rclcpp::QoS marker_qos(10);
+        // marker_qos.durability(rclcpp::DurabilityPolicy::TransientLocal);
+        wall_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_walls", marker_qos);
 
         // The following section creates wall marker array
-        double wall_thick{0.01};
+        double wall_thick{0.1};
         double wall_height{0.25};
         auto marker_array = visualization_msgs::msg::MarkerArray();
-        for (int i = 0; i<=1; i++)
-        {
-            auto x_loc = arena_x_length/2.0 + i * wall_thick;
-            auto y_loc = arena_y_length/2.0 + i * wall_thick;
-            auto marker = visualization_msgs::msg::Marker();
-            marker.header.frame_id = "~/world";
-            marker.header.stamp = rclcpp::Clock().now();
-            marker.id = 0;
-            marker.type = visualization_msgs::msg::Marker::LINE_STRIP;
-            marker.color.r = 1.0;
-            marker.color.a = 0.75;
+        RCLCPP_INFO(this->get_logger(), "Before wall loop");
+        auto marker = visualization_msgs::msg::Marker();
+        marker.header.frame_id = "nusim/world";
+        marker.scale.z = wall_height;
+        marker.type = visualization_msgs::msg::Marker::CUBE;
+        marker.color.r = 1.0;
+        marker.color.a = 0.75;
+        marker.pose.position.z = wall_height / 2.0;
 
-            geometry_msgs::msg::Point p1;
-            p1.x = x_loc, p1.y = y_loc, p1.z = wall_height / 2.0;
+        auto x_loc = arena_x_length / 2.0 + wall_thick / 2.0;
+        auto y_loc = arena_y_length / 2.0 + wall_thick / 2.0;
+        marker.header.stamp = rclcpp::Clock().now();
 
-            geometry_msgs::msg::Point p2;
-            p2.x = -x_loc, p2.y = y_loc, p2.z = wall_height / 2.0;
+        marker.scale.x = wall_thick;
+        marker.scale.y = arena_y_length + 2.0*wall_thick;
+        // marker.pose.orientation.x = 0.0;
+        // marker.pose.orientation.y = std::sqrt(2) / 2.0;
+        // marker.pose.orientation.z = 0.0;
+        // marker.pose.orientation.w = std::sqrt(2) / 2.0;
 
-            geometry_msgs::msg::Point p3;
-            p3.x = x_loc, p3.y = -y_loc, p3.z = wall_height / 2.0;
+        // +x wall
+        marker.id = 0;
+        marker.pose.position.x = x_loc;
+        marker_array.markers.push_back(marker);
 
-            geometry_msgs::msg::Point p4;
-            p4.x = -x_loc, p4.y = -y_loc, p4.z = wall_height / 2.0;
+        // -x wall
+        marker.id = 1;
+        marker.pose.position.x = -x_loc;
+        marker_array.markers.push_back(marker);
 
-            std::vector<geometry_msgs::msg::Point> line_points {p1, p2, p3, p4, p1};
-            marker.points = line_points;
-            marker_array.markers.push_back(marker);
-            wall_pub_->publish(marker);
-        }
+
+        marker.pose.position.x = 0.0;
+        marker.pose.orientation.z = 0;
+        marker.pose.orientation.x = 0.0;
+        marker.pose.orientation.y = 0.0;
+        marker.pose.orientation.w = 1;
+        marker.scale.y = wall_thick;
+        marker.scale.x = arena_x_length + 2.0 * wall_thick;
+
+        // +y wall
+        marker.id = 2;
+        marker.pose.position.y = y_loc;
+        marker_array.markers.push_back(marker);
+
+        // -y wall
+        marker.id = 3;
+        marker.pose.position.y = -y_loc;
+        marker_array.markers.push_back(marker);
+
+        wall_pub_->publish(marker_array);
+
+        // Create parameter 'rate', default 100 Hz
+        this->declare_parameter("rate", 100); // TODO: check removing the this->
+        int rate = this->get_parameter("rate").as_int();
+
+        auto timer_callback = [this]() -> void {          // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
+            RCLCPP_INFO(this->get_logger(), "Tick Tock"); // TODO: check using RCLCPP_DEBUG_STREAM
+            // this->wall_pub_->publish(this->marker);
+            // auto marker = visualization_msgs::msg::Marker();
+            // this->wall_pub_->publish(marker);
+            // double wall_thick{0.01};
+            // double wall_height{0.25};
+            // // this->declare_parameter("arena_x_length", 10.0); // TODO: check removing the this->
+            // // double arena_x_length = this->get_parameter("arena_x_length").as_double();
+            // // this->declare_parameter("arena_y_length", 10.0); // TODO: check removing the this->
+            // // double arena_y_length = this->get_parameter("arena_y_length").as_double();
+
+            // double arena_x_length = 10.0;
+            // double arena_y_length = 10.0;
+            // for (int i = 0; i <= 1; i++)
+            // {
+
+            //     RCLCPP_INFO(this->get_logger(), "Wall loop");
+            //     auto x_loc = arena_x_length / 2.0 + i * wall_thick;
+            //     auto y_loc = arena_y_length / 2.0 + i * wall_thick;
+            //     auto marker = visualization_msgs::msg::Marker();
+            //     marker.header.frame_id = "nusim/world";
+            //     marker.header.stamp = rclcpp::Clock().now();
+            //     marker.id = 0;
+            //     marker.type = visualization_msgs::msg::Marker::LINE_STRIP;
+            //     marker.color.r = 1.0;
+            //     marker.color.a = 0.75;
+            //     marker.scale.x = 1.0;
+
+            //     geometry_msgs::msg::Point p1;
+            //     p1.x = x_loc, p1.y = y_loc, p1.z = wall_height / 2.0;
+
+            //     geometry_msgs::msg::Point p2;
+            //     p2.x = -x_loc, p2.y = y_loc, p2.z = wall_height / 2.0;
+
+            //     geometry_msgs::msg::Point p3;
+            //     p3.x = -x_loc, p3.y = -y_loc, p3.z = wall_height / 2.0;
+
+            //     geometry_msgs::msg::Point p4;
+            //     p4.x = x_loc, p4.y = -y_loc, p4.z = wall_height / 2.0;
+
+            //     std::vector<geometry_msgs::msg::Point> line_points{p1, p2, p3, p4, p1, p2 };
+            //     marker.points = line_points;
+            //     // marker_array.markers.push_back(marker);
+            //     RCLCPP_INFO(this->get_logger(), "Line before publish");
+
+            //     wall_pub_->publish(marker);
+            // }
+        };
+        auto timer_period{std::chrono::milliseconds(1000 / rate)};
+        timer_ = this->create_wall_timer(timer_period, timer_callback);
         // wall_array_pub_->publish(marker_array);
 
-        // Create parameters x0, y0, theta0 for initial pose of red turtle
-            // default all to 0.0
-            // relative to nusim/world frame
-        this->declare_parameter("x0", 0.0); // TODO: check removing the this->
-        double x0 = this->get_parameter("x0").as_double();
+        // // Create parameters x0, y0, theta0 for initial pose of red turtle
+        //     // default all to 0.0
+        //     // relative to nusim/world frame
+        // this->declare_parameter("x0", 0.0); // TODO: check removing the this->
+        // double x0 = this->get_parameter("x0").as_double();
 
-        this->declare_parameter("y0", 0.0); // TODO: check removing the this->
-        double y0 = this->get_parameter("y0").as_double();
+        // this->declare_parameter("y0", 0.0); // TODO: check removing the this->
+        // double y0 = this->get_parameter("y0").as_double();
 
-        this->declare_parameter("theta0", 0.0); // TODO: check removing the this->
-        double theta0 = this->get_parameter("theta0").as_double();
+        // this->declare_parameter("theta0", 0.0); // TODO: check removing the this->
+        // double theta0 = this->get_parameter("theta0").as_double();
 
-        std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;
+        // std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;
     };
 
 
 private:
     rclcpp::TimerBase::SharedPtr timer_;
     // rclcpp::Publisher<std_msgs::msg::UInt64>::SharedPtr timestep_pub_;
-    rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr wall_array_pub_;
-    rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr wall_pub_;
+    // rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr wall_array_pub_;
+    rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr wall_pub_;
 };
 
 std::shared_ptr<nusim_node> my_node = nullptr;
 
-auto x{my_node->x0};
-auto y{my_node->y0};
-auto theta{my_node->theta0};
+// auto x{my_node->x0};
+// auto y{my_node->y0};
+// auto theta{my_node->theta0};
 
 
 auto reset_cb(
@@ -127,31 +209,31 @@ auto reset_cb(
     [[maybe_unused]] const std::shared_ptr<Empty::Response> response) -> void
 {
     RCLCPP_INFO(my_node->get_logger(), "Reset acknowledged, but can't do anything get");
-    x = my_node->get_parameter("x0").as_double();
-    y = my_node->get_parameter("y0").as_double();
-    theta = my_node->get_parameter("theta0").as_double();
+    // my_node.x = my_node->get_parameter("x0").as_double();
+    // my_node.y = my_node->get_parameter("y0").as_double();
+    // my_node.theta = my_node->get_parameter("theta0").as_double();
 };
 
-auto pub_redbase() -> void
-{
-    geometry_msgs::msg::TransformStamped red_pose;
-    red_pose.header.stamp = my_node->get_clock()->now();
-    red_pose.header.frame_id = "~/world";
-    red_pose.child_frame_id = "red/base_footprint";
+// auto pub_redbase() -> void
+// {
+//     geometry_msgs::msg::TransformStamped red_pose;
+//     red_pose.header.stamp = my_node->get_clock()->now();
+//     red_pose.header.frame_id = "~/world";
+//     red_pose.child_frame_id = "red/base_footprint";
 
-    red_pose.transform.translation.x = x;
-    red_pose.transform.translation.y = y;
-    red_pose.transform.translation.z = 0.1; // TODO: correct this height
+//     red_pose.transform.translation.x = x;
+//     red_pose.transform.translation.y = y;
+//     red_pose.transform.translation.z = 0.1; // TODO: correct this height
 
-    tf2::Quaternion rot;
-    rot.setRPY(0, 0, theta);
-    red_pose.transform.rotation.x = rot.x();
-    red_pose.transform.rotation.y = rot.y();
-    red_pose.transform.rotation.z = rot.z();
-    red_pose.transform.rotation.w = rot.w();
+//     tf2::Quaternion rot;
+//     rot.setRPY(0, 0, theta);
+//     red_pose.transform.rotation.x = rot.x();
+//     red_pose.transform.rotation.y = rot.y();
+//     red_pose.transform.rotation.z = rot.z();
+//     red_pose.transform.rotation.w = rot.w();
 
-    my_node->tf_broadcaster_->sendTransform(red_pose);
-}
+//     my_node->tf_broadcaster_->sendTransform(red_pose);
+// }
 
 // Obstacles
 // Not specified how to get this to work
