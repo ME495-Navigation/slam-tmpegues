@@ -1,10 +1,14 @@
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/catch_approx.hpp>
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
 #include "turtlelib/se2d.hpp"
 #include "turtlelib/angle.hpp"
 #include <cmath>
 
 #include <print>
+
+using namespace turtlelib;
+using namespace Catch::Matchers;
 
 TEST_CASE("Create a twist with format 'w x y' and 'x <unit> x y' and <w x y>, with radians and degrees", "std::istream & operator>>")
 {
@@ -164,3 +168,50 @@ TEST_CASE("Transform vector [1, 1]", "Transform2D")
 
 // TODO: need test for transforming a Twist2D
 
+TEST_CASE("Transform2D operator*", "[Conor]")
+{
+    // this is also implicitly testing operator*=
+    SECTION("Multiply two transforms")
+    {
+        Vector2D trans1{2.0, 0.0};
+        double angle1 = deg2rad(90);
+        Transform2D tf1(trans1, angle1);
+
+        Vector2D trans2{1.0, 0.0};
+        double angle2 = deg2rad(45);
+        Transform2D tf2(trans2, angle2);
+
+        Transform2D result = tf1 * tf2;
+
+        REQUIRE_THAT(result.rotation(), WithinAbs(deg2rad(135), 0.00001));
+        REQUIRE_THAT(result.translation().x, WithinAbs(2.0, 0.00001));
+        REQUIRE_THAT(result.translation().y, WithinAbs(1.0, 0.00001));
+    }
+
+    SECTION("operator* does not modify operands")
+    {
+        Vector2D trans1{1.0, 2.0};
+        double angle1 = deg2rad(30);
+        Transform2D tf1(trans1, angle1);
+
+        Vector2D trans2{3.0, 4.0};
+        double angle2 = deg2rad(60);
+        Transform2D tf2(trans2, angle2);
+
+        // Store original values
+        Vector2D orig_trans1 = tf1.translation();
+        double orig_angle1 = tf1.rotation();
+        Vector2D orig_trans2 = tf2.translation();
+        double orig_angle2 = tf2.rotation();
+        // Perform multiplication
+        [[maybe_unused]] Transform2D result = tf1 * tf2;
+
+        // Verify operands were not modified
+        REQUIRE_THAT(tf1.translation().x, WithinAbs(orig_trans1.x, 0.00001));
+        REQUIRE_THAT(tf1.translation().y, WithinAbs(orig_trans1.y, 0.00001));
+        REQUIRE_THAT(tf1.rotation(), WithinAbs(orig_angle1, 0.00001));
+        REQUIRE_THAT(tf2.translation().x, WithinAbs(orig_trans2.x, 0.00001));
+        REQUIRE_THAT(tf2.translation().y, WithinAbs(orig_trans2.y, 0.00001));
+        REQUIRE_THAT(tf2.rotation(), WithinAbs(orig_angle2, 0.00001));
+    }
+}

@@ -146,11 +146,13 @@ namespace turtlelib
     }
 
     Transform2D & Transform2D::operator*=(const Transform2D & rhs)
-    {  //TODO: how to return
-        // I think we just add all the values together?
-        tw.omega += rhs.tw.omega;
-        tw.x += rhs.tw.x;
-        tw.y = rhs.tw.y;
+    {
+        theta += rhs.theta;
+        Vector2D new_vec;
+        new_vec.x = rhs.x;
+        new_vec.y = rhs.y;
+        x += costh * rhs.x - sinth * rhs.y;
+        y += costh * rhs.y + sinth * rhs.x;
 
         return *this; //
     }
