@@ -46,9 +46,8 @@ Tasl C.2
 * Created reset service
     * It doesn't reset the timestep since I haven't created that yet
 Task C.3
-* Tried to create a publisher, but it's saying various variables don't exist, but it's saying the same ones are unused3
+* Tried to create a publisher, but it's saying various variables don't exist, but it's saying the same ones are unused
 Task C.4
-* Attempted, and the topic showed up once on rqt_graph, but does not work
 Task C.5
 * Skipping
 Task C.6

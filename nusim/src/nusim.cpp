@@ -16,8 +16,7 @@ using MarkerArray = visualization_msgs::msg::MarkerArray;
 class nusim_node : public rclcpp::Node
 {
 public:
-    nusim_node()
-    : Node("nusim")
+    nusim_node():Node("nusim")
 
     {
         // Create parameters x0, y0, theta0 for initial pose of red turtle
@@ -43,136 +42,18 @@ public:
         // Read the parameters at that time, not the values at initialization
 
 
-
-        // Walls
-        // Create parameters arena_x_length, arena_y_length
-
-        this->declare_parameter("arena_x_length", 10.0); // TODO: check removing the this->
-        double arena_x_length = this->get_parameter("arena_x_length").as_double();
-        this->declare_parameter("arena_y_length", 10.0); // TODO: check removing the this->
-        double arena_y_length = this->get_parameter("arena_y_length").as_double();
-
-        // Center arena at 0,0
-        // Walls 0.25 tall
-        // Walls are red
-        // use visualization_msgs/MarkerArray on topic ~/real_walls
-            // Check qos from assignment 2
-        auto marker_qos = rclcpp::QoS(rclcpp::KeepLast(10)).transient_local();
-        //rclcpp::QoS marker_qos(10);
-        // marker_qos.durability(rclcpp::DurabilityPolicy::TransientLocal);
-        wall_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_walls", marker_qos);
-
-        // The following section creates wall marker array
-        double wall_thick{0.1};
-        double wall_height{0.25};
-        auto marker_array = visualization_msgs::msg::MarkerArray();
-        RCLCPP_INFO(this->get_logger(), "Before wall loop");
-        auto marker = visualization_msgs::msg::Marker();
-        marker.header.frame_id = "nusim/world";
-        marker.scale.z = wall_height;
-        marker.type = visualization_msgs::msg::Marker::CUBE;
-        marker.color.r = 1.0;
-        marker.color.a = 0.75;
-        marker.pose.position.z = wall_height / 2.0;
-
-        auto x_loc = arena_x_length / 2.0 + wall_thick / 2.0;
-        auto y_loc = arena_y_length / 2.0 + wall_thick / 2.0;
-        marker.header.stamp = rclcpp::Clock().now();
-
-        marker.scale.x = wall_thick;
-        marker.scale.y = arena_y_length + 2.0*wall_thick;
-        // marker.pose.orientation.x = 0.0;
-        // marker.pose.orientation.y = std::sqrt(2) / 2.0;
-        // marker.pose.orientation.z = 0.0;
-        // marker.pose.orientation.w = std::sqrt(2) / 2.0;
-
-        // +x wall
-        marker.id = 0;
-        marker.pose.position.x = x_loc;
-        marker_array.markers.push_back(marker);
-
-        // -x wall
-        marker.id = 1;
-        marker.pose.position.x = -x_loc;
-        marker_array.markers.push_back(marker);
-
-
-        marker.pose.position.x = 0.0;
-        marker.pose.orientation.z = 0;
-        marker.pose.orientation.x = 0.0;
-        marker.pose.orientation.y = 0.0;
-        marker.pose.orientation.w = 1;
-        marker.scale.y = wall_thick;
-        marker.scale.x = arena_x_length + 2.0 * wall_thick;
-
-        // +y wall
-        marker.id = 2;
-        marker.pose.position.y = y_loc;
-        marker_array.markers.push_back(marker);
-
-        // -y wall
-        marker.id = 3;
-        marker.pose.position.y = -y_loc;
-        marker_array.markers.push_back(marker);
-
-        wall_pub_->publish(marker_array);
-
         // Create parameter 'rate', default 100 Hz
         this->declare_parameter("rate", 100); // TODO: check removing the this->
         int rate = this->get_parameter("rate").as_int();
 
         auto timer_callback = [this]() -> void {          // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
             RCLCPP_INFO(this->get_logger(), "Tick Tock"); // TODO: check using RCLCPP_DEBUG_STREAM
-            // this->wall_pub_->publish(this->marker);
-            // auto marker = visualization_msgs::msg::Marker();
-            // this->wall_pub_->publish(marker);
-            // double wall_thick{0.01};
-            // double wall_height{0.25};
-            // // this->declare_parameter("arena_x_length", 10.0); // TODO: check removing the this->
-            // // double arena_x_length = this->get_parameter("arena_x_length").as_double();
-            // // this->declare_parameter("arena_y_length", 10.0); // TODO: check removing the this->
-            // // double arena_y_length = this->get_parameter("arena_y_length").as_double();
 
-            // double arena_x_length = 10.0;
-            // double arena_y_length = 10.0;
-            // for (int i = 0; i <= 1; i++)
-            // {
-
-            //     RCLCPP_INFO(this->get_logger(), "Wall loop");
-            //     auto x_loc = arena_x_length / 2.0 + i * wall_thick;
-            //     auto y_loc = arena_y_length / 2.0 + i * wall_thick;
-            //     auto marker = visualization_msgs::msg::Marker();
-            //     marker.header.frame_id = "nusim/world";
-            //     marker.header.stamp = rclcpp::Clock().now();
-            //     marker.id = 0;
-            //     marker.type = visualization_msgs::msg::Marker::LINE_STRIP;
-            //     marker.color.r = 1.0;
-            //     marker.color.a = 0.75;
-            //     marker.scale.x = 1.0;
-
-            //     geometry_msgs::msg::Point p1;
-            //     p1.x = x_loc, p1.y = y_loc, p1.z = wall_height / 2.0;
-
-            //     geometry_msgs::msg::Point p2;
-            //     p2.x = -x_loc, p2.y = y_loc, p2.z = wall_height / 2.0;
-
-            //     geometry_msgs::msg::Point p3;
-            //     p3.x = -x_loc, p3.y = -y_loc, p3.z = wall_height / 2.0;
-
-            //     geometry_msgs::msg::Point p4;
-            //     p4.x = x_loc, p4.y = -y_loc, p4.z = wall_height / 2.0;
-
-            //     std::vector<geometry_msgs::msg::Point> line_points{p1, p2, p3, p4, p1, p2 };
-            //     marker.points = line_points;
-            //     // marker_array.markers.push_back(marker);
-            //     RCLCPP_INFO(this->get_logger(), "Line before publish");
-
-            //     wall_pub_->publish(marker);
-            // }
         };
         auto timer_period{std::chrono::milliseconds(1000 / rate)};
         timer_ = this->create_wall_timer(timer_period, timer_callback);
-        // wall_array_pub_->publish(marker_array);
+
+        wall_creator(); // This publishes the wall marker array
 
         // // Create parameters x0, y0, theta0 for initial pose of red turtle
         //     // default all to 0.0
@@ -195,6 +76,79 @@ private:
     // rclcpp::Publisher<std_msgs::msg::UInt64>::SharedPtr timestep_pub_;
     // rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr wall_array_pub_;
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr wall_pub_;
+    void wall_creator()
+    { // Walls
+        // Create parameters arena_x_length, arena_y_length
+
+        this->declare_parameter("arena_x_length", 10.0); // TODO: check removing the this->
+        double arena_x_length = this->get_parameter("arena_x_length").as_double();
+        this->declare_parameter("arena_y_length", 10.0); // TODO: check removing the this->
+        double arena_y_length = this->get_parameter("arena_y_length").as_double();
+
+        // Center arena at 0,0
+        // Walls 0.25 tall
+        // Walls are red
+        // use visualization_msgs/MarkerArray on topic ~/real_walls
+        // Check qos from assignment 2
+        auto marker_qos = rclcpp::QoS(rclcpp::KeepLast(10)).transient_local();
+        // rclcpp::QoS marker_qos(10);
+        //  marker_qos.durability(rclcpp::DurabilityPolicy::TransientLocal);
+        wall_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_walls", marker_qos);
+
+        // The following section creates wall marker array
+        double wall_thick{0.1};
+        double wall_height{0.25};
+        auto marker_array = visualization_msgs::msg::MarkerArray();
+        RCLCPP_INFO(this->get_logger(), "Before wall loop");
+        auto marker = visualization_msgs::msg::Marker();
+        marker.header.frame_id = "nusim/world";
+        marker.scale.z = wall_height;
+        marker.type = visualization_msgs::msg::Marker::CUBE;
+        marker.color.r = 1.0;
+        marker.color.a = 0.75;
+        marker.pose.position.z = wall_height / 2.0;
+
+        auto x_loc = arena_x_length / 2.0 + wall_thick / 2.0;
+        auto y_loc = arena_y_length / 2.0 + wall_thick / 2.0;
+        marker.header.stamp = rclcpp::Clock().now();
+
+        marker.scale.x = wall_thick;
+        marker.scale.y = arena_y_length + 2.0 * wall_thick;
+        // marker.pose.orientation.x = 0.0;
+        // marker.pose.orientation.y = std::sqrt(2) / 2.0;
+        // marker.pose.orientation.z = 0.0;
+        // marker.pose.orientation.w = std::sqrt(2) / 2.0;
+
+        // +x wall
+        marker.id = 0;
+        marker.pose.position.x = x_loc;
+        marker_array.markers.push_back(marker);
+
+        // -x wall
+        marker.id = 1;
+        marker.pose.position.x = -x_loc;
+        marker_array.markers.push_back(marker);
+
+        marker.pose.position.x = 0.0;
+        marker.pose.orientation.z = 0;
+        marker.pose.orientation.x = 0.0;
+        marker.pose.orientation.y = 0.0;
+        marker.pose.orientation.w = 1;
+        marker.scale.y = wall_thick;
+        marker.scale.x = arena_x_length + 2.0 * wall_thick;
+
+        // +y wall
+        marker.id = 2;
+        marker.pose.position.y = y_loc;
+        marker_array.markers.push_back(marker);
+
+        // -y wall
+        marker.id = 3;
+        marker.pose.position.y = -y_loc;
+        marker_array.markers.push_back(marker);
+
+        wall_pub_->publish(marker_array);
+    }
 };
 
 std::shared_ptr<nusim_node> my_node = nullptr;
@@ -213,6 +167,8 @@ auto reset_cb(
     // my_node.y = my_node->get_parameter("y0").as_double();
     // my_node.theta = my_node->get_parameter("theta0").as_double();
 };
+
+
 
 // auto pub_redbase() -> void
 // {
