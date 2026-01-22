@@ -177,6 +177,8 @@ private:
         auto marker = visualization_msgs::msg::Marker();
         marker.header.stamp = rclcpp::Clock().now();
         marker.header.frame_id = "nusim/world";
+        marker.ns = "red";
+
         marker.type = visualization_msgs::msg::Marker::CYLINDER;
         marker.color.r = 1.0;
         marker.color.a = 0.75;
@@ -187,6 +189,8 @@ private:
         marker.scale.y = 0.5;
         marker.scale.z = 0.25;
 
+        // Add loop here
+        marker.id = 0;
         marker.pose.position.x = 1;
         marker.pose.position.y = 3;
         marker.pose.position.z = .25/2.0;
