@@ -16,7 +16,11 @@ using MarkerArray = visualization_msgs::msg::MarkerArray;
 class nusim_node : public rclcpp::Node
 {
 public:
+    std::vector<double> obs_x {};
+    std::vector<double> obs_y {};
+    double obs_r {0.25};
     nusim_node():Node("nusim")
+
 
     {
         // Create parameters x0, y0, theta0 for initial pose of red turtle
@@ -53,7 +57,18 @@ public:
         auto timer_period{std::chrono::milliseconds(1000 / rate)};
         timer_ = this->create_wall_timer(timer_period, timer_callback);
 
-        wall_creator(); // This publishes the wall marker array
+        // std::vector empty_list<double> {};
+
+        this->declare_parameter("obstacles.x", std::vector<double>{});
+        this->declare_parameter("obstacles.y", std::vector<double>{});
+        this->declare_parameter("obstacles.r", 0.25);
+
+        obs_x = this->get_parameter("obstacles.x").as_double_array();
+        obs_y = this->get_parameter("obstacles.y").as_double_array();
+        obs_r = this->get_parameter("obstacles.r").as_double();
+
+        // Check lengths of the lists against each other, then loop through calling the obs_cb_ for each one
+
 
         // // Create parameters x0, y0, theta0 for initial pose of red turtle
         //     // default all to 0.0
@@ -68,14 +83,22 @@ public:
         // double theta0 = this->get_parameter("theta0").as_double();
 
         // std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;
+        wall_creator(); // This publishes the wall marker array
+        obs_cb(); // Publish the pre-loaded obstacle parameters
     };
 
 
 private:
     rclcpp::TimerBase::SharedPtr timer_;
     // rclcpp::Publisher<std_msgs::msg::UInt64>::SharedPtr timestep_pub_;
-    // rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr wall_array_pub_;
-    rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr wall_pub_;
+
+    rclcpp::QoS marker_qos = rclcpp::QoS(rclcpp::KeepLast(10)).transient_local();
+    rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr wall_pub_ =
+        this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_walls", marker_qos);
+
+    rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr obs_pub_ =
+        this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_obstacles", marker_qos);
+
     void wall_creator()
     { // Walls
         // Create parameters arena_x_length, arena_y_length
@@ -90,10 +113,9 @@ private:
         // Walls are red
         // use visualization_msgs/MarkerArray on topic ~/real_walls
         // Check qos from assignment 2
-        auto marker_qos = rclcpp::QoS(rclcpp::KeepLast(10)).transient_local();
         // rclcpp::QoS marker_qos(10);
         //  marker_qos.durability(rclcpp::DurabilityPolicy::TransientLocal);
-        wall_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_walls", marker_qos);
+        // wall_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_walls", marker_qos);
 
         // The following section creates wall marker array
         double wall_thick{0.1};
@@ -149,13 +171,34 @@ private:
 
         wall_pub_->publish(marker_array);
     }
+    void obs_cb()
+    {
+        auto marker_array = visualization_msgs::msg::MarkerArray();
+        auto marker = visualization_msgs::msg::Marker();
+        marker.header.stamp = rclcpp::Clock().now();
+        marker.header.frame_id = "nusim/world";
+        marker.type = visualization_msgs::msg::Marker::CYLINDER;
+        marker.color.r = 1.0;
+        marker.color.a = 0.75;
+        // marker.scale.x = obs_r/2.0;
+        // marker.scale.y = obs_r / 2.0;
+
+        marker.scale.x = 0.5;
+        marker.scale.y = 0.5;
+        marker.scale.z = 0.25;
+
+        marker.pose.position.x = 1;
+        marker.pose.position.y = 3;
+        marker.pose.position.z = .25/2.0;
+
+
+        marker_array.markers.push_back(marker);
+
+        obs_pub_->publish(marker_array);
+    }
 };
 
 std::shared_ptr<nusim_node> my_node = nullptr;
-
-// auto x{my_node->x0};
-// auto y{my_node->y0};
-// auto theta{my_node->theta0};
 
 
 auto reset_cb(

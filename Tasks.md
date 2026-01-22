@@ -49,7 +49,7 @@ Task C.3
 * Tried to create a publisher, but it's saying various variables don't exist, but it's saying the same ones are unused
 Task C.4
 Task C.5
-* Skipping
+* Publisher works for a hardcoded location, need to load in list from parameters.
 Task C.6
 * Rviz opens with a config that shows:
     * Fixed Frame `nusim/world`
