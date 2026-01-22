@@ -8,8 +8,6 @@
     </node>
 
     <node pkg="rviz2" exec="rviz2" on_exit="shutdown" args="-d $(find-pkg-share nusim)/config/nusim.rviz" />
-    <!-- I don't have a rviz config file yet, so not putting that in yet.
-    Namespace? -->
 
     <!-- Need to load in a red turtlebot -->
     <include file="$(find-pkg-share nuturtle_description)/launch/load_one.launch.xml">

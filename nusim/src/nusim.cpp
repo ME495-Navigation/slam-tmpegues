@@ -16,9 +16,7 @@ using MarkerArray = visualization_msgs::msg::MarkerArray;
 class nusim_node : public rclcpp::Node
 {
 public:
-    std::vector<double> obs_x {};
-    std::vector<double> obs_y {};
-    double obs_r {0.25};
+
     nusim_node():Node("nusim")
 
 
@@ -61,11 +59,13 @@ public:
 
         this->declare_parameter("obstacles.x", std::vector<double>{});
         this->declare_parameter("obstacles.y", std::vector<double>{});
-        this->declare_parameter("obstacles.r", 0.25);
+        this->declare_parameter("obstacles.r", 0.5);
 
         obs_x = this->get_parameter("obstacles.x").as_double_array();
         obs_y = this->get_parameter("obstacles.y").as_double_array();
         obs_r = this->get_parameter("obstacles.r").as_double();
+        RCLCPP_INFO_STREAM(this->get_logger(), "obs r: " << obs_r);
+        RCLCPP_INFO_STREAM(this->get_logger(), "obs x, then y length: " << obs_x.size() << " " << obs_y.size());
 
         // Check lengths of the lists against each other, then loop through calling the obs_cb_ for each one
 
@@ -98,6 +98,10 @@ private:
 
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr obs_pub_ =
         this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_obstacles", marker_qos);
+
+    std::vector<double> obs_x{};
+    std::vector<double> obs_y{};
+    double obs_r{0.25};
 
     void wall_creator()
     { // Walls
@@ -173,32 +177,39 @@ private:
     }
     void obs_cb()
     {
-        auto marker_array = visualization_msgs::msg::MarkerArray();
-        auto marker = visualization_msgs::msg::Marker();
-        marker.header.stamp = rclcpp::Clock().now();
-        marker.header.frame_id = "nusim/world";
-        marker.ns = "red";
+        if (obs_x.size() != obs_y.size())
+        {
+            RCLCPP_ERROR_STREAM(this->get_logger(), "Obstacle coordinate list lengths do not match:" << obs_x.size() << " and " << obs_y.size());
+        }
+        else
+        {
+            auto marker_array = visualization_msgs::msg::MarkerArray();
+            auto marker = visualization_msgs::msg::Marker();
+            marker.header.stamp = rclcpp::Clock().now();
+            marker.header.frame_id = "nusim/world";
+            marker.ns = "red";
 
-        marker.type = visualization_msgs::msg::Marker::CYLINDER;
-        marker.color.r = 1.0;
-        marker.color.a = 0.75;
-        // marker.scale.x = obs_r/2.0;
-        // marker.scale.y = obs_r / 2.0;
+            marker.type = visualization_msgs::msg::Marker::CYLINDER;
+            marker.color.r = 1.0;
+            marker.color.a = 0.75;
+            marker.scale.x = obs_r / 2.0;
+            marker.scale.y = obs_r / 2.0;
 
-        marker.scale.x = 0.5;
-        marker.scale.y = 0.5;
-        marker.scale.z = 0.25;
+            marker.scale.z = 0.25;
 
-        // Add loop here
-        marker.id = 0;
-        marker.pose.position.x = 1;
-        marker.pose.position.y = 3;
-        marker.pose.position.z = .25/2.0;
+            for (unsigned int i = 0; i <= obs_x.size()-1; i++)
+            {
+                marker.id = i;
+                marker.pose.position.x = obs_x[i];
+                marker.pose.position.y = obs_y[i];
+                marker.pose.position.z = .25/2.0;
 
 
-        marker_array.markers.push_back(marker);
+                marker_array.markers.push_back(marker);
 
-        obs_pub_->publish(marker_array);
+            }
+            obs_pub_->publish(marker_array);
+        }
     }
 };
 
