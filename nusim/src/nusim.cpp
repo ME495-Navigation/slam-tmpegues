@@ -16,13 +16,11 @@ using MarkerArray = visualization_msgs::msg::MarkerArray;
 class nusim_node : public rclcpp::Node
 {
 public:
-
-    nusim_node():Node("nusim")
-
+    nusim_node() : Node("nusim")
 
     {
         // Create parameters x0, y0, theta0 for initial pose of red turtle
-        // default all to 0.0
+        // default all to 0.0public
         // relative to nusim/world frame
         // this->declare_parameter("x0", 0.0); // TODO: check removing the this->
         // double x = this->get_parameter("x0").as_double();
@@ -42,7 +40,6 @@ public:
         //   timestep.data = 0
         // At next task, the position of the robot should be reset to x0, y0, theta0
         // Read the parameters at that time, not the values at initialization
-
 
         // Create parameter 'rate', default 100 Hz
         this->declare_parameter("rate", 100); // TODO: check removing the this->
@@ -69,7 +66,6 @@ public:
 
         // Check lengths of the lists against each other, then loop through calling the obs_cb_ for each one
 
-
         // // Create parameters x0, y0, theta0 for initial pose of red turtle
         //     // default all to 0.0
         //     // relative to nusim/world frame
@@ -84,20 +80,21 @@ public:
 
         // std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;
         wall_creator(); // This publishes the wall marker array
-        obs_cb(); // Publish the pre-loaded obstacle parameters
+        obs_cb();       // Publish the pre-loaded obstacle parameters
     };
-
 
 private:
     rclcpp::TimerBase::SharedPtr timer_;
     // rclcpp::Publisher<std_msgs::msg::UInt64>::SharedPtr timestep_pub_;
 
-    rclcpp::QoS marker_qos = rclcpp::QoS(rclcpp::KeepLast(10)).transient_local();
+    // conor - dont need to keep this around. make in constructor
+    rclcpp::QoS marker_qos_ = rclcpp::QoS(rclcpp::KeepLast(10)).transient_local();
+    // define these variables here, then assign to them in the constructor.
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr wall_pub_ =
-        this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_walls", marker_qos);
+        this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_walls", marker_qos_);
 
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr obs_pub_ =
-        this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_obstacles", marker_qos);
+        this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_obstacles", marker_qos_);
 
     std::vector<double> obs_x{};
     std::vector<double> obs_y{};
@@ -197,16 +194,14 @@ private:
 
             marker.scale.z = 0.25;
 
-            for (unsigned int i = 0; i <= obs_x.size()-1; i++)
+            for (unsigned int i = 0; i <= obs_x.size() - 1; i++)
             {
                 marker.id = i;
                 marker.pose.position.x = obs_x[i];
                 marker.pose.position.y = obs_y[i];
-                marker.pose.position.z = .25/2.0;
-
+                marker.pose.position.z = .25 / 2.0;
 
                 marker_array.markers.push_back(marker);
-
             }
             obs_pub_->publish(marker_array);
         }
@@ -214,7 +209,6 @@ private:
 };
 
 std::shared_ptr<nusim_node> my_node = nullptr;
-
 
 auto reset_cb(
     [[maybe_unused]] const std::shared_ptr<Empty::Request> request,
@@ -225,8 +219,6 @@ auto reset_cb(
     // my_node.y = my_node->get_parameter("y0").as_double();
     // my_node.theta = my_node->get_parameter("theta0").as_double();
 };
-
-
 
 // auto pub_redbase() -> void
 // {
