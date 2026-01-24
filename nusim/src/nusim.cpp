@@ -18,85 +18,57 @@ public:
     nusim_node() : Node("nusim")
 
     {
-        // Create parameters x0, y0, theta0 for initial pose of red turtle
-        // default all to 0.0public
-        // relative to nusim/world frame
-        // this->declare_parameter("x0", 0.0); // TODO: check removing the this->
-        // double x = this->get_parameter("x0").as_double();
-
-        // this->declare_parameter("y0", 0.0); // TODO: check removing the this->
-        // double y = this->get_parameter("y0").as_double();
-
-        // this->declare_parameter("theta0", 0.0); // TODO: check removing the this->
-        // double theta = this->get_parameter("theta0").as_double();
-
-        tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
-        // Create ~/reset service, type std/srv/Empty
-        // Resets simulation
-        // Right now, just resets the ~/timestep to 0
-        //   auto timestep = std_msgs::msg::UInt64();
-        //   timestep.data = 0
-        // At next task, the position of the robot should be reset to x0, y0, theta0
-        // Read the parameters at that time, not the values at initialization
-
-        // Create parameter 'rate', default 100 Hz
+        // Create all parameters
         this->declare_parameter("rate", 100); // TODO: check removing the this->
-        int rate = this->get_parameter("rate").as_int();
-
-        auto timer_callback = [this]() -> void { // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
-            RCLCPP_INFO(this->get_logger(), "Tick Tock");
-            // TODO: check using RCLCPP_DEBUG_STREAM
-            auto t = tl_point_to_pose(red_x, red_y, red_theta);
-            tf_broadcaster_->sendTransform(t);
-        };
-
-        auto timer_period{std::chrono::milliseconds(1000 / rate)};
-        timer_ = this->create_wall_timer(timer_period, timer_callback);
-
-        // std::vector empty_list<double> {};
-
         this->declare_parameter("obstacles.x", std::vector<double>{});
         this->declare_parameter("obstacles.y", std::vector<double>{});
         this->declare_parameter("obstacles.r", 0.5);
+        this->declare_parameter("x0", 0.0);
+        this->declare_parameter("y0", 0.0);
+        this->declare_parameter("theta0", 0.0);
+
+        // Create all publishers/broadcasters
+        tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
+        rclcpp::QoS marker_qos_ = rclcpp::QoS(rclcpp::KeepLast(10)).transient_local();
+        wall_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_walls", marker_qos_);
+        obs_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_obstacles", marker_qos_);
+
+        // Define all variables
+        int rate = this->get_parameter("rate").as_int();
+        auto timer_period{std::chrono::milliseconds(1000 / rate)};
 
         obs_x = this->get_parameter("obstacles.x").as_double_array();
         obs_y = this->get_parameter("obstacles.y").as_double_array();
         obs_r = this->get_parameter("obstacles.r").as_double();
-        RCLCPP_INFO_STREAM(this->get_logger(), "obs r: " << obs_r);
-        RCLCPP_INFO_STREAM(this->get_logger(), "obs x, then y length: " << obs_x.size() << " " << obs_y.size());
 
-        // Check lengths of the lists against each other, then loop through calling the obs_cb_ for each one
-
-        // // Create parameters x0, y0, theta0 for initial pose of red turtle
-        //     // default all to 0.0
-        //     // relative to nusim/world frame
-        this->declare_parameter("x0", 0.0); // TODO: check removing the this->
         red_x = this->get_parameter("x0").as_double();
-
-        this->declare_parameter("y0", 0.0); // TODO: check removing the this->
         red_y = this->get_parameter("y0").as_double();
-
-        this->declare_parameter("theta0", 0.0); // TODO: check removing the this->
         red_theta = this->get_parameter("theta0").as_double();
 
-        wall_creator(); // This publishes the wall marker array
-        obs_cb();       // Publish the pre-loaded obstacle parameters
+        // Define  functions
+
+        auto timer_callback = [this]() -> void { // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
+            RCLCPP_INFO(this->get_logger(), "Tick Tock");
+            auto t = tl_point_to_pose(red_x, red_y, red_theta);
+            tf_broadcaster_->sendTransform(t);
+        };
+
+        timer_ = this->create_wall_timer(timer_period, timer_callback);
+
+        // Use setup functions
+        create_walls();
+        publish_obstacles();
     };
 
 private:
     rclcpp::TimerBase::SharedPtr timer_;
-    // rclcpp::Publisher<std_msgs::msg::UInt64>::SharedPtr timestep_pub_;
 
-    // conor - dont need to keep this around. make in constructor
     rclcpp::QoS marker_qos_ = rclcpp::QoS(rclcpp::KeepLast(10)).transient_local();
-    // define these variables here, then assign to them in the constructor.
-    rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr wall_pub_ =
-        this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_walls", marker_qos_);
-
-    rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr obs_pub_ =
-        this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_obstacles", marker_qos_);
+    rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr wall_pub_;
+    rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr obs_pub_;
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
+    // Obstacle location
     std::vector<double> obs_x{};
     std::vector<double> obs_y{};
     double obs_r{0.25};
@@ -106,7 +78,7 @@ private:
     double red_theta {0};
 
 
-    void wall_creator()
+    void create_walls()
     { // Walls
         // Create parameters arena_x_length, arena_y_length
 
@@ -114,15 +86,6 @@ private:
         double arena_x_length = this->get_parameter("arena_x_length").as_double();
         this->declare_parameter("arena_y_length", 10.0); // TODO: check removing the this->
         double arena_y_length = this->get_parameter("arena_y_length").as_double();
-
-        // Center arena at 0,0
-        // Walls 0.25 tall
-        // Walls are red
-        // use visualization_msgs/MarkerArray on topic ~/real_walls
-        // Check qos from assignment 2
-        // rclcpp::QoS marker_qos(10);
-        //  marker_qos.durability(rclcpp::DurabilityPolicy::TransientLocal);
-        // wall_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_walls", marker_qos);
 
         // The following section creates wall marker array
         double wall_thick{0.1};
@@ -143,10 +106,6 @@ private:
 
         marker.scale.x = wall_thick;
         marker.scale.y = arena_y_length + 2.0 * wall_thick;
-        // marker.pose.orientation.x = 0.0;
-        // marker.pose.orientation.y = std::sqrt(2) / 2.0;
-        // marker.pose.orientation.z = 0.0;
-        // marker.pose.orientation.w = std::sqrt(2) / 2.0;
 
         // +x wall
         marker.id = 0;
@@ -178,7 +137,7 @@ private:
 
         wall_pub_->publish(marker_array);
     }
-    void obs_cb()
+    void publish_obstacles()
     {
         if (obs_x.size() != obs_y.size())
         {
@@ -243,41 +202,8 @@ auto reset_cb(
     [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Empty::Response> response) -> void
 {
     RCLCPP_INFO(my_node->get_logger(), "Reset acknowledged, but can't do anything get");
-    // my_node.x = my_node->get_parameter("x0").as_double();
-    // my_node.y = my_node->get_parameter("y0").as_double();
-    // my_node.theta = my_node->get_parameter("theta0").as_double();
+
 };
-
-// auto pub_redbase() -> void
-// {
-//     geometry_msgs::msg::TransformStamped red_pose;
-//     red_pose.header.stamp = my_node->get_clock()->now();
-//     red_pose.header.frame_id = "~/world";
-//     red_pose.child_frame_id = "red/base_footprint";
-
-//     red_pose.transform.translation.x = x;
-//     red_pose.transform.translation.y = y;
-//     red_pose.transform.translation.z = 0.1; // TODO: correct this height
-
-//     tf2::Quaternion rot;
-//     rot.setRPY(0, 0, theta);
-//     red_pose.transform.rotation.x = rot.x();
-//     red_pose.transform.rotation.y = rot.y();
-//     red_pose.transform.rotation.z = rot.z();
-//     red_pose.transform.rotation.w = rot.w();
-
-// }
-
-// Obstacles
-// Not specified how to get this to work
-// Parameters
-// obstacles.x is a list of x coordinates, float64
-// obstacles.y is a list of y coordinates, float64
-// obstacles.r is the radius (all abstacles are the same radius)
-// All obstacles are .25 m tall
-// All obstacles are red
-// Publish visualization_msgs/MarkerArray on ~/real_obstacles
-// PUblish in the red namespace of Marker message
 
 int main(int argc, char *argv[])
 {
