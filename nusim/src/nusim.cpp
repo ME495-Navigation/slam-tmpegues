@@ -7,10 +7,11 @@
 #include "tf2/LinearMath/Quaternion.hpp"
 #include "tf2_ros/transform_broadcaster.h"
 #include "geometry_msgs/msg/transform_stamped.hpp"
+#include "std_msgs/msg/u_int64.hpp"
 
 // #include "turtlelib"
 
-// #include "std_msgs/msg/uint64.hpp"
+
 
 class nusim_node : public rclcpp::Node
 {
@@ -48,9 +49,10 @@ public:
         // Define  functions
 
         auto timer_callback = [this]() -> void { // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
-            RCLCPP_INFO(this->get_logger(), "Tick Tock");
+            RCLCPP_INFO_STREAM(this->get_logger(), "Tick Tock: " << timestep);
             auto t = tl_point_to_pose(red_x, red_y, red_theta);
             tf_broadcaster_->sendTransform(t);
+            timestep++;
         };
 
         timer_ = this->create_wall_timer(timer_period, timer_callback);
@@ -76,6 +78,8 @@ private:
     double red_x {0};
     double red_y {0};
     double red_theta {0};
+
+    uint timestep {0};
 
 
     void create_walls()
