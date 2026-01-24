@@ -8,10 +8,9 @@
 #include "tf2_ros/transform_broadcaster.h"
 #include "geometry_msgs/msg/transform_stamped.hpp"
 
-// #include "std_msgs/msg/uint64.hpp"
+// #include "turtlelib"
 
-using Empty = std_srvs::srv::Empty;
-using MarkerArray = visualization_msgs::msg::MarkerArray;
+// #include "std_msgs/msg/uint64.hpp"
 
 class nusim_node : public rclcpp::Node
 {
@@ -31,8 +30,7 @@ public:
         // this->declare_parameter("theta0", 0.0); // TODO: check removing the this->
         // double theta = this->get_parameter("theta0").as_double();
 
-        std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;
-
+        tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
         // Create ~/reset service, type std/srv/Empty
         // Resets simulation
         // Right now, just resets the ~/timestep to 0
@@ -45,10 +43,13 @@ public:
         this->declare_parameter("rate", 100); // TODO: check removing the this->
         int rate = this->get_parameter("rate").as_int();
 
-        auto timer_callback = [this]() -> void {          // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
-            RCLCPP_INFO(this->get_logger(), "Tick Tock"); // TODO: check using RCLCPP_DEBUG_STREAM
-
+        auto timer_callback = [this]() -> void { // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
+            RCLCPP_INFO(this->get_logger(), "Tick Tock");
+            // TODO: check using RCLCPP_DEBUG_STREAM
+            auto t = tl_point_to_pose(red_x, red_y, red_theta);
+            tf_broadcaster_->sendTransform(t);
         };
+
         auto timer_period{std::chrono::milliseconds(1000 / rate)};
         timer_ = this->create_wall_timer(timer_period, timer_callback);
 
@@ -69,16 +70,15 @@ public:
         // // Create parameters x0, y0, theta0 for initial pose of red turtle
         //     // default all to 0.0
         //     // relative to nusim/world frame
-        // this->declare_parameter("x0", 0.0); // TODO: check removing the this->
-        // double x0 = this->get_parameter("x0").as_double();
+        this->declare_parameter("x0", 0.0); // TODO: check removing the this->
+        red_x = this->get_parameter("x0").as_double();
 
-        // this->declare_parameter("y0", 0.0); // TODO: check removing the this->
-        // double y0 = this->get_parameter("y0").as_double();
+        this->declare_parameter("y0", 0.0); // TODO: check removing the this->
+        red_y = this->get_parameter("y0").as_double();
 
-        // this->declare_parameter("theta0", 0.0); // TODO: check removing the this->
-        // double theta0 = this->get_parameter("theta0").as_double();
+        this->declare_parameter("theta0", 0.0); // TODO: check removing the this->
+        red_theta = this->get_parameter("theta0").as_double();
 
-        // std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster;
         wall_creator(); // This publishes the wall marker array
         obs_cb();       // Publish the pre-loaded obstacle parameters
     };
@@ -95,10 +95,16 @@ private:
 
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr obs_pub_ =
         this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_obstacles", marker_qos_);
+    std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
     std::vector<double> obs_x{};
     std::vector<double> obs_y{};
     double obs_r{0.25};
+
+    double red_x {0};
+    double red_y {0};
+    double red_theta {0};
+
 
     void wall_creator()
     { // Walls
@@ -206,13 +212,35 @@ private:
             obs_pub_->publish(marker_array);
         }
     }
+
+    geometry_msgs::msg::TransformStamped tl_point_to_pose(const double x, const double y, const double theta)
+    {
+        geometry_msgs::msg::TransformStamped t {};
+        t.header.stamp = this->get_clock()->now();
+        t.header.frame_id = "nusim/world";
+        t.child_frame_id = "red/base_footprint";
+
+        t.transform.translation.x = x;
+        t.transform.translation.y = y;
+
+        tf2::Quaternion q;
+        q.setRPY(0, 0, theta);
+        t.transform.rotation.x = q.x();
+        t.transform.rotation.y = q.y();
+        t.transform.rotation.z = q.z();
+        t.transform.rotation.w = q.w();
+
+        return t;
+    }
+
+
 };
 
 std::shared_ptr<nusim_node> my_node = nullptr;
 
 auto reset_cb(
-    [[maybe_unused]] const std::shared_ptr<Empty::Request> request,
-    [[maybe_unused]] const std::shared_ptr<Empty::Response> response) -> void
+    [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Empty::Request> request,
+    [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Empty::Response> response) -> void
 {
     RCLCPP_INFO(my_node->get_logger(), "Reset acknowledged, but can't do anything get");
     // my_node.x = my_node->get_parameter("x0").as_double();
@@ -238,7 +266,6 @@ auto reset_cb(
 //     red_pose.transform.rotation.z = rot.z();
 //     red_pose.transform.rotation.w = rot.w();
 
-//     my_node->tf_broadcaster_->sendTransform(red_pose);
 // }
 
 // Obstacles
@@ -256,7 +283,7 @@ int main(int argc, char *argv[])
 {
     rclcpp::init(argc, argv);
     my_node = std::make_shared<nusim_node>();
-    auto reset_service = my_node->create_service<Empty>("~/reset", reset_cb);
+    auto reset_service = my_node->create_service<std_srvs::srv::Empty>("~/reset", reset_cb);
     rclcpp::spin(my_node);
     rclcpp::shutdown();
     return 0;
