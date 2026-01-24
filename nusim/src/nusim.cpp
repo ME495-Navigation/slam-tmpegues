@@ -33,10 +33,12 @@ public:
         rclcpp::QoS marker_qos_ = rclcpp::QoS(rclcpp::KeepLast(10)).transient_local();
         wall_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_walls", marker_qos_);
         obs_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_obstacles", marker_qos_);
+        timestep_pub_ = this->create_publisher<std_msgs::msg::UInt64>("~/timestep", 10);
 
         // Define all variables
-        int rate = this->get_parameter("rate").as_int();
-        auto timer_period{std::chrono::milliseconds(1000 / rate)};
+        timestep.data = 0;
+        rate = this->get_parameter("rate").as_int();
+        timer_period = std::chrono::milliseconds(1000 / rate);
 
         obs_x = this->get_parameter("obstacles.x").as_double_array();
         obs_y = this->get_parameter("obstacles.y").as_double_array();
@@ -49,10 +51,11 @@ public:
         // Define  functions
 
         auto timer_callback = [this]() -> void { // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
-            RCLCPP_INFO_STREAM(this->get_logger(), "Tick Tock: " << timestep);
+            RCLCPP_INFO_STREAM(this->get_logger(), "Tick Tock: " << timestep.data);
             auto t = tl_point_to_pose(red_x, red_y, red_theta);
             tf_broadcaster_->sendTransform(t);
-            timestep++;
+            timestep_pub_->publish(timestep);
+            timestep.data++;
         };
 
         timer_ = this->create_wall_timer(timer_period, timer_callback);
@@ -68,18 +71,24 @@ private:
     rclcpp::QoS marker_qos_ = rclcpp::QoS(rclcpp::KeepLast(10)).transient_local();
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr wall_pub_;
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr obs_pub_;
+    rclcpp::Publisher<std_msgs::msg::UInt64>::SharedPtr timestep_pub_;
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
-    // Obstacle location
+    // Obstacle locations
     std::vector<double> obs_x{};
     std::vector<double> obs_y{};
     double obs_r{0.25};
 
+    // Red robot location
     double red_x {0};
     double red_y {0};
     double red_theta {0};
 
-    uint timestep {0};
+    // Timer rate
+    int rate{};
+    std::chrono::milliseconds timer_period{};
+
+    std_msgs::msg::UInt64 timestep;
 
 
     void create_walls()
