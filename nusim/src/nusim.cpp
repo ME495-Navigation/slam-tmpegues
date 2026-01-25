@@ -33,6 +33,7 @@ public:
         rclcpp::QoS marker_qos_ = rclcpp::QoS(rclcpp::KeepLast(10)).transient_local();
         wall_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_walls", marker_qos_);
         obs_pub_ = this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_obstacles", marker_qos_);
+        reset_service_ = this->create_service<std_srvs::srv::Empty>("~/reset", std::bind(&nusim_node::reset_cb_, this, std::placeholders::_1, std::placeholders::_2));
         timestep_pub_ = this->create_publisher<std_msgs::msg::UInt64>("~/timestep", 10);
 
         // Define all variables
@@ -72,6 +73,7 @@ private:
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr wall_pub_;
     rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr obs_pub_;
     rclcpp::Publisher<std_msgs::msg::UInt64>::SharedPtr timestep_pub_;
+    rclcpp::Service<std_srvs::srv::Empty>::SharedPtr reset_service_;
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
     // Obstacle locations
@@ -205,24 +207,32 @@ private:
         return t;
     }
 
-
+    void reset_cb_(
+        [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Empty::Request> request,
+        [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Empty::Response> response)
+    {
+        RCLCPP_INFO_STREAM(this->get_logger(), "Reset acknowledged at timestep " << timestep.data);
+        timestep.data = 0;
+        red_x = this->get_parameter("x0").as_double();
+        red_y = this->get_parameter("y0").as_double();
+        red_theta = this->get_parameter("theta0").as_double();
+    };
 };
 
 std::shared_ptr<nusim_node> my_node = nullptr;
 
-auto reset_cb(
-    [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Empty::Request> request,
-    [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Empty::Response> response) -> void
-{
-    RCLCPP_INFO(my_node->get_logger(), "Reset acknowledged, but can't do anything get");
-
-};
+// auto reset_cb(
+//     [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Empty::Request> request,
+//     [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Empty::Response> response) -> void
+// {
+//     RCLCPP_INFO_STREAM(my_node->get_logger(), "Reset acknowledged, timestep " << my_node->timestep.data << "is now " << my_node->timestep.data = 0);
+// };
 
 int main(int argc, char *argv[])
 {
     rclcpp::init(argc, argv);
     my_node = std::make_shared<nusim_node>();
-    auto reset_service = my_node->create_service<std_srvs::srv::Empty>("~/reset", reset_cb);
+    // auto reset_service = my_node->create_service<std_srvs::srv::Empty>("~/reset", reset_cb);
     rclcpp::spin(my_node);
     rclcpp::shutdown();
     return 0;
