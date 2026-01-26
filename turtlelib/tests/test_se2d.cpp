@@ -5,8 +5,6 @@
 #include "turtlelib/angle.hpp"
 #include <cmath>
 
-#include <print>
-
 using namespace turtlelib;
 using namespace Catch::Matchers;
 
@@ -62,7 +60,6 @@ TEST_CASE("Create transforms", "Transform2D")
 
     // Check rot and trans
     turtlelib::Transform2D tf4(vc, rotate);
-    std::print("{}",vc.x);
     REQUIRE(tf4.theta == 1);
     REQUIRE(tf4.x == 1);
     REQUIRE(tf4.y == 2);
@@ -146,9 +143,14 @@ TEST_CASE("Transform vector [1, 1]", "Transform2D")
     // origin with pure rotation
     double rot = turtlelib::deg2rad(45);
     turtlelib::Transform2D tf2(rot);
+    vc_one_one.x = 1.0;
+    vc_one_one.y = 1.0;
     auto vc3 = tf2(vc_one_one);
-    REQUIRE(vc3.x == Catch::Approx(0));
-    REQUIRE(vc3.y == Catch::Approx(std::sqrt(2)));
+    REQUIRE_THAT(vc3.x, WithinAbs(0, 0.00001));
+    REQUIRE_THAT(vc3.y, WithinAbs(std::sqrt(2), 0.00001));
+
+    // REQUIRE(vc3.x == Catch::Approx(0));
+    // REQUIRE(vc3.y == Catch::Approx(std::sqrt(2)));
 
     // origin with pure translation (shouldn't change)
     turtlelib::Vector2D vec_one_negone;
@@ -162,8 +164,10 @@ TEST_CASE("Transform vector [1, 1]", "Transform2D")
     // translate and rotate origin (should just rotate)
     turtlelib::Transform2D tf5(vec_one_negone, rot);
     auto vc5 = tf5(vc_one_one);
-    REQUIRE(vc5.x == 0.0);
-    REQUIRE(vc5.y == std::sqrt(2));
+    // REQUIRE(vc5.x == 0.0);
+    // REQUIRE(vc5.y == std::sqrt(2));
+    REQUIRE_THAT(vc5.x, WithinAbs(0, 0.00001));
+    REQUIRE_THAT(vc5.y, WithinAbs(std::sqrt(2), 0.00001));
 }
 
 // TODO: need test for transforming a Twist2D
@@ -182,7 +186,6 @@ TEST_CASE("Transform2D operator*", "[Conor]")
         Transform2D tf2(trans2, angle2);
 
         Transform2D result = tf1 * tf2;
-
         REQUIRE_THAT(result.rotation(), WithinAbs(deg2rad(135), 0.00001));
         REQUIRE_THAT(result.translation().x, WithinAbs(2.0, 0.00001));
         REQUIRE_THAT(result.translation().y, WithinAbs(1.0, 0.00001));

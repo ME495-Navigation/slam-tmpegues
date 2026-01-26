@@ -69,8 +69,8 @@ namespace turtlelib
 
     Transform2D::Transform2D(Vector2D trans)
     {
-        tw.x = trans.x;
-        tw.y = trans.y;
+        // tw.x = trans.x;
+        // tw.y = trans.y;
 
         x = trans.x;
         y = trans.y;
@@ -79,7 +79,6 @@ namespace turtlelib
 
     Transform2D::Transform2D(double radians)
     {
-        tw.omega = radians;
         // Default values for tw.x and tw.y are correct for no translation
         theta = radians;
         costh = std::cos(radians);
@@ -88,9 +87,9 @@ namespace turtlelib
 
     Transform2D::Transform2D(Vector2D trans, double radians)
     {
-        tw.omega = radians;
-        tw.x = trans.x;
-        tw.y = trans.y;
+        // tw.omega = radians;
+        // tw.x = trans.x;
+        // tw.y = trans.y;
 
         theta = radians;
         x = trans.x;
@@ -106,8 +105,8 @@ namespace turtlelib
         new_pt.x = costh * p.x - sinth * p.y;
         new_pt.y = costh * p.y + sinth * p.x;
 
-        new_pt.x += tw.x;
-        new_pt.y += tw.y;
+        new_pt.x += x;
+        new_pt.y += y;
 
         return new_pt;
     }
@@ -126,16 +125,14 @@ namespace turtlelib
     {
         Twist2D new_tw;
         new_tw.omega = v.omega;
-        new_tw.x = costh*v.x - sinth*v.y + tw.y*v.omega;
-        new_tw.y = costh*v.y + sinth*v.x - tw.x*v.omega;
+        new_tw.x = costh*v.x - sinth*v.y + y*v.omega;
+        new_tw.y = costh*v.y + sinth*v.x - x*v.omega;
 
         return new_tw;
     }
 
     Transform2D Transform2D::inv() const
     {
-        // TODO: check. This seems too easy
-
         Vector2D new_vc;
         new_vc.x = -x*costh-y*sinth;
         new_vc.y = -y*costh+x*sinth;
@@ -154,20 +151,20 @@ namespace turtlelib
         x += costh * rhs.x - sinth * rhs.y;
         y += costh * rhs.y + sinth * rhs.x;
 
-        return *this; //
+        return *this;
     }
 
     Vector2D Transform2D::translation() const
     {
         Vector2D new_vc;
-        new_vc.x = tw.x;
-        new_vc.y = tw.y;
+        new_vc.x = x;
+        new_vc.y = y;
         return new_vc;
     }
 
     double Transform2D::rotation() const
     {
-        return tw.omega;
+        return theta;
     }
 
     std::istream &operator>>(std::istream &is, Transform2D &tf)
@@ -200,7 +197,7 @@ namespace turtlelib
             case ',': // this means that unit was not given and we can assume radians
             {
 
-                tf.tw.omega = angle;
+                tf.theta = angle;
                 break;
             }
             case '<': // this means we need to check the unit
@@ -209,14 +206,14 @@ namespace turtlelib
                 is.get(); // Purge the <
                 if (is.peek() == 'r') // We have radians again, but we need to purge the string
                 {
-                    tf.tw.omega = angle;
+                    tf.theta = angle;
                     std::string str;
                     is >> str;
                     is.get(); // Purge the ' ' space
                 }
                 else if (is.peek() == 'd') // Convert from deg to rad, then purge string
                 {
-                    tf.tw.omega = deg2rad(angle);
+                    tf.theta = deg2rad(angle);
                     std::string str;
                     is >> str;
                     is.get(); // Purge the ' ' space
@@ -236,7 +233,7 @@ namespace turtlelib
             is.get(); // purge <
         }
 
-        is >> tf.tw.x;
+        is >> tf.x;
 
         if (is.peek() == '>')
         {
@@ -251,7 +248,7 @@ namespace turtlelib
         }
 
 
-        is >> tf.tw.y;
+        is >> tf.y;
 
         if (is.peek() == '>')
         {

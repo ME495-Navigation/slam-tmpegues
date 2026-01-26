@@ -40,15 +40,15 @@ int main()
                 std::cout << "New twist: " << tw << "\n";
                 break;
             }
-            case 'r':
-            {
-                turtlelib::Transform2D tr;
-                std::print("Initial transform twist: ");
-                std::cout << tr.tw << "\nInput: ";
-                std::cin >> tr;
-                std::cout << "New transform twist: " << tr.tw << "\n";
-                break;
-            }
+            // case 'r':
+            // {
+            //     turtlelib::Transform2D tr;
+            //     std::print("Initial transform twist: ");
+            //     std::cout << tr.tw << "\nInput: ";
+            //     std::cin >> tr;
+            //     std::cout << "New transform twist: " << tr.tw << "\n";
+            //     break;
+            // }
             default:
             {
                 end = true;
