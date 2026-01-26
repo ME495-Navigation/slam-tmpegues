@@ -21,6 +21,8 @@ public:
     {
         // Create all parameters
         this->declare_parameter("rate", 100); // TODO: check removing the this->
+        this->declare_parameter("arena_x_length", 3.0);
+        this->declare_parameter("arena_y_length", 3.0);
         this->declare_parameter("obstacles.x", std::vector<double>{});
         this->declare_parameter("obstacles.y", std::vector<double>{});
         this->declare_parameter("obstacles.r", 0.5);
@@ -41,6 +43,9 @@ public:
         rate = this->get_parameter("rate").as_int();
         timer_period = std::chrono::milliseconds(1000 / rate);
 
+        arena_x_length = this->get_parameter("arena_x_length").as_double();
+        arena_y_length = this->get_parameter("arena_y_length").as_double();
+
         obs_x = this->get_parameter("obstacles.x").as_double_array();
         obs_y = this->get_parameter("obstacles.y").as_double_array();
         obs_r = this->get_parameter("obstacles.r").as_double();
@@ -52,7 +57,7 @@ public:
         // Define  functions
 
         auto timer_callback = [this]() -> void { // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
-            RCLCPP_INFO_STREAM(this->get_logger(), "Tick Tock: " << timestep.data);
+            // RCLCPP_INFO_STREAM(this->get_logger(), "Tick Tock: " << timestep.data);
             auto t = tl_point_to_pose(red_x, red_y, red_theta);
             tf_broadcaster_->sendTransform(t);
             timestep_pub_->publish(timestep);
@@ -76,6 +81,10 @@ private:
     rclcpp::Service<std_srvs::srv::Empty>::SharedPtr reset_service_;
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
+    // Wall dimensions
+    double arena_x_length {3};
+    double arena_y_length {3};
+
     // Obstacle locations
     std::vector<double> obs_x{};
     std::vector<double> obs_y{};
@@ -94,15 +103,7 @@ private:
 
 
     void create_walls()
-    { // Walls
-        // Create parameters arena_x_length, arena_y_length
-
-        this->declare_parameter("arena_x_length", 10.0); // TODO: check removing the this->
-        double arena_x_length = this->get_parameter("arena_x_length").as_double();
-        this->declare_parameter("arena_y_length", 10.0); // TODO: check removing the this->
-        double arena_y_length = this->get_parameter("arena_y_length").as_double();
-
-        // The following section creates wall marker array
+    {   // The following section creates wall marker array and sets all variables that don't change
         double wall_thick{0.1};
         double wall_height{0.25};
         auto marker_array = visualization_msgs::msg::MarkerArray();
