@@ -40,21 +40,9 @@ Task B.9
 
 Task C.1
 Tasl C.2
-* Created timer
-* Did not create ~/timestep publisher
-    * fatal error: std_msgs/msg/uint64.hpp: No such file or directory
-* Created reset service
-    * It doesn't reset the timestep since I haven't created that yet
 Task C.3
-* Tried to create a publisher, but it's saying various variables don't exist, but it's saying the same ones are unused
 Task C.4
 Task C.5
 * Node does not exit when lists aren't the same size
 Task C.6
-* Rviz opens with a config that shows:
-    * Fixed Frame `nusim/world`
-    * RobotModel in red (not correctly placed yet)
-    * MarkerArray on topic nusim/real_walls
-    * Shows axes `nusim_world`
 Task C.7
-* I'll do it when I get at least half of this node working
