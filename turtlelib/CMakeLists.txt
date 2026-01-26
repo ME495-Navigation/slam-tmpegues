@@ -83,7 +83,7 @@ target_link_libraries(Manual_tester turtlelib)
 
 
 # install the include files by copying the whole include directory
-install(DIRECTORY include/turtlelib DESTINATION include)
+install(DIRECTORY include/ DESTINATION include)
 
 install(TARGETS Converter Manual_tester turtlelib EXPORT project_name-targets)
 
