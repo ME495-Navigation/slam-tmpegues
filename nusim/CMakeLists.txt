@@ -18,6 +18,8 @@ find_package(ament_cmake REQUIRED)
   find_package(std_msgs REQUIRED)
   find_package(visualization_msgs REQUIRED)
   find_package(geometry_msgs REQUIRED)
+  find_package(turtlelib REQUIRED)
+
 
     add_executable(nusim src/nusim.cpp)
   target_link_libraries(nusim
@@ -25,6 +27,7 @@ find_package(ament_cmake REQUIRED)
                         rclcpp::rclcpp
                         tf2::tf2
                         tf2_ros::tf2_ros
+                        turtlelib::turtlelib
                         ${std_srvs_TARGETS}
                         ${std_msgs_TARGETS}
                         ${visualization_msgs_TARGETS}

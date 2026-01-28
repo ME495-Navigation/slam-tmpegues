@@ -85,10 +85,10 @@ target_link_libraries(Manual_tester turtlelib)
 # install the include files by copying the whole include directory
 install(DIRECTORY include/ DESTINATION include)
 
-install(TARGETS Converter Manual_tester turtlelib EXPORT project_name-targets)
+install(TARGETS Converter Manual_tester turtlelib EXPORT turtlelib-targets)
 
 
-install(EXPORT project_name-targets
-        FILE project_name-config.cmake
-        NAMESPACE project_name::
+install(EXPORT turtlelib-targets
+        FILE turtlelib-config.cmake
+        NAMESPACE turtlelib::
         DESTINATION lib/cmake/${PROJECT_NAME})
