@@ -21,20 +21,19 @@ Task A.5
 Task A.6
 * Can I hide the arguments from included launchfiles from when you do `ros2 launch ... ... -s`?
 
-Task B.1 (package)
-Task B.2 (angles)
+Task B.1
+Task B.2
 Task B.3 (geometry primitives)
 * Formatters not done
-Task B.4 (unit testing geometry)
+Task B.4
 Task B.5 (SE2 geometry)
 * Formatters not done
-Task B.6 (SE2 unit test)
+Task B.6
 Task B.7 (Visualization)
 * Skipping
 Task B.8 (Executable)
 * Skipping
-Task B.9 (README)
-* Skipping
+Task B.9
 
 Task C.1
 Tasl C.2
