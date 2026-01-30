@@ -83,6 +83,28 @@ namespace turtlelib
         return new_pt;
     }
 
+    double dot(const Vector2D &vect1, const Vector2D &vect2)
+    {
+        auto result { vect1.x *vect2.x + vect1.y *vect2.y};
+        return result;
+    }
+
+    double magnitude(Vector2D &vect)
+    {
+        auto length = std::sqrt((std::pow(vect.x, 2) + std::pow(vect.y, 2)));
+        return length;
+    }
+
+    double angle(Vector2D &vect1, Vector2D &vect2)
+    {
+        auto angle1 = std::atan2(vect1.x, vect1.y);
+        auto angle2 = std::atan2(vect2.x, vect2.y);
+
+        auto diff = angle2 - angle1;
+        return diff;
+    }
+
+
     std::ostream & operator<<(std::ostream &os, const Vector2D &v)
     {
         os << "[" <<  v.x << ", " << v.y << "]";
@@ -97,7 +119,7 @@ namespace turtlelib
 
     Vector2D normalize(Vector2D in)
     {
-        auto length = std::sqrt((std::pow(in.x, 2) + std::pow(in.y, 2)));
+        auto length = magnitude(in);
         turtlelib::Vector2D normalized;
         normalized.x = in.x/length;
         normalized.y = in.y/length;

@@ -157,6 +157,23 @@ namespace turtlelib
     /// \return The normalized vector.
     /// \throws std::invalid_input if in is the zero vector
     Vector2D normalize(Vector2D in);
+
+    /// \brief Return the dot product of the two vectors
+    /// \param vect1 The 1st vector
+    /// \param vect2 The 2nd vector
+    /// \return The dot product
+    double dot(const Vector2D & vect1, const Vector2D & vect2);
+
+    /// \brief Calculate the magnitude of the vector
+    /// \param vect The vector to calculate the magnitude of
+    /// \return The magnitude of vect
+    double magnitude(Vector2D & vect);
+
+    /// \brief Calculate the shortest angle between two vectors
+    /// \param vect1 The 1st vector
+    /// \param vect2 The 2nd vector
+    /// \return The shortest angle between the two vectors (radians)
+    double angle(Vector2D & vect1, Vector2D & vect2);
 }
 
 /// \brief A Formatter for 2D points
