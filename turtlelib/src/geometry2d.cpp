@@ -100,7 +100,7 @@ namespace turtlelib
         auto angle1 = std::atan2(vect1.x, vect1.y);
         auto angle2 = std::atan2(vect2.x, vect2.y);
 
-        auto diff = angle2 - angle1;
+        auto diff = angle1 - angle2;
         return diff;
     }
 

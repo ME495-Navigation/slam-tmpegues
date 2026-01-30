@@ -1,7 +1,12 @@
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_approx.hpp>
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
 #include "turtlelib/geometry2d.hpp"
 #include <cmath>
 #include <iostream>
+
+using namespace turtlelib;
+using namespace Catch::Matchers;
 
 TEST_CASE("Create points and with format 'x y' and '(x, y)'", "std::istream & operator>>")
 {
@@ -107,7 +112,7 @@ TEST_CASE("Add a point and vector to make a new point", "Point2D operator+")
     REQUIRE(pt_res_tth.y == 3.0);
 }
 
-TEST_CASE("Normalize vectors", "Vector2D normalize")
+TEST_CASE("Normalize vectors. Normalize uses magnitude(), so this also tests magnitude()", "Vector2D normalize")
 {
     turtlelib::Vector2D vec1;
     vec1.x = 1.0;
@@ -171,4 +176,81 @@ TEST_CASE("Vector addition", "operator+")
     auto vec4 = vec3 + vec11;
     REQUIRE(vec4.x == 43.3);
     REQUIRE(vec4.y == -119.75);
+}
+
+TEST_CASE("Vector subtraction", "operator-")
+{
+    turtlelib::Vector2D vec00;
+    vec00.x = 0.0;
+    vec00.y = 0.0;
+    turtlelib::Vector2D vec11;
+    vec11.x = 1.0;
+    vec11.y = 1.0;
+
+    auto vec2 = vec00 - vec11;
+    REQUIRE(vec2.x == -1.0);
+    REQUIRE(vec2.y == -1.0);
+
+    turtlelib::Vector2D vec3;
+    vec3.x = 42.3;
+    vec3.y = -120.75;
+    auto vec4 = vec3 - vec11;
+    REQUIRE(vec4.x == 41.3);
+    REQUIRE(vec4.y == -121.75);
+}
+
+TEST_CASE("Vector dot product", "dot()")
+{
+    turtlelib::Vector2D vec00;
+    vec00.x = 0.0;
+    vec00.y = 0.0;
+    turtlelib::Vector2D vec11;
+    vec11.x = 1.0;
+    vec11.y = 1.0;
+
+    auto res1 = dot(vec00, vec11);
+    REQUIRE(res1 == 0.0);
+
+    auto res2 = dot(vec11, vec11);
+    REQUIRE(res2 == 2.0);
+
+    turtlelib::Vector2D vec3;
+    vec3.x = 42.3;
+    vec3.y = -120.75;
+
+    auto res3 = dot(vec11, vec3);
+    REQUIRE(res3 == 42.3 -120.75);
+}
+
+TEST_CASE("Vector angle", "angle()")
+{
+    turtlelib::Vector2D vec10;
+    vec10.x = 1.0;
+    vec10.y = 0.0;
+    turtlelib::Vector2D vec11;
+    vec11.x = 1.0;
+    vec11.y = 1.0;
+    turtlelib::Vector2D vec01;
+    vec01.x = 0.0;
+    vec01.y = 1.0;
+
+    auto ang1 = angle(vec10, vec01);
+    REQUIRE_THAT(ang1, WithinAbs(std::numbers::pi/2, 0.0001));
+    auto angn1 = angle(vec01, vec10);
+    REQUIRE_THAT(angn1, WithinAbs(-std::numbers::pi / 2, 0.0001));
+
+    auto ang2 = angle(vec10, vec11);
+    REQUIRE_THAT(ang2, WithinAbs(std::numbers::pi/4, 0.0001));
+
+    auto ang3 = angle(vec11, vec01);
+    REQUIRE_THAT(ang3, WithinAbs(std::numbers::pi / 4, 0.0001));
+
+    auto ang4 = angle(vec11, vec11);
+    REQUIRE(ang4 == 0.0);
+
+    Vector2D vec;
+    vec.x = -1;
+    vec.y = 0.0;
+    auto ang5 = angle(vec10, vec);
+    REQUIRE_THAT(ang5, WithinAbs(std::numbers::pi, 0.0001));
 }
