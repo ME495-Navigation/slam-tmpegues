@@ -102,7 +102,7 @@ namespace turtlelib
     /// \param vect the vector to be scaled
     /// \return the scaled vector
     template <typename T>
-    Vector2D operator*(const T & scalar, Vector2D & vect)
+    Vector2D operator*(const T & scalar, Vector2D vect)
     {
         return vect *= scalar;
     }

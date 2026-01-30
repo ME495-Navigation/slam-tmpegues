@@ -35,7 +35,8 @@ Task B.8 (Executable)
 * Skipping
 Task B.9 (README)
 Task B.10 (Vector Operations)
-* Unsure how to allow the scalar to be on the right or left
+Task B.11 (Integrate a Twist)
+* Scalar done
 
 Task C.1
 Tasl C.2

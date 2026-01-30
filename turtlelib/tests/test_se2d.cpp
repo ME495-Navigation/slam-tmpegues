@@ -218,3 +218,21 @@ TEST_CASE("Transform2D operator*", "[Conor]")
         REQUIRE_THAT(tf2.rotation(), WithinAbs(orig_angle2, 0.00001));
     }
 }
+
+TEST_CASE("Scale a twist by a scalar", "operator*")
+{
+    Twist2D tw1;
+    tw1.x = 1;
+    tw1.y = 1;
+    tw1.omega = 1;
+
+    auto tw2 = tw1 * 2;
+    auto tw3 = tw1 * -1.5;
+    REQUIRE(tw2.x == 2.0);
+    REQUIRE(tw2.y == 2.0);
+    REQUIRE(tw2.omega == 2.0);
+
+    REQUIRE(tw3.x == -1.5);
+    REQUIRE(tw3.y == -1.5);
+    REQUIRE(tw3.omega == -1.5);
+}

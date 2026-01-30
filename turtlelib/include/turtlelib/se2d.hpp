@@ -11,7 +11,20 @@ namespace turtlelib
 
     /// \brief represent a 2-Dimensional twist
     struct Twist2D
+
     {
+        /// \brief Scale a twist by a scalar
+        /// \param rhs The scalar to scal the vector by
+        /// \return A reference to the scaled twist
+        template <typename T>
+        Twist2D &operator*=(const T &rhs)
+        {
+            x *= rhs;
+            y *= rhs;
+            omega *= rhs;
+
+            return *this;
+        }
         /// \brief the angular velocity
         double omega = 0.0;
 
@@ -106,6 +119,25 @@ namespace turtlelib
         // friend struct std::formatter;
     };
 
+    /// \brief Multiplying a scalar to a twist yields a scaled twist
+    /// \param scalar value to scale the twist by
+    /// \param twist the twist to be scaled
+    /// \return the scaled vetwistctor
+    template <typename T>
+    Twist2D operator*(Twist2D twist, const T &scalar)
+    {
+        return twist *= scalar;
+    }
+
+    /// \brief Multiplying a scalar to a twist yields a scaled twist
+    /// \param twist the twist to be scaled
+    /// \param scalar value to scale the twist by
+    /// \return the scaled vetwistctor
+    template <typename T>
+    Twist2D operator*(const T &scalar, Twist2D twist)
+    {
+        return twist *= scalar;
+    }
 
     /// \brief Read a transformation from stdin
     /// Should be able to read input either as:
