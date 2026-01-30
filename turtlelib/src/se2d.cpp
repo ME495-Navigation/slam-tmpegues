@@ -167,6 +167,16 @@ namespace turtlelib
         return theta;
     }
 
+    Transform2D integrate_twist(const Twist2D &twist)
+    {
+        Vector2D trans;
+        trans.x = twist.x;
+        trans.y = twist.y;
+
+        Transform2D tf(trans, twist.omega);
+        return tf;
+    }
+
     std::istream &operator>>(std::istream &is, Transform2D &tf)
     {
         // If first character is '{', get rid of it and the following '<'

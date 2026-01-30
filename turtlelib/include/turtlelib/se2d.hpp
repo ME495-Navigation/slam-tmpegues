@@ -51,8 +51,8 @@ namespace turtlelib
     /// \param v - the twist to print
     std::ostream &operator<<(std::ostream &os, const Twist2D &tw);
 
-        /// \brief a rigid body transformation in 2 dimensions
-        class Transform2D
+    /// \brief a rigid body transformation in 2 dimensions
+    class Transform2D
     {
     private:
         ;
@@ -138,6 +138,11 @@ namespace turtlelib
     {
         return twist *= scalar;
     }
+
+    /// \brief Integrate a twist to get the transform after following the twist for unit time
+    /// \param twist The twist to integrate
+    /// \return The resultant transfom after following the twist for unit time
+    Transform2D integrate_twist(const Twist2D &twist);
 
     /// \brief Read a transformation from stdin
     /// Should be able to read input either as:

@@ -236,3 +236,33 @@ TEST_CASE("Scale a twist by a scalar", "operator*")
     REQUIRE(tw3.y == -1.5);
     REQUIRE(tw3.omega == -1.5);
 }
+
+TEST_CASE("Integrate twists into transforms", "integrate_twist()")
+{
+    Twist2D tw_trans {};
+    tw_trans.x = 1;
+    tw_trans.y = 1;
+    auto tf1 = integrate_twist(tw_trans);
+
+    REQUIRE(tf1.translation().x == 1.0);
+    REQUIRE(tf1.translation().y == 1.0);
+    REQUIRE(tf1.rotation() == 0.0);
+
+    Twist2D tw_rot {};
+    tw_rot.omega = 1;
+    auto tf2 = integrate_twist(tw_rot);
+
+    REQUIRE(tf2.translation().x == 0.0);
+    REQUIRE(tf2.translation().y == 0.0);
+    REQUIRE(tf2.rotation() == 1.0);
+
+    Twist2D twist {};
+    twist.x = 1;
+    twist.y = 1;
+    twist.omega = 1;
+    auto tf3 = integrate_twist(twist);
+
+    REQUIRE(tf3.translation().x == 1.0);
+    REQUIRE(tf3.translation().y == 1.0);
+    REQUIRE(tf3.rotation() == 1.0);
+}
