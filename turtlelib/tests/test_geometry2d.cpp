@@ -143,13 +143,32 @@ TEST_CASE("Vector scaling", "operator*")
     turtlelib::Vector2D vec11;
     vec11.x = 1.0;
     vec11.y = 1.0;
-    std::cout << vec11;
     auto vec3 = vec11*2;
     REQUIRE(vec3.x == 2.0);
     REQUIRE(vec3.y == 2.0);
 
-    std::cout << vec11;
     auto vec4 = 3.5*vec11;
     REQUIRE(vec4.x == 3.5);
     REQUIRE(vec4.y == 3.5);
+}
+
+TEST_CASE("Vector addition", "operator+")
+{
+    turtlelib::Vector2D vec00;
+    vec00.x = 0.0;
+    vec00.y = 0.0;
+    turtlelib::Vector2D vec11;
+    vec11.x = 1.0;
+    vec11.y = 1.0;
+
+    auto vec2 = vec00 + vec11;
+    REQUIRE(vec2.x == 1.0);
+    REQUIRE(vec2.y == 1.0);
+
+    turtlelib::Vector2D vec3;
+    vec3.x = 42.3;
+    vec3.y = -120.75;
+    auto vec4 = vec3 + vec11;
+    REQUIRE(vec4.x == 43.3);
+    REQUIRE(vec4.y == -119.75);
 }

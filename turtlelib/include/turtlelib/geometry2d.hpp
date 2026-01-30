@@ -54,6 +54,8 @@ namespace turtlelib
     struct Vector2D
     {
         /// \brief scale a vector by a scalar
+        /// \param rhs The scalar to scale the vector by
+        /// \return a reference to the scaled vector
         template <typename T>
         Vector2D & operator*=(const T &rhs)
         {
@@ -62,9 +64,15 @@ namespace turtlelib
 
             return *this;
         }
+        /// \brief Add a vector to another
+        /// \param rhs The vector to add to the other vector
+        /// \return A reference to the summed vector
+        Vector2D & operator+=(const Vector2D &rhs);
 
-        Vector2D & operator+=(const Vector2D *rhs);
-        Vector2D & operator-=(const Vector2D *rhs);
+        /// \brief Subtract a vector from another
+        /// \param rhs The vector to subtract from the other vector
+        /// \return A reference to the subtracted vector
+        Vector2D & operator-=(const Vector2D &rhs);
 
 
         /// \brief the x coordinate
@@ -108,6 +116,18 @@ namespace turtlelib
     {
         return vect *= scalar;
     }
+
+    /// \brief Add two vectors to yield a single vector
+    /// \param lhs a vector to be added
+    /// \param rhs the other vector to be added
+    /// \return the resultant vector sum
+    Vector2D operator+(Vector2D lhs, Vector2D&rhs);
+
+    /// \brief Subtract two vectors to yield a single vector
+    /// \param lhs The vector to be subtracted from
+    /// \param rhs The vector to be subtracted
+    /// \return the resultant vector difference
+    Vector2D operator-(Vector2D lhs, Vector2D &rhs);
 
     /// \brief output a 2 dimensional vector as [xcomponent, ycomponent]
     /// \param os - stream to output to
