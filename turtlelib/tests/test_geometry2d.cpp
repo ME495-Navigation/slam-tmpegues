@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include "turtlelib/geometry2d.hpp"
 #include <cmath>
+#include <iostream>
 
 TEST_CASE("Create points and with format 'x y' and '(x, y)'", "std::istream & operator>>")
 {
@@ -127,4 +128,28 @@ TEST_CASE("Normalize vectors", "Vector2D normalize")
     vec2 = turtlelib::normalize(vec1);
     REQUIRE(vec2.x == 3.0/5.0);
     REQUIRE(vec2.y == 4.0/5.0);
+}
+
+TEST_CASE("Vector scaling", "operator*")
+{
+
+    turtlelib::Vector2D vec00;
+    vec00.x = 0.0;
+    vec00.y = 0.0;
+    auto vec2 = vec00*10;
+    REQUIRE(vec2.x == 0.0);
+    REQUIRE(vec2.y == 0.0);
+
+    turtlelib::Vector2D vec11;
+    vec11.x = 1.0;
+    vec11.y = 1.0;
+    std::cout << vec11;
+    auto vec3 = vec11*2;
+    REQUIRE(vec3.x == 2.0);
+    REQUIRE(vec3.y == 2.0);
+
+    std::cout << vec11;
+    auto vec4 = 3.5*vec11;
+    REQUIRE(vec4.x == 3.5);
+    REQUIRE(vec4.y == 3.5);
 }

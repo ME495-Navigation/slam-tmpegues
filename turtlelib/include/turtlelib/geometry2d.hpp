@@ -53,6 +53,20 @@ namespace turtlelib
     /// \brief A 2-Dimensional Vector
     struct Vector2D
     {
+        /// \brief scale a vector by a scalar
+        template <typename T>
+        Vector2D & operator*=(const T &rhs)
+        {
+            x *= rhs;
+            y *= rhs;
+
+            return *this;
+        }
+
+        Vector2D & operator+=(const Vector2D *rhs);
+        Vector2D & operator-=(const Vector2D *rhs);
+
+
         /// \brief the x coordinate
         double x = 0.0;
 
@@ -75,6 +89,25 @@ namespace turtlelib
     /// NOTE: this is not implemented in terms of += because of the different types
     Point2D operator+(const Point2D & tail, const Vector2D & disp);
 
+    /// \brief Multiplying a scalar to a vector yields a scaled vector
+    /// \param scalar value to scale the vector by
+    /// \param vect the vector to be scaled
+    /// \return the scaled vector
+    template <typename T>
+    Vector2D operator*(const T & scalar, Vector2D & vect)
+    {
+        return vect *= scalar;
+    }
+
+    /// \brief Multiplying a scalar to a vector yields a scaled vector
+    /// \param vect the vector to be scaled
+    /// \param scalar value to scale the vector by
+    /// \return the scaled vector
+    template <typename T>
+    Vector2D operator*(Vector2D vect, const T &scalar)
+    {
+        return vect *= scalar;
+    }
 
     /// \brief output a 2 dimensional vector as [xcomponent, ycomponent]
     /// \param os - stream to output to

@@ -33,7 +33,9 @@ Task B.7 (Visualization)
 * Skipping
 Task B.8 (Executable)
 * Skipping
-Task B.9
+Task B.9 (README)
+Task B.10 (Vector Operations)
+* Unsure how to allow the scalar to be on the right or left
 
 Task C.1
 Tasl C.2
@@ -43,3 +45,4 @@ Task C.5
 * Node does not exit when lists aren't the same size
 Task C.6
 Task C.7
+
