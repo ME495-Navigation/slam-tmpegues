@@ -5,6 +5,8 @@
 #include "turtlelib/angle.hpp"
 #include <cmath>
 
+#include <iostream>
+
 using namespace turtlelib;
 using namespace Catch::Matchers;
 
@@ -171,6 +173,49 @@ TEST_CASE("Transform vector [1, 1]", "Transform2D")
 }
 
 // TODO: need test for transforming a Twist2D
+TEST_CASE("Transform a twist", "Transform2D::operator(Twist2D)")
+{
+    // Identity transform of twist with omega, x, and y
+    Transform2D tr1 {};
+    Twist2D tw_input {deg2rad(90.0), 1.0, 1.0};
+    auto tw_res = tr1(tw_input);
+    REQUIRE(tw_res.omega == tw_input.omega);
+    REQUIRE(tw_res.x == tw_input.x);
+    REQUIRE(tw_res.y == tw_input.y);
+
+    // Pure rotation of a twist with omega, x, and y
+
+    double rot2 {deg2rad(90.0)};
+    Transform2D tr2(rot2);
+    tw_res = tr2(tw_input);
+    REQUIRE_THAT(tw_res.omega, WithinAbs(tw_input.omega, 0.00001));
+    REQUIRE_THAT(tw_res.x, WithinAbs(-tw_input.x, 0.00001));
+    REQUIRE_THAT(tw_res.y, WithinAbs(tw_input.y, 0.00001));
+
+    // Translate a twist with omega, x, and y
+    Vector2D trans2{0.0, 0.0};
+    Transform2D tr3(trans2);
+    tw_res = tr3(tw_input);
+    REQUIRE(tw_res.omega == tw_input.omega);
+    REQUIRE(tw_res.x == tw_input.x);
+    REQUIRE(tw_res.y == tw_input.y);
+
+    // Translate and rotate
+    Transform2D tr4(trans2, rot2);
+    tw_res = tr4(tw_input);
+    REQUIRE_THAT(tw_res.omega, WithinAbs(tw_input.omega, 0.00001));
+    REQUIRE_THAT(tw_res.x, WithinAbs(-tw_input.x, 0.00001));
+    REQUIRE_THAT(tw_res.y, WithinAbs(tw_input.y, 0.00001));
+
+    // Translate and rotate, but with a different y component on the Transform2D
+    Vector2D trans3{1, 2};
+    Transform2D tr5(trans3, rot2);
+    tw_res = tr5(tw_input);
+    REQUIRE_THAT(tw_res.omega, WithinAbs(tw_input.omega, 0.00001));
+    REQUIRE_THAT(tw_res.x, WithinAbs(std::numbers::pi-1, 0.00001));
+    REQUIRE_THAT(tw_res.y, WithinAbs((2-std::numbers::pi)/2, 0.00001));
+
+}
 
 TEST_CASE("Transform2D operator*", "[Conor]")
 {
