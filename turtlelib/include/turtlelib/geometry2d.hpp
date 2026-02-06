@@ -122,6 +122,7 @@ class std::formatter<turtlelib::Point2D, CharT>
     // {
     //     return T_formatter.parse(parse_ctx);
     // }
+    // formatters are not implemented
 };
 
 /// \brief A formatter for Vector2D

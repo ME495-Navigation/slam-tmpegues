@@ -45,6 +45,9 @@ namespace turtlelib
         ;
 
     public:
+    // This constituttes adding members to the public API.
+    // all these members must be private, otherwise you are allowing users to set
+    // theta = 100, costh = 10, and sinth = -9999
         Twist2D tw;
         double theta {0.0};
         double x {0.0};

@@ -45,7 +45,7 @@ namespace turtlelib
     Vector2D operator-(const Point2D & head, const Point2D & tail)
     {
         // vector is head - tail
-        Vector2D vect {};
+        Vector2D vect {}; // unnecessary temporary
 
         vect.x = head.x - tail.x;
         vect.y = head.y - tail.y;
@@ -64,19 +64,19 @@ namespace turtlelib
     std::ostream & operator<<(std::ostream &os, const Vector2D &v)
     {
         os << "[" <<  v.x << ", " << v.y << "]";
-        return os; // TODO: do I need to return?
+        return os; // TODO: do I need to return? YES
     }
 
     std::ostream &operator<<(std::ostream &os, const Point2D & p)
     {
         os << "(" << p.x << ", " << p.y << ")";
-        return os; // TODO: do I need to return?
+        return os; // TODO: do I need to return? YES
     }
 
     Vector2D normalize(Vector2D in)
     {
         auto length = std::sqrt((std::pow(in.x, 2) + std::pow(in.y, 2)));
-        turtlelib::Vector2D normalized;
+        turtlelib::Vector2D normalized; // unnecessary temporary
         normalized.x = in.x/length;
         normalized.y = in.y/length;
         return normalized;

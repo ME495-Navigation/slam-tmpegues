@@ -16,6 +16,7 @@ using MarkerArray = visualization_msgs::msg::MarkerArray;
 class nusim_node : public rclcpp::Node
 {
 public:
+    // these members should likely be private
     std::vector<double> obs_x {};
     std::vector<double> obs_y {};
     double obs_r {0.25};

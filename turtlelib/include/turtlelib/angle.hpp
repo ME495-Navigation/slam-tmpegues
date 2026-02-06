@@ -23,7 +23,8 @@ namespace turtlelib
         // constexpr means that the function can be computed at compile time
         // if given compile-time constants as input, and therefore
         // it's definition must be visible in any compilation unit that uses it.
-        return (std::abs(d1 - d2) < epsilon);
+        return (std::abs(d1 - d2) < epsilon); // don't include these outside parens, it subtly
+        // can change the meaning of the return in a bad way so it is a bad habit
     }
 
     /// \brief Convert degrees to radians
@@ -44,7 +45,7 @@ namespace turtlelib
     /// \returns The equivalent angle in degrees
     constexpr double rad2deg(double rad)
     {
-        return (rad * (180 / std::numbers::pi));
+        return (rad * (180 / std::numbers::pi)); // 180.0
     }
 
     /// \brief Wrap an angle to (-PI, PI]
@@ -55,7 +56,8 @@ namespace turtlelib
         // NOTE: You will receive partial credit only if this function uses loops.
         // double result{std::fmod(rad + std::numbers::pi, 2 * std::numbers::pi) - std::numbers::pi};
 
-        double result{rad};
+        double result{rad}; // auto
+        // this could be simplified
         if (rad < 0)
         {
             result -= std::numbers::pi;

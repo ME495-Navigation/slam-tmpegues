@@ -1,0 +1,9 @@
+build/nusim/Testing/20260130-1958/Test.xml: 4 tests, 0 errors, 1 failure, 0 skipped
+build/nusim/test_results/nusim/uncrustify.xunit.xml: 1 test, 0 errors, 1 failure, 0 skipped
+build/turtlelib/Testing/20260130-1958/Test.xml: 1 test, 0 errors, 1 failure, 0 skipped
+
+Summary: 16 tests, 0 errors, 3 failures, 1 skipped
+
+SOme tests fail
+
+Some parts are not implemented/completed

@@ -67,7 +67,7 @@ namespace turtlelib
         ; // Default values for twist and costh and sinth are for an identity transform
     }
 
-    Transform2D::Transform2D(Vector2D trans)
+    Transform2D::Transform2D(Vector2D trans) // use initializer lists
     {
         tw.x = trans.x;
         tw.y = trans.y;
@@ -148,7 +148,7 @@ namespace turtlelib
     Transform2D & Transform2D::operator*=(const Transform2D & rhs)
     {
         theta += rhs.theta;
-        Vector2D new_vec;
+        Vector2D new_vec; // unnecessary temporary
         new_vec.x = rhs.x;
         new_vec.y = rhs.y;
         x += costh * rhs.x - sinth * rhs.y;
@@ -172,6 +172,7 @@ namespace turtlelib
 
     std::istream &operator>>(std::istream &is, Transform2D &tf)
     {
+        // there are much simpler solutions here
         // If first character is '{', get rid of it and the following '<'
         if (is.peek() == '{')
         {
@@ -264,6 +265,10 @@ namespace turtlelib
 
     Transform2D operator*(Transform2D lhs, const Transform2D &rhs)
     {
+        // should be
+        // lhs *=rhs
+        // return lhs;
+        // what you ahve here is subtly different and can cause problems
         return lhs*=rhs;
     }
 }

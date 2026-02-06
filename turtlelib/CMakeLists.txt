@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.22)
 project(turtlelib) # TODO
 
 # https://eigen.tuxfamily.org/dox/TopicCMakeGuide.html
+# you aren't using eigen, why is it being found?
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 find_package(Doxygen)
@@ -77,7 +78,7 @@ add_executable(Manual_tester src/tester.cpp)
 
 
 
-# TODO: What actually is Eigen?
+# TODO: What actually is Eigen? it's an external library that you aren't using
 target_link_libraries(Converter turtlelib)
 target_link_libraries(Manual_tester turtlelib)
 
