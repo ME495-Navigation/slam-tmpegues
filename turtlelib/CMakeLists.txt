@@ -52,6 +52,7 @@ if(BUILD_TESTING)
     # A test is just an executable that is linked against the unit testing library
     add_executable(test_turtlelib
                    tests/test_angle.cpp
+                   tests/test_diff_drive.cpp
                    tests/test_geometry2d.cpp
                    tests/test_se2d.cpp)
 
