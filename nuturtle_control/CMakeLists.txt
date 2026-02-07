@@ -13,6 +13,7 @@ find_package(ament_cmake REQUIRED)
 
   find_package(rclcpp REQUIRED)
   find_package(geometry_msgs REQUIRED)
+  find_package(sensor_msgs REQUIRED)
   find_package(turtlelib REQUIRED)
   find_package(nuturtlebot_msgs REQUIRED)
 
@@ -27,7 +28,8 @@ find_package(ament_cmake REQUIRED)
                         ${std_srvs_TARGETS}
                         ${std_msgs_TARGETS}
                         ${visualization_msgs_TARGETS}
-                        ${geometry_msgs_TARGETS})
+                        ${geometry_msgs_TARGETS}
+                        ${sensor_msgs_TARGETS})
 
   install(TARGETS
     turtle_control

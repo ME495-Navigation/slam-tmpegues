@@ -1,5 +1,6 @@
 #include "geometry_msgs/msg/twist.hpp"
 #include "nuturtlebot_msgs/msg/wheel_commands.hpp"
+#include "sensor_msgs/msg/joint_state.hpp"
 #include "rclcpp/rclcpp.hpp"
 
 
@@ -18,7 +19,8 @@ public:
         this->declare_parameter("collision_radius", 0.0);
 
         // Create all publishers/broadcasters and subscribers
-        twist_sub_ = this->create_subscription<geometry_msgs::msg::Twist>("cmd_vel", 10, std::bind(&turtle_control::cmd_vel_cb_, this, std::placeholders::_1));
+        cmd_vel_sub_ = this->create_subscription<geometry_msgs::msg::Twist>("cmd_vel", 10, std::bind(&turtle_control::cmd_vel_cb_, this, std::placeholders::_1));
+        sensor_data_sub_ = this->create_subscription<sensor_msgs::msg::JointState>("sensor_data", 10, std::bind(&turtle_control::sensor_data_cb_, this, std::placeholders::_1));
 
         // Define all variables
         wheel_radius = this->get_parameter("wheel_radius").as_double();
@@ -41,11 +43,18 @@ private:
     int encoder_tics_per_rad {0};
     double collision_radius {0.0};
 
-    rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr twist_sub_ ;
+    rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub_ ;
+    rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr sensor_data_sub_ ;
 
-    void cmd_vel_cb_([[maybe_unused]] const std::shared_ptr<geometry_msgs::msg::Twist> msg)
+
+    void cmd_vel_cb_(const std::shared_ptr<geometry_msgs::msg::Twist> msg)
     {
         RCLCPP_INFO_STREAM(this->get_logger(), "Twist received: " << msg);
+    }
+
+    void sensor_data_cb_(const std::shared_ptr<sensor_msgs::msg::JointState> msg)
+    {
+         RCLCPP_INFO_STREAM(this->get_logger(), "JointState received: " << msg);
     }
 };
 
