@@ -7,10 +7,8 @@ namespace turtlelib
 {
     std::istream & operator>>(std::istream & is, Point2D & p)
     {
-
-
         if (is.peek() == '(')
-        {// if the first character is (, then assume it's properly formatted as (x, y)
+        {   // if the first character is (, then assume it's properly formatted as (x, y)
             is.get(); // purge the (
             is >> p.x;
             is.get(); // purge the ,
@@ -18,7 +16,7 @@ namespace turtlelib
             is.get(); // purge the )
         }
         else
-        {// If we can break it into 2 numbers, do it
+        {   // If we can break it into 2 numbers, do it
             is >> p.x >> p.y;
         }
         return is;
@@ -45,11 +43,7 @@ namespace turtlelib
     Vector2D operator-(const Point2D & head, const Point2D & tail)
     {
         // vector is head - tail
-        auto x = head.x - tail.x;
-        auto y = head.y - tail.y;
-        Vector2D vect {x, y};
-
-        return vect;
+        return {head.x - tail.x, head.y - tail.y};
     }
 
     Vector2D &Vector2D::operator+=(const Vector2D &rhs)
@@ -58,6 +52,7 @@ namespace turtlelib
         y += rhs.y;
         return *this;
     }
+
     Vector2D operator+(Vector2D lhs, Vector2D &rhs)
     {
         return lhs += rhs;
@@ -76,53 +71,39 @@ namespace turtlelib
 
     Point2D operator+(const Point2D &tail, const Vector2D &disp)
     {
-        auto x = tail.x + disp.x;
-        auto y = tail.y + disp.y;
-        Point2D new_pt{x, y};
-
-        return new_pt;
+        return {tail.x + disp.x, tail.y + disp.y};
     }
 
     double dot(const Vector2D &vect1, const Vector2D &vect2)
     {
-        auto result { vect1.x *vect2.x + vect1.y *vect2.y};
-        return result;
+        return {vect1.x *vect2.x + vect1.y *vect2.y};
     }
 
     double magnitude(Vector2D &vect)
     {
-        auto length = std::sqrt((std::pow(vect.x, 2) + std::pow(vect.y, 2)));
-        return length;
+        return std::sqrt((std::pow(vect.x, 2) + std::pow(vect.y, 2)));
     }
 
     double angle(Vector2D &vect1, Vector2D &vect2)
     {
-        auto angle1 = std::atan2(vect1.x, vect1.y);
-        auto angle2 = std::atan2(vect2.x, vect2.y);
-
-        auto diff = angle1 - angle2;
-        return diff;
+        return std::atan2(vect1.x, vect1.y) - std::atan2(vect2.x, vect2.y);
     }
 
 
     std::ostream & operator<<(std::ostream &os, const Vector2D &v)
     {
         os << "[" <<  v.x << ", " << v.y << "]";
-        return os; //
+        return os;
     }
 
     std::ostream &operator<<(std::ostream &os, const Point2D & p)
     {
         os << "(" << p.x << ", " << p.y << ")";
-        return os; //
+        return os;
     }
 
     Vector2D normalize(Vector2D in)
     {
-        auto length = magnitude(in);
-        turtlelib::Vector2D normalized;
-        normalized.x = in.x/length;
-        normalized.y = in.y/length;
-        return normalized;
+        return {in.x / magnitude(in), in.y / magnitude(in)};
     }
 }

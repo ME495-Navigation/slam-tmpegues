@@ -52,7 +52,6 @@ namespace turtlelib
     constexpr double normalize_angle(double rad)
     {
         // NOTE: You will receive partial credit only if this function uses loops.
-        // double result{std::fmod(rad + std::numbers::pi, 2 * std::numbers::pi) - std::numbers::pi};
 
         auto result{rad};
         if (rad < 0)
