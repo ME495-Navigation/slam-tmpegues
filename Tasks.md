@@ -36,7 +36,6 @@ Task B.8 (Executable)
 Task B.9 (README)
 Task B.10 (Vector Operations)
 Task B.11 (Integrate a Twist)
-* Scalar done
 
 Task C.1
 Tasl C.2
@@ -47,3 +46,5 @@ Task C.5
 Task C.6
 Task C.7
 
+Task D.1
+Task D.2

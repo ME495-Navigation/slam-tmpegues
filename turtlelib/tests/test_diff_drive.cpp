@@ -3,7 +3,7 @@
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
 #include "turtlelib/diff_drive.hpp"
 #include <cmath>
-
+#include <stdexcept>
 
 #include <iostream>
 
@@ -106,6 +106,7 @@ TEST_CASE("Test ik","DiffDrive::ik")
     REQUIRE(speeds.left == 0);
     REQUIRE(speeds.right == -pi);
 
-
-
+    Twist2D body_tw5 {1, 1, 1};
+    speeds = dd.ik(body_tw5);
+    REQUIRE_THROWS(dd.ik(body_tw5));
 }
