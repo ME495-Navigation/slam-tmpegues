@@ -14,7 +14,7 @@ using namespace Catch::Matchers;
 using std::numbers::pi;
 
 TEST_CASE("Test fk","DiffDrive::fk")
-    {
+{
         DiffDrive dd {2.0, 1.0 }; // Wheels have circumference 2*pi
 
         // 0 rotation on both wheels should result in no change
@@ -35,20 +35,29 @@ TEST_CASE("Test fk","DiffDrive::fk")
 
         // Returning to the previous position should return state to original
         dd.fk(0, 0, 1);
-        REQUIRE(dd.get_transform().translation().x == 0);
-        REQUIRE(dd.get_transform().translation().y == 0);
-        REQUIRE(dd.get_transform().rotation() == 0);
-        REQUIRE(dd.get_wheels().left == 0);
-        REQUIRE(dd.get_wheels().right == 0);
+        REQUIRE(dd.get_transform().translation().x == 0.0);
+        REQUIRE(dd.get_transform().translation().y == 0.0);
+        REQUIRE(dd.get_transform().rotation() == 0.0);
+        REQUIRE(dd.get_wheels().left == 0.0);
+        REQUIRE(dd.get_wheels().right == 0.0);
 
         // Wheels rotation equal distances in opposite direction should spin with no translation
         auto rot = pi/2;
         dd.fk(-rot, rot, 1);
-        REQUIRE(dd.get_transform().translation().x == 0);
-        REQUIRE(dd.get_transform().translation().y == 0);
+        REQUIRE(dd.get_transform().translation().x == 0.0);
+        REQUIRE(dd.get_transform().translation().y == 0.0);
         REQUIRE(dd.get_transform().rotation() == rot);
         REQUIRE(dd.get_wheels().left == -rot);
         REQUIRE(dd.get_wheels().right == rot);
+
+        // Back it up
+        rot = 0.0;
+        dd.fk(-rot, rot, 1);
+        REQUIRE(dd.get_transform().translation().x == 0.0);
+        REQUIRE(dd.get_transform().translation().y == 0.0);
+        REQUIRE(dd.get_transform().rotation() == 0.0);
+        REQUIRE(dd.get_wheels().left == 0.0);
+        REQUIRE(dd.get_wheels().right == 0.0);
 
         // Rotate only one wheel should result in an x, y, and theta change (multiple iterations so I get to a location with easy numbers)
         DiffDrive dd2 {2.0, 1.0 }; // Wheels have circumference 2*pi
@@ -62,5 +71,41 @@ TEST_CASE("Test fk","DiffDrive::fk")
         REQUIRE_THAT(dd2.get_transform().translation().x, WithinAbs(0, 0.00001));
         REQUIRE_THAT(dd2.get_transform().translation().y, WithinAbs(2, 0.00001));
         REQUIRE_THAT(dd2.get_transform().rotation(), WithinAbs(normalize_angle(pi), 0.00001));
+}
 
-    }
+TEST_CASE("Test ik","DiffDrive::ik")
+{
+
+    DiffDrive dd {2.0, 1.0};
+    Twist2D body_tw {0.0, 1, 0.0};
+
+    auto speeds {dd.ik(body_tw)}; // Pure translation +
+    REQUIRE(speeds.left == 1);
+    REQUIRE(speeds.right == 1);
+
+    speeds = dd.ik(-1*body_tw); // Pure translation -
+    REQUIRE(speeds.left == -1);
+    REQUIRE(speeds.right == -1);
+
+    Twist2D body_tw2 {1.0, 0.0, 0.0}; // Pure rotation  +
+    speeds = dd.ik(body_tw2);
+    REQUIRE(speeds.left == -1);
+    REQUIRE(speeds.right == 1);
+
+    speeds = dd.ik(-1*body_tw2); // Pure rotation -
+    REQUIRE(speeds.left == 1);
+    REQUIRE(speeds.right == -1);
+
+    Twist2D body_tw3 {pi/2, pi/2, 0.0};
+    speeds = dd.ik(body_tw3);
+    REQUIRE(speeds.left == 0);
+    REQUIRE(speeds.right == pi);
+
+    Twist2D body_tw4 {-pi/2, -pi/2, 0.0};
+    speeds = dd.ik(body_tw4);
+    REQUIRE(speeds.left == 0);
+    REQUIRE(speeds.right == -pi);
+
+
+
+}

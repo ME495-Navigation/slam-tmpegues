@@ -47,8 +47,8 @@ namespace turtlelib
         }
         else
         {   // u = H*V_b
-            auto right = 1/radius * (body_tw.x-body_tw.omega*track/2);
-            auto left = 1/radius * (body_tw.x+body_tw.omega*track/2);
+            auto left = 1/radius * (body_tw.x-body_tw.omega*track/2);
+            auto right = 1/radius * (body_tw.x+body_tw.omega*track/2);
 
             return {left, right};
         }
