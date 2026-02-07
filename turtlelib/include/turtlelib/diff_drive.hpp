@@ -14,6 +14,15 @@ namespace turtlelib
             /// \brief the right wheel position
             double right = {0.0};
         };
+    /// \brief represent wheel speeds
+
+    struct wheelspeed
+    {   /// \brief the left wheel speed
+        double left{0.0};
+        /// \brief the right wheel speed
+        double right = {0.0};
+    };
+
     class DiffDrive
     {
         private:
@@ -40,7 +49,7 @@ namespace turtlelib
             /// \brief Calculate wheel velocities needed to achive the provided twist
             /// \param tw The desired twist
             /// \return phirdot, phildot: the right and left wheel velocities
-            auto ik(Twist2D tw);
+            wheelspeed ik(Twist2D tw);
 
             /// \brief Get the world to body transform
             /// \return q, the world to body transform
@@ -51,7 +60,7 @@ namespace turtlelib
             wheels get_wheels();
 
     }
-
+;
 }
 
 #endif

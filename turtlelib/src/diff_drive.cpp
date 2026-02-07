@@ -1,4 +1,5 @@
 #include <cmath>
+#include <stdexcept>
 #include "turtlelib/diff_drive.hpp"
 #include "turtlelib/angle.hpp"
 
@@ -19,34 +20,38 @@ namespace turtlelib
         // 3rd, integrate the twist in the body frame
         // 4th, chain the initial position transform and the integrated twist transform
 
-        auto phidotl = (phil2 - phi.left)/time;
-        auto phidotr = (phir2 - phi.right)/time;
+        wheelspeed phidot { (phil2 - phi.left) / time, (phir2 - phi.right) / time };
+        // auto phidotl = (phil2 - phi.left)/time;
+        // auto phidotr = (phir2 - phi.right)/time;
 
         phi.left = normalize_angle(phil2);
         phi.right = normalize_angle(phir2);
 
-        auto omega = radius / 2.0 * (2.0 * (phidotr - phidotl) / 2.0);
-        auto x = radius / 2.0 * (phidotr + phidotl);
+        auto omega = radius / 2.0 * (2.0 * (phidot.right - phidot.left) / 2.0);
+        auto x = radius / 2.0 * (phidot.right + phidot.left);
         auto y = 0.0;
 
         Twist2D body_twist{omega, x, y};
 
         auto world_twist = q(body_twist);
-        auto oldq_to_newq = integrate_twist(world_twist);
-        q *= oldq_to_newq;
-
+        auto tf_current_to_new = integrate_twist(world_twist);
+        q *= tf_current_to_new;
     }
 
-    auto DiffDrive::ik(Twist2D tw)
-    {  // TODO: Add citation 2
-        struct phidot
+    wheelspeed DiffDrive::ik(Twist2D body_tw)
+    {
+        // Do not allow twists with a y component
+        if (std::abs(body_tw.y) >= 0.00001)
         {
-            double left {0};
-            double right {0};
-        } phidot;
+            throw std::logic_error("Requested body twist cannot have non-zero y component.");
+        }
+        else
+        {   // u = H*V_b
+            auto right = 1/radius * (body_tw.x-body_tw.omega*track/2);
+            auto left = 1/radius * (body_tw.x+body_tw.omega*track/2);
 
-
-        return phidot;
+            return {left, right};
+        }
     }
 
     Transform2D DiffDrive::get_transform()
