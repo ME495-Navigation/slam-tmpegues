@@ -60,12 +60,12 @@ namespace turtlelib
     std::ostream &operator<<(std::ostream &os, const Twist2D & tw)
     {
         os << "<" << tw.omega << ", " << tw.x << ", " << tw.y << '>' ;
-        return os; // TODO: do I need to return?
+        return os;
     }
 
     Transform2D::Transform2D()
     {
-        ; // Default values for twist and costh and sinth are for an identity transform
+        ; // Default values for pos, theta, and costh and sinth are for an identity transform
     }
 
     Transform2D::Transform2D(Vector2D trans)
@@ -87,13 +87,6 @@ namespace turtlelib
         pos = trans;
     }
 
-    // Transform2D::Transform2D(double transx, double transy, double radians)
-    //     {
-    //         update_theta(radians);
-    //         pos.x = transx;
-    //         pos.y = transy;
-    //     }
-
     void Transform2D::update_theta(double new_theta)
     {
         theta = normalize_angle(new_theta);
@@ -104,34 +97,23 @@ namespace turtlelib
     Point2D Transform2D::operator()(Point2D p) const
     {
         // Rotate then translate the point
-        Point2D new_pt;
-        new_pt.x = costh * p.x - sinth * p.y;
-        new_pt.y = costh * p.y + sinth * p.x;
-
-        new_pt.x += pos.x;
-        new_pt.y += pos.y;
-
-        return new_pt;
+        return {(costh * p.x - sinth * p.y) + pos.x,
+                (costh * p.y + sinth * p.x) + pos.y};
     }
 
     Vector2D Transform2D::operator()(Vector2D v) const
     {
         // Transforming a vector only rotates it
-        Vector2D new_vc;
-        new_vc.x = costh * v.x - sinth * v.y;
-        new_vc.y = costh * v.y + sinth * v.x;
-
-        return new_vc;
+        return {costh * v.x - sinth * v.y,
+                costh * v.y + sinth * v.x};
     }
 
     Twist2D Transform2D::operator()(Twist2D v ) const
     {
-        Twist2D new_tw;
-        new_tw.omega = v.omega;
-        new_tw.x = costh*v.x - sinth*v.y + pos.y*v.omega;
-        new_tw.y = costh*v.y + sinth*v.x - pos.x*v.omega;
 
-        return new_tw;
+        return {v.omega,
+                costh * v.x - sinth * v.y + pos.y * v.omega,
+                costh * v.y + sinth * v.x - pos.x * v.omega};
     }
 
     Transform2D Transform2D::inv() const
@@ -140,14 +122,11 @@ namespace turtlelib
         new_vc.x = -pos.x*costh-pos.y*sinth;
         new_vc.y = -pos.y*costh+pos.x*sinth;
 
-        Transform2D new_tf(new_vc, -theta);
-
-    return new_tf;
+        return {new_vc, -theta};
     }
 
     Transform2D & Transform2D::operator*=(const Transform2D & rhs)
     {
-
         pos.x += costh * rhs.pos.x - sinth * rhs.pos.y;
         pos.y += costh * rhs.pos.y + sinth * rhs.pos.x;
 
@@ -158,10 +137,7 @@ namespace turtlelib
 
     Vector2D Transform2D::translation() const
     {
-        Vector2D new_vc;
-        new_vc.x = pos.x;
-        new_vc.y = pos.y;
-        return new_vc;
+        return pos;
     }
 
     double Transform2D::rotation() const
