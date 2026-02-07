@@ -3,13 +3,38 @@
 
 #include "turtlelib/geometry2d.hpp"
 #include "turtlelib/se2d.hpp"
+#include <cmath>
+using std::numbers::pi;
 
 
 int main()
 {
-    bool end = false;
-    while (not end)
+    bool end = true;
+    turtlelib::Twist2D tw {};
+    tw.x = 1;
+    tw.y = 0;
+    double w = 0;
+    while (w<=2*pi)
     {
+        std::cout <<"\n";
+        tw.x = w;
+        tw.omega = w;
+        // std::cout << tw << "\n";
+        auto tf = turtlelib::integrate_twist(tw);
+        std::cout << tf.rotation() << "\n";
+        std::cout << tf.translation() << "\n";
+        w += pi/8;
+    }
+
+
+
+
+
+
+    while (not end)
+
+    {
+
         std::print("t(r)ansform, (t)wist, (v)ector, (p)oint?, or (e)nd: ");
         char choice {'e'};
         std::cin >> choice;

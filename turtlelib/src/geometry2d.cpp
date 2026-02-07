@@ -108,13 +108,13 @@ namespace turtlelib
     std::ostream & operator<<(std::ostream &os, const Vector2D &v)
     {
         os << "[" <<  v.x << ", " << v.y << "]";
-        return os; // TODO: do I need to return?
+        return os; //
     }
 
     std::ostream &operator<<(std::ostream &os, const Point2D & p)
     {
         os << "(" << p.x << ", " << p.y << ")";
-        return os; // TODO: do I need to return?
+        return os; //
     }
 
     Vector2D normalize(Vector2D in)

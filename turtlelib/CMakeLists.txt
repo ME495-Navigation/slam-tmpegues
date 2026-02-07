@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 project(turtlelib) # TODO
 
-# https://eigen.tuxfamily.org/dox/TopicCMakeGuide.html
-find_package(Eigen3 3.3 REQUIRED NO_MODULE)
-
 find_package(Doxygen)
 
 # Building documentation should be optional.
@@ -77,8 +74,6 @@ add_executable(Converter src/converter.cpp)
 add_executable(Manual_tester src/tester.cpp)
 
 
-
-# TODO: What actually is Eigen?
 target_link_libraries(Converter turtlelib)
 target_link_libraries(Manual_tester turtlelib)
 
