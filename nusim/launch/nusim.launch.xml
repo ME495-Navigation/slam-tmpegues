@@ -1,6 +1,6 @@
 <!-- Arguments -->
     <!-- config_file, defaults to config/basic_worls.yaml -->
-<launch>`
+<launch>
     <arg name="config_file" default="basic_world.yaml" description="What yaml file to load obstacle and turtlebot initial positions from."/>
 
     <node pkg="nusim" exec="nusim">

@@ -16,11 +16,10 @@ find_package(ament_cmake REQUIRED)
   find_package(turtlelib REQUIRED)
   find_package(nuturtlebot_msgs REQUIRED)
 
-  add_executable(nuturtle_control src/turtle_control.cpp)
+  add_executable(turtle_control src/turtle_control.cpp)
 
-  # ament_target_dependencies(nuturtle_control nuturtlebot_msgs)
 
-  target_link_libraries(nuturtle_control
+  target_link_libraries(turtle_control
                         PUBLIC
                         rclcpp::rclcpp
                         turtlelib::turtlelib
@@ -31,7 +30,7 @@ find_package(ament_cmake REQUIRED)
                         ${geometry_msgs_TARGETS})
 
   install(TARGETS
-    nuturtle_control
+    turtle_control
     DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
