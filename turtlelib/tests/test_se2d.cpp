@@ -9,6 +9,7 @@
 
 using namespace turtlelib;
 using namespace Catch::Matchers;
+using std::numbers::pi;
 
 TEST_CASE("Create a twist with format 'w x y' and 'x <unit> x y' and <w x y>, with radians and degrees", "std::istream & operator>>")
 {
@@ -303,11 +304,11 @@ TEST_CASE("Integrate twists into transforms", "integrate_twist()")
 
     Twist2D twist {};
     twist.x = 1;
-    twist.y = 1;
-    twist.omega = 1;
+    twist.y = 0;
+    twist.omega = pi/2;
     auto tf3 = integrate_twist(twist);
 
     REQUIRE(tf3.translation().x == 1.0);
     REQUIRE(tf3.translation().y == 1.0);
-    REQUIRE(tf3.rotation() == 1.0);
+    REQUIRE(tf3.rotation() == pi/2);
 }

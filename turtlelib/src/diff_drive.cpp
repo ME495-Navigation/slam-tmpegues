@@ -25,7 +25,7 @@ namespace turtlelib
         phi.right = normalize_angle(phir2);
 
         Twist2D body_twist {};
-        body_twist.omega = radius/2 * (-2*(phidotr-phidotl)/2);
+        body_twist.omega = radius/2 * (2*(phidotr-phidotl)/2);
         body_twist.x = radius/2 * (phidotr+phidotl);
         body_twist.y = 0.0;
         auto world_twist = q(body_twist);

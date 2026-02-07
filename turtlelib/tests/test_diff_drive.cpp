@@ -42,12 +42,13 @@ TEST_CASE("Test fk","DiffDrive::fk")
         REQUIRE(dd.get_wheels().right == 0);
 
         // Wheels rotation equal distances in opposite direction should spin with no translation
-        dd.fk(pi/2, -pi/2, 1);
+        auto rot = pi/2;
+        dd.fk(-rot, rot, 1);
         REQUIRE(dd.get_transform().translation().x == 0);
         REQUIRE(dd.get_transform().translation().y == 0);
-        REQUIRE(dd.get_transform().rotation() == pi/2);
-        REQUIRE(dd.get_wheels().left == pi/2);
-        REQUIRE(dd.get_wheels().right == -pi/2);
+        REQUIRE(dd.get_transform().rotation() == rot);
+        REQUIRE(dd.get_wheels().left == -rot);
+        REQUIRE(dd.get_wheels().right == rot);
 
         // Rotate only one wheel should result in an x, y, and theta change (multiple iterations so I get to a location with easy numbers)
         DiffDrive dd2 {2.0, 1.0 }; // Wheels have circumference 2*pi

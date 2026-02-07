@@ -69,9 +69,6 @@ namespace turtlelib
 
     Transform2D::Transform2D(Vector2D trans)
     {
-        // tw.x = trans.x;
-        // tw.y = trans.y;
-
         x = trans.x;
         y = trans.y;
         // Default values for tw.omega, theta, costh, sinth are correct for no rotation
@@ -150,11 +147,14 @@ namespace turtlelib
     Transform2D & Transform2D::operator*=(const Transform2D & rhs)
     {
         theta = normalize_angle(theta + rhs.theta);
-        Vector2D new_vec;
-        new_vec.x = rhs.x;
-        new_vec.y = rhs.y;
+
+        // Vector2D new_vec;
+        // new_vec.x = rhs.x;
+        // new_vec.y = rhs.y;
         x += costh * rhs.x - sinth * rhs.y;
         y += costh * rhs.y + sinth * rhs.x;
+        costh = std::cos(theta);
+        sinth = std::sin(theta);
 
         return *this;
     }
@@ -183,7 +183,7 @@ namespace turtlelib
         double cosom {std::cos(twist.omega)};
 
         double x = (twist.x * sinom + twist.y * (1.0 - cosom)) / twist.omega;
-        double y = (twist.y * sinom - twist.x * (1.0 - cosom)) / twist.omega;
+        double y = (-twist.y * sinom + twist.x * (1.0 - cosom)) / twist.omega;
 
         Transform2D tf(x, y, twist.omega);
         return tf;
@@ -283,6 +283,7 @@ namespace turtlelib
 
     Transform2D operator*(Transform2D lhs, const Transform2D &rhs)
     {
-        return lhs*=rhs;
+        lhs *= rhs;
+        return lhs;
     }
 }
