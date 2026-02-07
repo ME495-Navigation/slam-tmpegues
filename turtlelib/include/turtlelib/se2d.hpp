@@ -55,16 +55,18 @@ namespace turtlelib
     class Transform2D
     {
     private:
-        /// \brief Update angle of the transform, along with the saved sine and cosine values
-        /// \param new_theta - The new angle
-        void update_theta(double new_theta);
-
-    public:
         double theta {0.0};
         double x {0.0};
         double y {0.0};
         double costh {1.0};
         double sinth {0.0};
+
+        /// \brief Update angle of the transform, along with the saved sine and cosine values
+        /// \param new_theta - The new angle
+        void update_theta(double new_theta);
+
+    public:
+
 
         /// \brief Create an identity transformation
         Transform2D();

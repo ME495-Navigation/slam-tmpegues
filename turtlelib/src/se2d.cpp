@@ -10,6 +10,7 @@ namespace turtlelib
 {
     std::istream & operator>>(std::istream &is, Twist2D &tw)
     {
+
         // If first character is <, get rid of it
         if (is.peek() == '<')
         {
@@ -188,6 +189,10 @@ namespace turtlelib
 
     std::istream &operator>>(std::istream &is, Transform2D &tf)
     {
+        double x{0.0};
+        double y{0.0};
+        double theta{0.0};
+
         // If first character is '{', get rid of it and the following '<'
         if (is.peek() == '{')
         {
@@ -216,7 +221,7 @@ namespace turtlelib
             case ',': // this means that unit was not given and we can assume radians
             {
 
-                tf.theta = angle;
+                theta = angle;
                 break;
             }
             case '<': // this means we need to check the unit
@@ -225,14 +230,14 @@ namespace turtlelib
                 is.get(); // Purge the <
                 if (is.peek() == 'r') // We have radians again, but we need to purge the string
                 {
-                    tf.theta = angle;
+                    theta = angle;
                     std::string str;
                     is >> str;
                     is.get(); // Purge the ' ' space
                 }
                 else if (is.peek() == 'd') // Convert from deg to rad, then purge string
                 {
-                    tf.theta = deg2rad(angle);
+                    theta = deg2rad(angle);
                     std::string str;
                     is >> str;
                     is.get(); // Purge the ' ' space
@@ -252,7 +257,7 @@ namespace turtlelib
             is.get(); // purge <
         }
 
-        is >> tf.x;
+        is >> x;
 
         if (is.peek() == '>')
         {
@@ -267,14 +272,14 @@ namespace turtlelib
         }
 
 
-        is >> tf.y;
+        is >> y;
 
         if (is.peek() == '>')
         {
             is.get(); // purge >
             is.get(); // purge }
         }
-
+        tf = Transform2D(x, y, theta);
         return is;
     }
 

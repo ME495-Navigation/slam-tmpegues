@@ -41,31 +41,31 @@ TEST_CASE("Create transforms", "Transform2D")
 {
     // Check that default constructor is correct
     turtlelib::Transform2D tf;
-    REQUIRE(tf.theta == 0);
-    REQUIRE(tf.x == 0);
-    REQUIRE(tf.y == 0);
+    REQUIRE(tf.rotation() == 0);
+    REQUIRE(tf.translation().x == 0);
+    REQUIRE(tf.translation().y == 0);
 
     // Check that rotate constructor is correct
     double rotate {1};
     turtlelib::Transform2D tf2(rotate);
-    REQUIRE(tf2.theta == 1);
-    REQUIRE(tf2.x == 0);
-    REQUIRE(tf2.y == 0);
+    REQUIRE(tf2.rotation() == 1);
+    REQUIRE(tf2.translation().x == 0);
+    REQUIRE(tf2.translation().y == 0);
 
     // Check trans constructor
     turtlelib::Vector2D vc;
     vc.x = 1;
     vc.y = 2;
     turtlelib::Transform2D tf3(vc);
-    REQUIRE(tf3.theta == 0);
-    REQUIRE(tf3.x == 1);
-    REQUIRE(tf3.y == 2);
+    REQUIRE(tf3.rotation() == 0);
+    REQUIRE(tf3.translation().x == 1);
+    REQUIRE(tf3.translation().y == 2);
 
     // Check rot and trans
     turtlelib::Transform2D tf4(vc, rotate);
-    REQUIRE(tf4.theta == 1);
-    REQUIRE(tf4.x == 1);
-    REQUIRE(tf4.y == 2);
+    REQUIRE(tf4.rotation() == 1);
+    REQUIRE(tf4.translation().x == 1);
+    REQUIRE(tf4.translation().y == 2);
 }
 
 TEST_CASE("Transform a point", "Transform2D")
