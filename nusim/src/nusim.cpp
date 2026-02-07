@@ -154,6 +154,7 @@ private:
 
         wall_pub_->publish(marker_array);
     }
+
     void publish_obstacles()
     {
         if (obs_x.size() != obs_y.size())

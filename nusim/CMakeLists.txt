@@ -21,7 +21,7 @@ find_package(ament_cmake REQUIRED)
   find_package(turtlelib REQUIRED)
 
 
-    add_executable(nusim src/nusim.cpp)
+  add_executable(nusim src/nusim.cpp)
   target_link_libraries(nusim
                         PUBLIC
                         rclcpp::rclcpp
@@ -33,14 +33,12 @@ find_package(ament_cmake REQUIRED)
                         ${visualization_msgs_TARGETS}
                         ${geometry_msgs_TARGETS})
 
+install(TARGETS
+  nusim
+  DESTINATION lib/${PROJECT_NAME})
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
-
-  install(TARGETS
-    nusim
-    DESTINATION lib/${PROJECT_NAME})
-
-
   # the following line skips the linter which checks for copyrights
   # comment the line when a copyright and license is added to all source files
   set(ament_cmake_copyright_FOUND TRUE)
@@ -51,7 +49,6 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-# Install launch files.
 install(DIRECTORY
   config
   launch
