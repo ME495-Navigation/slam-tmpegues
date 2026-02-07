@@ -7,12 +7,18 @@
 
 namespace turtlelib
 {
+    /// \brief represent wheel positions
+    struct wheels
+        {   /// \brief the left wheel position
+            double left {0.0};
+            /// \brief the right wheel position
+            double right = {0.0};
+        };
     class DiffDrive
     {
         private:
             Transform2D q;
-            double phir = 0;
-            double phil = 0;
+            wheels phi;
             double track = 0;
             double radius = 0;
 
@@ -42,7 +48,7 @@ namespace turtlelib
 
             /// \brief Get wheel positions
             /// \return phir, phil: the left and right wheel angles
-            std::tuple<double, double> get_wheels();
+            wheels get_wheels();
 
     }
 ;

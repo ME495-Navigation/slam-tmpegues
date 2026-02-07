@@ -80,23 +80,28 @@ namespace turtlelib
     Transform2D::Transform2D(double radians)
     {
         // Default values for tw.x and tw.y are correct for no translation
-        theta = radians;
-        costh = std::cos(radians);
-        sinth = std::sin(radians);
+        theta = normalize_angle(radians);
+        costh = std::cos(theta);
+        sinth = std::sin(theta);
     }
 
     Transform2D::Transform2D(Vector2D trans, double radians)
     {
-        // tw.omega = radians;
-        // tw.x = trans.x;
-        // tw.y = trans.y;
-
-        theta = radians;
+        theta = normalize_angle(radians);
         x = trans.x;
         y = trans.y;
-        costh = std::cos(radians);
-        sinth = std::sin(radians);
+        costh = std::cos(theta);
+        sinth = std::sin(theta);
     }
+
+    Transform2D::Transform2D(double transx, double transy, double radians)
+        {
+            theta = normalize_angle(radians);
+            x = transx;
+            y = transy;
+            costh = std::cos(theta);
+            sinth = std::sin(theta);
+        }
 
     Point2D Transform2D::operator()(Point2D p) const
     {
@@ -144,7 +149,7 @@ namespace turtlelib
 
     Transform2D & Transform2D::operator*=(const Transform2D & rhs)
     {
-        theta += rhs.theta;
+        theta = normalize_angle(theta + rhs.theta);
         Vector2D new_vec;
         new_vec.x = rhs.x;
         new_vec.y = rhs.y;
@@ -168,12 +173,19 @@ namespace turtlelib
     }
 
     Transform2D integrate_twist(const Twist2D &twist)
-    {
-        Vector2D trans;
-        trans.x = twist.x;
-        trans.y = twist.y;
+    {   // TODO: Cite Theo
+        if (std::abs(twist.omega) < 1e-9)
+        {
+            return Transform2D(twist.x, twist.y, 0.0);
+        }
 
-        Transform2D tf(trans, twist.omega);
+        double sinom {std::sin(twist.omega)};
+        double cosom {std::cos(twist.omega)};
+
+        double x = (twist.x * sinom + twist.y * (1.0 - cosom)) / twist.omega;
+        double y = (twist.y * sinom - twist.x * (1.0 - cosom)) / twist.omega;
+
+        Transform2D tf(x, y, twist.omega);
         return tf;
     }
 
