@@ -70,8 +70,7 @@ namespace turtlelib
 
     Transform2D::Transform2D(Vector2D trans)
     {
-        x = trans.x;
-        y = trans.y;
+        pos = trans;
         // Default values for tw.omega, theta, costh, sinth are correct for no rotation
     }
 
@@ -85,8 +84,7 @@ namespace turtlelib
     Transform2D::Transform2D(Vector2D trans, double radians)
     {
         update_theta(radians);
-        x = trans.x;
-        y = trans.y;
+        pos = trans;
     }
 
     Transform2D::Transform2D(double transx, double transy, double radians)

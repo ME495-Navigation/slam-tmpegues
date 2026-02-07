@@ -55,9 +55,8 @@ namespace turtlelib
     class Transform2D
     {
     private:
+        Vector2D pos {0.0, 0.0};
         double theta {0.0};
-        double x {0.0};
-        double y {0.0};
         double costh {1.0};
         double sinth {0.0};
 
@@ -66,8 +65,6 @@ namespace turtlelib
         void update_theta(double new_theta);
 
     public:
-
-
         /// \brief Create an identity transformation
         Transform2D();
 

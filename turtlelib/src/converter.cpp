@@ -36,12 +36,10 @@ std::pair<double, std::string> get_input()
         if (unit == "deg")
         {
             return {angle, unit};
-            ;
         }
         else if (unit == "rad")
         {
             return {angle, unit};
-            ;
         }
         else
         {
