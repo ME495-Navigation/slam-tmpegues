@@ -285,6 +285,7 @@ TEST_CASE("Scale a twist by a scalar", "operator*")
 
 TEST_CASE("Integrate twists into transforms", "integrate_twist()")
 {
+    // Pure translation
     Twist2D tw_trans {};
     tw_trans.x = 1;
     tw_trans.y = 1;
@@ -294,6 +295,7 @@ TEST_CASE("Integrate twists into transforms", "integrate_twist()")
     REQUIRE(tf1.translation().y == 1.0);
     REQUIRE(tf1.rotation() == 0.0);
 
+    // Pure rotation
     Twist2D tw_rot {};
     tw_rot.omega = 1;
     auto tf2 = integrate_twist(tw_rot);
@@ -302,13 +304,15 @@ TEST_CASE("Integrate twists into transforms", "integrate_twist()")
     REQUIRE(tf2.translation().y == 0.0);
     REQUIRE(tf2.rotation() == 1.0);
 
+    // Translate and rotate
     Twist2D twist {};
-    twist.x = 1;
+    twist.x = pi/2;
     twist.y = 0;
     twist.omega = pi/2;
     auto tf3 = integrate_twist(twist);
 
-    REQUIRE(tf3.translation().x == 1.0);
-    REQUIRE(tf3.translation().y == 1.0);
-    REQUIRE(tf3.rotation() == pi/2);
+    REQUIRE_THAT(tf3.translation().x, WithinAbs(1.0, 0.0001));
+    REQUIRE_THAT(tf3.translation().y, WithinAbs(1.0, 0.0001));
+    REQUIRE_THAT(tf3.rotation(), WithinAbs(pi/2, 0.0001));
+
 }

@@ -55,7 +55,9 @@ namespace turtlelib
     class Transform2D
     {
     private:
-        ;
+        /// \brief Update angle of the transform, along with the saved sine and cosine values
+        /// \param new_theta - The new angle
+        void update_theta(double new_theta);
 
     public:
         double theta {0.0};

@@ -77,28 +77,29 @@ namespace turtlelib
     Transform2D::Transform2D(double radians)
     {
         // Default values for tw.x and tw.y are correct for no translation
-        theta = normalize_angle(radians);
-        costh = std::cos(theta);
-        sinth = std::sin(theta);
+        update_theta(radians);
+
     }
 
     Transform2D::Transform2D(Vector2D trans, double radians)
     {
-        theta = normalize_angle(radians);
+        update_theta(radians);
         x = trans.x;
         y = trans.y;
-        costh = std::cos(theta);
-        sinth = std::sin(theta);
     }
 
     Transform2D::Transform2D(double transx, double transy, double radians)
         {
-            theta = normalize_angle(radians);
+            update_theta(radians);
             x = transx;
             y = transy;
-            costh = std::cos(theta);
-            sinth = std::sin(theta);
         }
+    void Transform2D::update_theta(double new_theta)
+    {
+        theta = normalize_angle(new_theta);
+        sinth = std::sin(theta);
+        costh = std::cos(theta);
+    }
 
     Point2D Transform2D::operator()(Point2D p) const
     {
@@ -146,15 +147,11 @@ namespace turtlelib
 
     Transform2D & Transform2D::operator*=(const Transform2D & rhs)
     {
-        theta = normalize_angle(theta + rhs.theta);
 
-        // Vector2D new_vec;
-        // new_vec.x = rhs.x;
-        // new_vec.y = rhs.y;
         x += costh * rhs.x - sinth * rhs.y;
         y += costh * rhs.y + sinth * rhs.x;
-        costh = std::cos(theta);
-        sinth = std::sin(theta);
+
+        update_theta(theta + rhs.theta);
 
         return *this;
     }
