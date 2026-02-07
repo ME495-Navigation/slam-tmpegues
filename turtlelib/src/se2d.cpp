@@ -87,12 +87,13 @@ namespace turtlelib
         pos = trans;
     }
 
-    Transform2D::Transform2D(double transx, double transy, double radians)
-        {
-            update_theta(radians);
-            x = transx;
-            y = transy;
-        }
+    // Transform2D::Transform2D(double transx, double transy, double radians)
+    //     {
+    //         update_theta(radians);
+    //         pos.x = transx;
+    //         pos.y = transy;
+    //     }
+
     void Transform2D::update_theta(double new_theta)
     {
         theta = normalize_angle(new_theta);
@@ -107,8 +108,8 @@ namespace turtlelib
         new_pt.x = costh * p.x - sinth * p.y;
         new_pt.y = costh * p.y + sinth * p.x;
 
-        new_pt.x += x;
-        new_pt.y += y;
+        new_pt.x += pos.x;
+        new_pt.y += pos.y;
 
         return new_pt;
     }
@@ -127,8 +128,8 @@ namespace turtlelib
     {
         Twist2D new_tw;
         new_tw.omega = v.omega;
-        new_tw.x = costh*v.x - sinth*v.y + y*v.omega;
-        new_tw.y = costh*v.y + sinth*v.x - x*v.omega;
+        new_tw.x = costh*v.x - sinth*v.y + pos.y*v.omega;
+        new_tw.y = costh*v.y + sinth*v.x - pos.x*v.omega;
 
         return new_tw;
     }
@@ -136,8 +137,8 @@ namespace turtlelib
     Transform2D Transform2D::inv() const
     {
         Vector2D new_vc;
-        new_vc.x = -x*costh-y*sinth;
-        new_vc.y = -y*costh+x*sinth;
+        new_vc.x = -pos.x*costh-pos.y*sinth;
+        new_vc.y = -pos.y*costh+pos.x*sinth;
 
         Transform2D new_tf(new_vc, -theta);
 
@@ -147,8 +148,8 @@ namespace turtlelib
     Transform2D & Transform2D::operator*=(const Transform2D & rhs)
     {
 
-        x += costh * rhs.x - sinth * rhs.y;
-        y += costh * rhs.y + sinth * rhs.x;
+        pos.x += costh * rhs.pos.x - sinth * rhs.pos.y;
+        pos.y += costh * rhs.pos.y + sinth * rhs.pos.x;
 
         update_theta(theta + rhs.theta);
 
@@ -158,8 +159,8 @@ namespace turtlelib
     Vector2D Transform2D::translation() const
     {
         Vector2D new_vc;
-        new_vc.x = x;
-        new_vc.y = y;
+        new_vc.x = pos.x;
+        new_vc.y = pos.y;
         return new_vc;
     }
 
@@ -172,7 +173,7 @@ namespace turtlelib
     {   // TODO: Cite Theo
         if (std::abs(twist.omega) < 1e-9)
         {
-            return Transform2D(twist.x, twist.y, 0.0);
+            return Transform2D(Vector2D{twist.x, twist.y}, 0.0);
         }
 
         double sinom {std::sin(twist.omega)};
@@ -181,7 +182,7 @@ namespace turtlelib
         double x = (twist.x * sinom + twist.y * (1.0 - cosom)) / twist.omega;
         double y = (-twist.y * sinom + twist.x * (1.0 - cosom)) / twist.omega;
 
-        Transform2D tf(x, y, twist.omega);
+        Transform2D tf(Vector2D{x, y}, twist.omega);
         return tf;
     }
 
@@ -277,7 +278,7 @@ namespace turtlelib
             is.get(); // purge >
             is.get(); // purge }
         }
-        tf = Transform2D(x, y, theta);
+        tf = Transform2D(Vector2D{x, y}, theta);
         return is;
     }
 

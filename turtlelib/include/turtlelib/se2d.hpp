@@ -82,12 +82,12 @@ namespace turtlelib
         /// \param radians - the rotation, in radians
         Transform2D(Vector2D trans, double radians);
 
-        /// \brief Create a transformation with a translational and rotational
-        /// component
-        /// \param transx - the x component of translation
-        /// \param transy - the y component of translation
-        /// \param radians - the rotation, in radians
-        Transform2D(double transx, double transy, double radians);
+        // /// \brief Create a transformation with a translational and rotational
+        // /// component
+        // /// \param transx - the x component of translation
+        // /// \param transy - the y component of translation
+        // /// \param radians - the rotation, in radians
+        // Transform2D(double transx, double transy, double radians);
 
         /// \brief apply a transformation to a 2D Point
         /// \param p the point to transform
