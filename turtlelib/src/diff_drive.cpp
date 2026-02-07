@@ -21,13 +21,16 @@ namespace turtlelib
 
         auto phidotl = (phil2 - phi.left)/time;
         auto phidotr = (phir2 - phi.right)/time;
+
         phi.left = normalize_angle(phil2);
         phi.right = normalize_angle(phir2);
 
-        Twist2D body_twist {};
-        body_twist.omega = radius/2 * (2*(phidotr-phidotl)/2);
-        body_twist.x = radius/2 * (phidotr+phidotl);
-        body_twist.y = 0.0;
+        auto omega = radius / 2.0 * (2.0 * (phidotr - phidotl) / 2.0);
+        auto x = radius / 2.0 * (phidotr + phidotl);
+        auto y = 0.0;
+
+        Twist2D body_twist{omega, x, y};
+
         auto world_twist = q(body_twist);
         auto oldq_to_newq = integrate_twist(world_twist);
         q *= oldq_to_newq;
@@ -47,7 +50,9 @@ namespace turtlelib
     }
 
     Transform2D DiffDrive::get_transform()
-        {return q;}
+        {
+            return q;
+        }
 
     wheels DiffDrive::get_wheels()
         {

@@ -41,17 +41,11 @@ TEST_CASE("Create vectors and with format 'x y' and '[x, y]", "std::istream & op
 
 TEST_CASE("Subtract points to make vectors", "Vector2D operator-")
 {
-    turtlelib::Point2D origin {};
-    origin.x = 0.0;
-    origin.y = 0.0;
+    turtlelib::Point2D origin {0.0, 0.0};
 
-    turtlelib::Point2D pt_oo {};
-    pt_oo.x = 1.0;
-    pt_oo.y = 1.0;
+    turtlelib::Point2D pt_oo {1.0, 1.0};
 
-    turtlelib::Point2D pt_ot {};
-    pt_ot.x = 1.0;
-    pt_ot.y = 2.0;
+    turtlelib::Point2D pt_ot {1.0, 2.0};
 
     // 1 1 - 0 0 = 1 1
     auto vec_res_oo {pt_oo - origin};
@@ -80,17 +74,11 @@ TEST_CASE("Subtract points to make vectors", "Vector2D operator-")
 
 TEST_CASE("Add a point and vector to make a new point", "Point2D operator+")
 {
-    turtlelib::Point2D origin{};
-    origin.x = 0.0;
-    origin.y = 0.0;
+    turtlelib::Point2D origin{0.0, 0.0};
 
-    turtlelib::Vector2D vec_oo{};
-    vec_oo.x = 1.0;
-    vec_oo.y = 1.0;
+    turtlelib::Vector2D vec_oo{1.0, 1.0};
 
-    turtlelib::Point2D pt_oo{};
-    pt_oo.x = 1.0;
-    pt_oo.y = 1.0;
+    turtlelib::Point2D pt_oo{1.0, 1.0};
 
     auto pt_res_oo {origin + vec_oo};
     REQUIRE(pt_res_oo.x == 1.0);
@@ -100,9 +88,8 @@ TEST_CASE("Add a point and vector to make a new point", "Point2D operator+")
     REQUIRE(pt_res_tt.x == 2.0);
     REQUIRE(pt_res_tt.y == 2.0);
 
-    turtlelib::Vector2D vec_ot{};
-    vec_ot.x = 1.0;
-    vec_ot.y = 2.0;
+    turtlelib::Vector2D vec_ot{1.0, 2.0};
+
     auto pt_res_ot{origin + vec_ot};
     REQUIRE(pt_res_ot.x == 1.0);
     REQUIRE(pt_res_ot.y == 2.0);
@@ -114,16 +101,13 @@ TEST_CASE("Add a point and vector to make a new point", "Point2D operator+")
 
 TEST_CASE("Normalize vectors. Normalize uses magnitude(), so this also tests magnitude()", "Vector2D normalize")
 {
-    turtlelib::Vector2D vec1;
-    vec1.x = 1.0;
-    vec1.y = 1.0;
+    turtlelib::Vector2D vec1 {1.0, 1.0};
     auto vec2 = turtlelib::normalize(vec1);
 
     REQUIRE(vec2.x == 1.0/std::sqrt(2.0));
     REQUIRE(vec2.y == 1.0/std::sqrt(2.0));
 
-    vec1.x = -1.0;
-    vec1.y = -1.0;
+    vec1 *= -1;
     vec2 = turtlelib::normalize(vec1);
     REQUIRE(vec2.x == -1.0 / std::sqrt(2.0));
     REQUIRE(vec2.y == -1.0 / std::sqrt(2.0));
@@ -138,16 +122,12 @@ TEST_CASE("Normalize vectors. Normalize uses magnitude(), so this also tests mag
 TEST_CASE("Vector scaling", "operator*")
 {
 
-    turtlelib::Vector2D vec00;
-    vec00.x = 0.0;
-    vec00.y = 0.0;
+    turtlelib::Vector2D vec00 {0.0, 0.0};
     auto vec2 = vec00*10;
     REQUIRE(vec2.x == 0.0);
     REQUIRE(vec2.y == 0.0);
 
-    turtlelib::Vector2D vec11;
-    vec11.x = 1.0;
-    vec11.y = 1.0;
+    turtlelib::Vector2D vec11 {1.0, 1.0};
     auto vec3 = vec11*2;
     REQUIRE(vec3.x == 2.0);
     REQUIRE(vec3.y == 2.0);
@@ -159,20 +139,14 @@ TEST_CASE("Vector scaling", "operator*")
 
 TEST_CASE("Vector addition", "operator+")
 {
-    turtlelib::Vector2D vec00;
-    vec00.x = 0.0;
-    vec00.y = 0.0;
-    turtlelib::Vector2D vec11;
-    vec11.x = 1.0;
-    vec11.y = 1.0;
+    turtlelib::Vector2D vec00{0.0, 0.0};
+    turtlelib::Vector2D vec11{1.0, 1.0};
 
     auto vec2 = vec00 + vec11;
     REQUIRE(vec2.x == 1.0);
     REQUIRE(vec2.y == 1.0);
 
-    turtlelib::Vector2D vec3;
-    vec3.x = 42.3;
-    vec3.y = -120.75;
+    turtlelib::Vector2D vec3 {42.3, -120.75};
     auto vec4 = vec3 + vec11;
     REQUIRE(vec4.x == 43.3);
     REQUIRE(vec4.y == -119.75);

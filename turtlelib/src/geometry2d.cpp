@@ -45,10 +45,10 @@ namespace turtlelib
     Vector2D operator-(const Point2D & head, const Point2D & tail)
     {
         // vector is head - tail
-        Vector2D vect {};
+        auto x = head.x - tail.x;
+        auto y = head.y - tail.y;
+        Vector2D vect {x, y};
 
-        vect.x = head.x - tail.x;
-        vect.y = head.y - tail.y;
         return vect;
     }
 
@@ -76,9 +76,9 @@ namespace turtlelib
 
     Point2D operator+(const Point2D &tail, const Vector2D &disp)
     {
-        Point2D new_pt {};
-        new_pt.x = tail.x + disp.x;
-        new_pt.y = tail.y + disp.y;
+        auto x = tail.x + disp.x;
+        auto y = tail.y + disp.y;
+        Point2D new_pt{x, y};
 
         return new_pt;
     }
