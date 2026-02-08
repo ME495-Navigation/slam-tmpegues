@@ -43,7 +43,7 @@ namespace turtlelib
             /// \param phir2 The new right wheel angle
             /// \param phil2 The new left wheel angle
             /// \param time Time elapsed since the wheel angles were last collected
-            void fk(double phil2, double phir2, double time);
+            wheelspeed fk(double phil2, double phir2, double time);
 
             /// \brief Calculate wheel velocities needed to achive the provided twist
             /// \param tw The desired twist

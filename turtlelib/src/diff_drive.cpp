@@ -12,7 +12,7 @@ namespace turtlelib
         radius = input_radius;
     }
 
-    void DiffDrive::fk(double phil2, double phir2, double time)
+    wheelspeed DiffDrive::fk(double phil2, double phir2, double time)
     {
         // 0st, update wheel positions
         // 1st, calculate the resultant twist
@@ -33,9 +33,11 @@ namespace turtlelib
 
         Twist2D body_twist{omega, x, y};
 
-        auto world_twist = q(body_twist);
+        auto world_twist = q(time*body_twist);
         auto tf_current_to_new = integrate_twist(world_twist);
         q *= tf_current_to_new;
+
+        return phidot;
     }
 
     wheelspeed DiffDrive::ik(Twist2D body_tw)
