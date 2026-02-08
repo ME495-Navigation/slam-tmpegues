@@ -9,159 +9,158 @@
 namespace turtlelib
 {
 
-    /// \brief represent a 2-Dimensional twist
-    struct Twist2D
+/// \brief represent a 2-Dimensional twist
+struct Twist2D
 
-    {
-        /// \brief Scale a twist by a scalar
-        /// \param rhs The scalar to scal the vector by
-        /// \return A reference to the scaled twist
-        template <typename T>
-        Twist2D &operator*=(const T &rhs)
-        {
-            x *= rhs;
-            y *= rhs;
-            omega *= rhs;
+{
+  /// \brief Scale a twist by a scalar
+  /// \param rhs The scalar to scal the vector by
+  /// \return A reference to the scaled twist
+  template <typename T>
+  Twist2D & operator*=(const T & rhs)
+  {
+    x *= rhs;
+    y *= rhs;
+    omega *= rhs;
 
-            return *this;
-        }
-        /// \brief the angular velocity
-        double omega = 0.0;
+    return *this;
+  }
+  /// \brief the angular velocity
+  double omega = 0.0;
 
-        /// \brief the linear x velocity
-        double x = 0.0;
+  /// \brief the linear x velocity
+  double x = 0.0;
 
-        /// \brief the linear y velocity
-        double y = 0.0;
-    };
+  /// \brief the linear y velocity
+  double y = 0.0;
+};
 
+/// \brief read the Twist2D in the format "<w [<unit>], x, y>" or as "w [<unit>] x y"
+/// The "" are not part of the input.
+/// The [<unit>] is optional and can be any string without spaces that starts with an r
+/// (for rad/s) and any string without spaces that starts with a d for deg/s)
+/// If the unit is omitted, assume rad/s.
+/// \param is [in/out] the istream to read from
+/// \param tw [out] the twist read from the stream
+/// \returns the istream is with the twist characters removed
+std::istream & operator>>(std::istream & is, Twist2D & tw);
 
-    /// \brief read the Twist2D in the format "<w [<unit>], x, y>" or as "w [<unit>] x y"
-    /// The "" are not part of the input.
-    /// The [<unit>] is optional and can be any string without spaces that starts with an r
-    /// (for rad/s) and any string without spaces that starts with a d for deg/s)
-    /// If the unit is omitted, assume rad/s.
-    /// \param is [in/out] the istream to read from
-    /// \param tw [out] the twist read from the stream
-    /// \returns the istream is with the twist characters removed
-    std::istream & operator>>(std::istream & is, Twist2D & tw);
+/// \brief output a 2 dimensional twist as <zrotation, xcomponent, ycomponent>
+/// \param os - stream to output to
+/// \param v - the twist to print
+std::ostream & operator<<(std::ostream & os, const Twist2D & tw);
 
-    /// \brief output a 2 dimensional twist as <zrotation, xcomponent, ycomponent>
-    /// \param os - stream to output to
-    /// \param v - the twist to print
-    std::ostream &operator<<(std::ostream &os, const Twist2D &tw);
+/// \brief a rigid body transformation in 2 dimensions
+class Transform2D
+{
+private:
+  Vector2D pos{0.0, 0.0};
+  double theta{0.0};
+  double costh{1.0};
+  double sinth{0.0};
 
-    /// \brief a rigid body transformation in 2 dimensions
-    class Transform2D
-    {
-    private:
-        Vector2D pos {0.0, 0.0};
-        double theta {0.0};
-        double costh {1.0};
-        double sinth {0.0};
+  /// \brief Update angle of the transform, along with the saved sine and cosine values
+  /// \param new_theta - The new angle
+  void update_theta(double new_theta);
 
-        /// \brief Update angle of the transform, along with the saved sine and cosine values
-        /// \param new_theta - The new angle
-        void update_theta(double new_theta);
+public:
+  /// \brief Create an identity transformation
+  Transform2D();
 
-    public:
-        /// \brief Create an identity transformation
-        Transform2D();
+  /// \brief create a transformation that is a pure translation
+  /// \param trans - the vector by which to translate
+  explicit Transform2D(Vector2D trans);
 
-        /// \brief create a transformation that is a pure translation
-        /// \param trans - the vector by which to translate
-        explicit Transform2D(Vector2D trans);
+  /// \brief create a pure rotation
+  /// \param radians - angle of the rotation, in radians
+  explicit Transform2D(double radians);
 
-        /// \brief create a pure rotation
-        /// \param radians - angle of the rotation, in radians
-        explicit Transform2D(double radians);
+  /// \brief Create a transformation with a translational and rotational
+  /// component
+  /// \param trans - the translation
+  /// \param radians - the rotation, in radians
+  Transform2D(Vector2D trans, double radians);
 
-        /// \brief Create a transformation with a translational and rotational
-        /// component
-        /// \param trans - the translation
-        /// \param radians - the rotation, in radians
-        Transform2D(Vector2D trans, double radians);
+  /// \brief apply a transformation to a 2D Point
+  /// \param p the point to transform
+  /// \return a point in the new coordinate system
+  Point2D operator()(Point2D p) const;
 
-        /// \brief apply a transformation to a 2D Point
-        /// \param p the point to transform
-        /// \return a point in the new coordinate system
-        Point2D operator()(Point2D p) const;
+  /// \brief apply a transformation to a 2D Vector
+  /// \param v - the vector to transform
+  /// \return a vector in the new coordinate system
+  Vector2D operator()(Vector2D v) const;
 
-        /// \brief apply a transformation to a 2D Vector
-        /// \param v - the vector to transform
-        /// \return a vector in the new coordinate system
-        Vector2D operator()(Vector2D v) const;
+  /// \brief apply a transformation to a Twist2D (e.g. using the adjoint)
+  /// \param v - the twist to transform
+  /// \return a twist in the new coordinate system
+  Twist2D operator()(Twist2D v) const;
 
-        /// \brief apply a transformation to a Twist2D (e.g. using the adjoint)
-        /// \param v - the twist to transform
-        /// \return a twist in the new coordinate system
-        Twist2D operator()(Twist2D v) const;
+  /// \brief invert the transformation
+  /// \return the inverse transformation.
+  Transform2D inv() const;
 
-        /// \brief invert the transformation
-        /// \return the inverse transformation.
-        Transform2D inv() const;
+  /// \brief compose this transform with another and store the result
+  /// in this object
+  /// \param rhs - the first transform to apply
+  /// \return a reference to the newly transformed operator
+  Transform2D & operator*=(const Transform2D & rhs);
 
-        /// \brief compose this transform with another and store the result
-        /// in this object
-        /// \param rhs - the first transform to apply
-        /// \return a reference to the newly transformed operator
-        Transform2D & operator*=(const Transform2D & rhs);
+  /// \brief the translational component of the transform
+  /// \return the x,y translation
+  Vector2D translation() const;
 
-        /// \brief the translational component of the transform
-        /// \return the x,y translation
-        Vector2D translation() const;
+  /// \brief get the angular displacement of the transform
+  /// \return the angular displacement, in radians
+  double rotation() const;
 
-        /// \brief get the angular displacement of the transform
-        /// \return the angular displacement, in radians
-        double rotation() const;
+  // /// \brief see std::formatter for the Transform2D
+  // template<class CharT>
+  // friend struct std::formatter;
+};
 
-        // /// \brief see std::formatter for the Transform2D
-        // template<class CharT>
-        // friend struct std::formatter;
-    };
-
-    /// \brief Multiplying a scalar to a twist yields a scaled twist
-    /// \param scalar value to scale the twist by
-    /// \param twist the twist to be scaled
-    /// \return the scaled vetwistctor
-    template <typename T>
-    Twist2D operator*(Twist2D twist, const T &scalar)
-    {
-        return twist *= scalar;
-    }
-
-    /// \brief Multiplying a scalar to a twist yields a scaled twist
-    /// \param twist the twist to be scaled
-    /// \param scalar value to scale the twist by
-    /// \return the scaled vetwistctor
-    template <typename T>
-    Twist2D operator*(const T &scalar, Twist2D twist)
-    {
-        return twist *= scalar;
-    }
-
-    /// \brief Integrate a twist to get the transform after following the twist for unit time
-    /// \param twist The twist to integrate
-    /// \return The resultant transfom after following the twist for unit time
-    Transform2D integrate_twist(const Twist2D &twist);
-
-    /// \brief Read a transformation from stdin
-    /// Should be able to read input either as:
-    ///  "theta [<unit>] dx dy" (i.e., three numbers separated by whitespace, angle assumed to be radians)
-    //   "{<angle> [<unit>], <x>, <y>}" (as output by std::format)
-    ///  "{<angle> [<unit>], <x>, <y>}" (as output by std::format)
-    ///  [<unit>] is optional and can be any string without spaces that starts with a d for deg or r for rad
-    ///  If [<unit>] is omitted, assume the unit is radians
-    std::istream & operator>>(std::istream & is, Transform2D & tf);
-
-    /// \brief multiply two transforms together, returning their composition
-    /// \param lhs - the left hand operand
-    /// \param rhs - the right hand operand
-    /// \return the composition of the two transforms
-    /// HINT: This function should be implemented in terms of *=
-    Transform2D operator*(Transform2D lhs, const Transform2D & rhs);
-
+/// \brief Multiplying a scalar to a twist yields a scaled twist
+/// \param scalar value to scale the twist by
+/// \param twist the twist to be scaled
+/// \return the scaled vetwistctor
+template <typename T>
+Twist2D operator*(Twist2D twist, const T & scalar)
+{
+  return twist *= scalar;
 }
+
+/// \brief Multiplying a scalar to a twist yields a scaled twist
+/// \param twist the twist to be scaled
+/// \param scalar value to scale the twist by
+/// \return the scaled vetwistctor
+template <typename T>
+Twist2D operator*(const T & scalar, Twist2D twist)
+{
+  return twist *= scalar;
+}
+
+/// \brief Integrate a twist to get the transform after following the twist for unit time
+/// \param twist The twist to integrate
+/// \return The resultant transfom after following the twist for unit time
+Transform2D integrate_twist(const Twist2D & twist);
+
+/// \brief Read a transformation from stdin
+/// Should be able to read input either as:
+///  "theta [<unit>] dx dy" (i.e., three numbers separated by whitespace, angle assumed to be radians)
+//   "{<angle> [<unit>], <x>, <y>}" (as output by std::format)
+///  "{<angle> [<unit>], <x>, <y>}" (as output by std::format)
+///  [<unit>] is optional and can be any string without spaces that starts with a d for deg or r for rad
+///  If [<unit>] is omitted, assume the unit is radians
+std::istream & operator>>(std::istream & is, Transform2D & tf);
+
+/// \brief multiply two transforms together, returning their composition
+/// \param lhs - the left hand operand
+/// \param rhs - the right hand operand
+/// \return the composition of the two transforms
+/// HINT: This function should be implemented in terms of *=
+Transform2D operator*(Transform2D lhs, const Transform2D & rhs);
+
+}  // namespace turtlelib
 
 // /// \brief A formatter for Transform2D
 // /// Creates a string representation of a Transform2D
