@@ -17,7 +17,7 @@ namespace turtlelib
         // 0st, update wheel positions
         // 1st, calculate the resultant twist
         // 2nd, transform the twist into the world frame
-        // 3rd, integrate the twist in the body frame
+        // 3rd, integrate the twist in the world frame
         // 4th, chain the initial position transform and the integrated twist transform
 
         wheelspeed phidot { (phil2 - phi.left) / time, (phir2 - phi.right) / time };

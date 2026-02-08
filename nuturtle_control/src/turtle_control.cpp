@@ -14,16 +14,18 @@ public:
 
     {
         // Create all parameters
-        this->declare_parameter("wheel_radius", 0.0);
-        this->declare_parameter("track_width", 0.0);
-        this->declare_parameter("motor_cmd_max", 0);
-        this->declare_parameter("motor_cmd_per_rad_sec", 0.0);
-        this->declare_parameter("encoder_ticks_per_rad", 0);
-        this->declare_parameter("collision_radius", 0.0);
+        this->declare_parameter("wheel_radius", 0.033);
+        this->declare_parameter("track_width", 0.16 );
+        this->declare_parameter("motor_cmd_max", 256);
+        this->declare_parameter("motor_cmd_per_rad_sec", 0.024);
+        this->declare_parameter("encoder_ticks_per_rad", 4096);
+        this->declare_parameter("collision_radius", 0.11);
 
         // Create all publishers/broadcasters and subscribers
         cmd_vel_sub_ = this->create_subscription<geometry_msgs::msg::Twist>("cmd_vel", 10, std::bind(&turtle_control::cmd_vel_cb_, this, std::placeholders::_1));
         sensor_data_sub_ = this->create_subscription<sensor_msgs::msg::JointState>("sensor_data", 10, std::bind(&turtle_control::sensor_data_cb_, this, std::placeholders::_1));
+
+        wheel_cmd_pub_ = this->create_publisher<nuturtlebot_msgs::msg::WheelCommands>("wheel_cmd", 10);
 
         // Define all variables
         wheel_radius = this->get_parameter("wheel_radius").as_double();
@@ -52,6 +54,8 @@ private:
     rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_sub_ ;
     rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr sensor_data_sub_ ;
 
+    rclcpp::Publisher<nuturtlebot_msgs::msg::WheelCommands>::SharedPtr wheel_cmd_pub_;
+
     void cmd_vel_cb_(const std::shared_ptr<geometry_msgs::msg::Twist> msg)
     {
         RCLCPP_INFO_STREAM(this->get_logger(), "Twist received: " << msg);
@@ -62,9 +66,30 @@ private:
             }
 
         turtlelib::Twist2D twist_cmd {msg->angular.z, msg->linear.x, msg->linear.y};
-        auto wheelspeed_cmd {dd_calc.ik(twist_cmd)};
-        RCLCPP_INFO_STREAM(this->get_logger(), "Wheelspeeds " << wheelspeed_cmd.right << ", " << wheelspeed_cmd.left);
+        turtlelib::wheelspeed wheelrad_cmd;
+        try
+        {
+            wheelrad_cmd  = dd_calc.ik(twist_cmd); // These are in radians per second
+        }
+        catch (std::logic_error error_msg)
+        {
+            RCLCPP_ERROR_STREAM(this->get_logger(), "Invalid cmd_vel: y component must be 0");
+            return;
+        }
+        int lefttick_cmd {static_cast<int>(wheelrad_cmd.left / motor_cmd_per_rad_sec)};
+        int righttick_cmd {static_cast<int>(wheelrad_cmd.right / motor_cmd_per_rad_sec)};
+        RCLCPP_INFO_STREAM(this->get_logger(), "Motor calc " << wheelrad_cmd.left / motor_cmd_per_rad_sec << ", " << wheelrad_cmd.right / motor_cmd_per_rad_sec);
+        RCLCPP_INFO_STREAM(this->get_logger(), "Motor ticks " << lefttick_cmd << ", " << righttick_cmd);
+        lefttick_cmd = ((lefttick_cmd > motor_cmd_max) ? motor_cmd_max : lefttick_cmd);
+        righttick_cmd = ((righttick_cmd > motor_cmd_max) ? motor_cmd_max : righttick_cmd);
 
+        auto wheeltick_cmd = nuturtlebot_msgs::msg::WheelCommands();
+        wheeltick_cmd.left_velocity = lefttick_cmd;
+        wheeltick_cmd.right_velocity = righttick_cmd;
+        RCLCPP_INFO_STREAM(this->get_logger(), "Wheel rads " << wheelrad_cmd.left << ", " << wheelrad_cmd.left);
+        RCLCPP_INFO_STREAM(this->get_logger(), "Motor ticks " << wheeltick_cmd.left_velocity << ", " << wheeltick_cmd.right_velocity);
+
+        wheel_cmd_pub_->publish(wheeltick_cmd);
     }
 
     void sensor_data_cb_(const std::shared_ptr<sensor_msgs::msg::JointState> msg)

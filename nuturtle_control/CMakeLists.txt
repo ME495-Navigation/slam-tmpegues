@@ -11,29 +11,33 @@ find_package(ament_cmake REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-  find_package(rclcpp REQUIRED)
-  find_package(geometry_msgs REQUIRED)
-  find_package(sensor_msgs REQUIRED)
-  find_package(turtlelib REQUIRED)
-  find_package(nuturtlebot_msgs REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(turtlelib REQUIRED)
+find_package(nuturtlebot_msgs REQUIRED)
 
-  add_executable(turtle_control src/turtle_control.cpp)
+add_executable(turtle_control src/turtle_control.cpp)
 
 
-  target_link_libraries(turtle_control
-                        PUBLIC
-                        rclcpp::rclcpp
-                        turtlelib::turtlelib
-                        ${nuturtlebot_msgs_TARGETS}
-                        ${std_srvs_TARGETS}
-                        ${std_msgs_TARGETS}
-                        ${visualization_msgs_TARGETS}
-                        ${geometry_msgs_TARGETS}
-                        ${sensor_msgs_TARGETS})
+target_link_libraries(turtle_control
+                      PUBLIC
+                      rclcpp::rclcpp
+                      turtlelib::turtlelib
+                      ${nuturtlebot_msgs_TARGETS}
+                      ${std_srvs_TARGETS}
+                      ${std_msgs_TARGETS}
+                      ${visualization_msgs_TARGETS}
+                      ${geometry_msgs_TARGETS}
+                      ${sensor_msgs_TARGETS})
 
-  install(TARGETS
-    turtle_control
-    DESTINATION lib/${PROJECT_NAME})
+install(TARGETS
+  turtle_control
+  DESTINATION lib/${PROJECT_NAME})
+
+if(NOT CMAKE_BUILD_TYPE)        # If no build type is set, set one
+  set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Type of build." FORCE)
+endif()
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
