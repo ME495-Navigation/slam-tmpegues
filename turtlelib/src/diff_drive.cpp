@@ -43,7 +43,7 @@ namespace turtlelib
         // Do not allow twists with a y component
         if (std::abs(body_tw.y) >= 0.00001)
         {
-            throw std::logic_error("Requested body twist cannot have non-zero y component.");
+            throw std::logic_error("DiffDrive::ik: Requested body twist cannot have non-zero y component.");
         }
         else
         {   // u = H*V_b
@@ -55,12 +55,22 @@ namespace turtlelib
     }
 
     Transform2D DiffDrive::get_transform()
-        {
-            return q;
-        }
+    {
+        return q;
+    }
 
     wheels DiffDrive::get_wheels()
-        {
-            return phi;
-        }
+    {
+        return phi;
+    }
+
+    double DiffDrive::get_track()
+    {
+        return track;
+    }
+
+    double DiffDrive::get_radius()
+    {
+        return radius;
+    }
 }

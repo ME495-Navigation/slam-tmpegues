@@ -39,7 +39,6 @@ namespace turtlelib
             /// \param input_radius The radius of the wheels
             explicit DiffDrive(double input_track, double input_radius);
 
-
             /// \brief Update the state of the robot based on new wheel positions
             /// \param phir2 The new right wheel angle
             /// \param phil2 The new left wheel angle
@@ -58,6 +57,14 @@ namespace turtlelib
             /// \brief Get wheel positions
             /// \return phir, phil: the left and right wheel angles
             wheels get_wheels();
+
+            /// \brief Get track width
+            /// \return Track width
+            double get_track();
+
+            /// \brief Get wheel radius
+            /// \return Wheel Radius
+            double get_radius();
 
     }
 ;

@@ -108,5 +108,5 @@ TEST_CASE("Test ik","DiffDrive::ik")
 
     Twist2D body_tw5 {1, 1, 1};
     speeds = dd.ik(body_tw5);
-    REQUIRE_THROWS(dd.ik(body_tw5));
+    REQUIRE_THROWS_AS(dd.ik(body_tw5), std::logic_error);
 }
