@@ -35,13 +35,13 @@ constexpr double deg2rad(double deg)
   // would need to define your own constant for pi.
   // You should use the standardized value now
   using std::numbers::pi;
-  return (deg * (std::numbers::pi / 180.0));
+  return  deg * (std::numbers::pi / 180.0);
 }
 
 /// \brief Convert radians to degrees
 /// \param rad  Angle in radians
 /// \returns The equivalent angle in degrees
-constexpr double rad2deg(double rad) { return rad * (180.0 / std::numbers::pi); }
+constexpr double rad2deg(double rad) {return rad * (180.0 / std::numbers::pi);}
 
 /// \brief Wrap an angle to (-PI, PI]
 /// \param rad Angle in radians

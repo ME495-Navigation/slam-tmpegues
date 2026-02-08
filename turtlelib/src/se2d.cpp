@@ -20,12 +20,10 @@ std::istream & operator>>(std::istream & is, Twist2D & tw)
   is.get();  // Purge the space
 
   // Check if next character is r or d
-  if (is.peek() == 'r')  // remove the string, but do nothing else. Keep all units in rad/sec
-  {
+  if (is.peek() == 'r') { // remove the string, but do nothing else. Keep all units in rad/sec
     std::string str;
     is >> str;
-  } else if (is.peek() == 'd')  // remove the string, then convert deg/s to rad/s
-  {
+  } else if (is.peek() == 'd') { // remove the string, then convert deg/s to rad/s
     std::string str;
     is >> str;
     tw.omega = deg2rad(tw.omega);
@@ -58,7 +56,7 @@ std::ostream & operator<<(std::ostream & os, const Twist2D & tw)
 
 Transform2D::Transform2D()
 {
-  ;  // Default values for pos, theta, and costh and sinth are for an identity transform
+     // Default values for pos, theta, and costh and sinth are for an identity transform
 }
 
 Transform2D::Transform2D(Vector2D trans)
@@ -124,9 +122,9 @@ Transform2D & Transform2D::operator*=(const Transform2D & rhs)
   return *this;
 }
 
-Vector2D Transform2D::translation() const { return pos; }
+Vector2D Transform2D::translation() const {return pos;}
 
-double Transform2D::rotation() const { return theta; }
+double Transform2D::rotation() const {return theta;}
 
 Transform2D integrate_twist(const Twist2D & twist)
 {  // TODO: Cite Theo
@@ -167,35 +165,32 @@ std::istream & operator>>(std::istream & is, Transform2D & tf)
     }
   }
   std::print("Peek 1: {}\n", static_cast<char>(is.peek()));
-  switch (is.peek())  // either we get a '<', indicating that we're being given a unit,
-                      // or a ',' or  ' ', or a digit indicating we aren't.
-                      // Anything else is a problem.
-  {
+  switch (is.peek()) { // either we get a '<', indicating that we're being given a unit,
+                       // or a ',' or  ' ', or a digit indicating we aren't.
+                       // Anything else is a problem.
     case ' ':  // this means that unit was not given and we can assume radians
     case ',':  // this means that unit was not given and we can assume radians
-    {
-      theta = angle;
-      break;
-    }
-    case '<':  // this means we need to check the unit
-    {
-      std::print("in the unit case\n");
-      is.get();              // Purge the <
-      if (is.peek() == 'r')  // We have radians again, but we need to purge the string
       {
         theta = angle;
-        std::string str;
-        is >> str;
-        is.get();                   // Purge the ' ' space
-      } else if (is.peek() == 'd')  // Convert from deg to rad, then purge string
-      {
-        theta = deg2rad(angle);
-        std::string str;
-        is >> str;
-        is.get();  // Purge the ' ' space
+        break;
       }
-      break;
-    }
+    case '<':  // this means we need to check the unit
+      {
+        std::print("in the unit case\n");
+        is.get();            // Purge the <
+        if (is.peek() == 'r') { // We have radians again, but we need to purge the string
+          theta = angle;
+          std::string str;
+          is >> str;
+          is.get();                 // Purge the ' ' space
+        } else if (is.peek() == 'd') { // Convert from deg to rad, then purge string
+          theta = deg2rad(angle);
+          std::string str;
+          is >> str;
+          is.get(); // Purge the ' ' space
+        }
+        break;
+      }
   }
   std::print("Peek 2: {}\n", static_cast<char>(is.peek()));
   if (is.peek() == ',') {

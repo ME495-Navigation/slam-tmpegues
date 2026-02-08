@@ -24,35 +24,33 @@ int main()
     w += pi / 8;
   }
 
-  while (not end)
-
-  {
+  while (not end) {
     std::print("t(r)ansform, (t)wist, (v)ector, (p)oint?, or (e)nd: ");
     char choice{'e'};
     std::cin >> choice;
     std::cin.get();
     switch (choice) {
       case 'p': {
-        turtlelib::Point2D pt;
-        std::cout << "Initial point: " << pt << "\nInput:";
-        std::cin >> pt;
-        std::cout << "New point: " << pt << "\n";
-        break;
-      }
+          turtlelib::Point2D pt;
+          std::cout << "Initial point: " << pt << "\nInput:";
+          std::cin >> pt;
+          std::cout << "New point: " << pt << "\n";
+          break;
+        }
       case 'v': {
-        turtlelib::Vector2D vc;
-        std::cout << "Initial vector: " << vc << "\nInput:";
-        std::cin >> vc;
-        std::cout << "New vector: " << vc << "\n";
-        break;
-      }
+          turtlelib::Vector2D vc;
+          std::cout << "Initial vector: " << vc << "\nInput:";
+          std::cin >> vc;
+          std::cout << "New vector: " << vc << "\n";
+          break;
+        }
       case 't': {
-        turtlelib::Twist2D tw;
-        std::print("Initial twist: <{}, {}, {}>\nInput:", tw.omega, tw.x, tw.y);
-        std::cin >> tw;
-        std::cout << "New twist: " << tw << "\n";
-        break;
-      }
+          turtlelib::Twist2D tw;
+          std::print("Initial twist: <{}, {}, {}>\nInput:", tw.omega, tw.x, tw.y);
+          std::cin >> tw;
+          std::cout << "New twist: " << tw << "\n";
+          break;
+        }
       // case 'r':
       // {
       //     turtlelib::Transform2D tr;
@@ -63,8 +61,8 @@ int main()
       //     break;
       // }
       default: {
-        end = true;
-      }
+          end = true;
+        }
     }
   }
   return 0;

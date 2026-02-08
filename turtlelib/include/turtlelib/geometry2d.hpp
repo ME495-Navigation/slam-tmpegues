@@ -55,7 +55,7 @@ struct Vector2D
   /// \brief scale a vector by a scalar
   /// \param rhs The scalar to scale the vector by
   /// \return a reference to the scaled vector
-  template <typename T>
+  template<typename T>
   Vector2D & operator*=(const T & rhs)
   {
     x *= rhs;
@@ -99,7 +99,7 @@ Point2D operator+(const Point2D & tail, const Vector2D & disp);
 /// \param scalar value to scale the vector by
 /// \param vect the vector to be scaled
 /// \return the scaled vector
-template <typename T>
+template<typename T>
 Vector2D operator*(const T & scalar, Vector2D vect)
 {
   return vect *= scalar;
@@ -109,7 +109,7 @@ Vector2D operator*(const T & scalar, Vector2D vect)
 /// \param vect the vector to be scaled
 /// \param scalar value to scale the vector by
 /// \return the scaled vector
-template <typename T>
+template<typename T>
 Vector2D operator*(Vector2D vect, const T & scalar)
 {
   return vect *= scalar;
@@ -177,7 +177,7 @@ double angle(Vector2D & vect1, Vector2D & vect2);
 /// \brief A Formatter for 2D points
 /// The output is "(x, y)"
 /// All floating-point format specifiers are honored and applied to both x and y.
-template <class CharT>
+template<class CharT>
 class std::formatter<turtlelib::Point2D, CharT>
 {
   // static_assert(std::formattable<turtlelib::Point2D>);
@@ -195,7 +195,7 @@ class std::formatter<turtlelib::Point2D, CharT>
 /// \brief A formatter for Vector2D
 /// All double format-spec specifiers apply to each number in the vector
 /// The vector is output as [x, y]
-template <class CharT>
+template<class CharT>
 class std::formatter<turtlelib::Vector2D, CharT>
 {
 };

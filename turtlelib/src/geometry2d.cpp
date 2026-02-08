@@ -9,7 +9,8 @@ std::istream & operator>>(std::istream & is, Point2D & p)
 {
   if (
     is.peek() ==
-    '(') {     // if the first character is (, then assume it's properly formatted as (x, y)
+    '(')       // if the first character is (, then assume it's properly formatted as (x, y)
+  {
     is.get();  // purge the (
     is >> p.x;
     is.get();  // purge the ,
@@ -25,7 +26,8 @@ std::istream & operator>>(std::istream & is, Vector2D & v)
 {
   if (
     is.peek() ==
-    '[') {     // if the first character is [, then assume it's properly formatted as [x, y]
+    '[')       // if the first character is [, then assume it's properly formatted as [x, y]
+  {
     is.get();  // Purge [
     is >> v.x;
     is.get();  // Purge ,
@@ -50,7 +52,7 @@ Vector2D & Vector2D::operator+=(const Vector2D & rhs)
   return *this;
 }
 
-Vector2D operator+(Vector2D lhs, Vector2D & rhs) { return lhs += rhs; }
+Vector2D operator+(Vector2D lhs, Vector2D & rhs) {return lhs += rhs;}
 
 Vector2D & Vector2D::operator-=(const Vector2D & rhs)
 {
@@ -58,7 +60,7 @@ Vector2D & Vector2D::operator-=(const Vector2D & rhs)
   y -= rhs.y;
   return *this;
 }
-Vector2D operator-(Vector2D lhs, Vector2D & rhs) { return lhs -= rhs; }
+Vector2D operator-(Vector2D lhs, Vector2D & rhs) {return lhs -= rhs;}
 
 Point2D operator+(const Point2D & tail, const Vector2D & disp)
 {
@@ -70,7 +72,7 @@ double dot(const Vector2D & vect1, const Vector2D & vect2)
   return {vect1.x * vect2.x + vect1.y * vect2.y};
 }
 
-double magnitude(Vector2D & vect) { return std::sqrt((std::pow(vect.x, 2) + std::pow(vect.y, 2))); }
+double magnitude(Vector2D & vect) {return std::sqrt((std::pow(vect.x, 2) + std::pow(vect.y, 2)));}
 
 double angle(Vector2D & vect1, Vector2D & vect2)
 {
@@ -89,5 +91,5 @@ std::ostream & operator<<(std::ostream & os, const Point2D & p)
   return os;
 }
 
-Vector2D normalize(Vector2D in) { return {in.x / magnitude(in), in.y / magnitude(in)}; }
+Vector2D normalize(Vector2D in) {return {in.x / magnitude(in), in.y / magnitude(in)};}
 }  // namespace turtlelib

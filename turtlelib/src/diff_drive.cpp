@@ -55,11 +55,11 @@ wheelspeed DiffDrive::ik(Twist2D body_tw)
   }
 }
 
-Transform2D DiffDrive::get_transform() { return q; }
+Transform2D DiffDrive::get_transform() {return q;}
 
-wheels DiffDrive::get_wheels() { return phi; }
+wheels DiffDrive::get_wheels() {return phi;}
 
-double DiffDrive::get_track() { return track; }
+double DiffDrive::get_track() {return track;}
 
-double DiffDrive::get_radius() { return radius; }
+double DiffDrive::get_radius() {return radius;}
 }  // namespace turtlelib

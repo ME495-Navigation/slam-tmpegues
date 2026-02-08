@@ -9,8 +9,8 @@
 class turtle_control : public rclcpp::Node
 {
 public:
-  turtle_control() : Node("turtle_control")
-
+  turtle_control()
+  : Node("turtle_control")
   {
     // Create all parameters
     this->declare_parameter("wheel_radius", 0.033);
@@ -44,7 +44,7 @@ public:
     // Define functions
 
     // Call setup functions
-  };
+  }
 
 private:
   builtin_interfaces::msg::Time last_time{};

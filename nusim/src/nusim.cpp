@@ -14,8 +14,8 @@
 class nusim_node : public rclcpp::Node
 {
 public:
-  nusim_node() : Node("nusim")
-
+  nusim_node()
+  : Node("nusim")
   {
     // Create all parameters
     this->declare_parameter("rate", 100);  // TODO: check removing the this->
@@ -61,18 +61,18 @@ public:
     auto timer_callback = [this]()
       -> void {  // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
       // RCLCPP_INFO_STREAM(this->get_logger(), "Tick Tock: " << timestep.data);
-      auto t = tl_point_to_pose(red_x, red_y, red_theta);
-      tf_broadcaster_->sendTransform(t);
-      timestep_pub_->publish(timestep);
-      timestep.data++;
-    };
+        auto t = tl_point_to_pose(red_x, red_y, red_theta);
+        tf_broadcaster_->sendTransform(t);
+        timestep_pub_->publish(timestep);
+        timestep.data++;
+      };
 
     timer_ = this->create_wall_timer(timer_period, timer_callback);
 
     // Use setup functions
     create_walls();
     publish_obstacles();
-  };
+  }
 
 private:
   rclcpp::TimerBase::SharedPtr timer_;
@@ -219,7 +219,7 @@ private:
     red_x = this->get_parameter("x0").as_double();
     red_y = this->get_parameter("y0").as_double();
     red_theta = this->get_parameter("theta0").as_double();
-  };
+  }
 };
 
 std::shared_ptr<nusim_node> my_node = nullptr;
