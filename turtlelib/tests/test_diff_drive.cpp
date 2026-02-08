@@ -24,13 +24,14 @@ TEST_CASE("Test fk", "DiffDrive::fk")
   REQUIRE(dd.get_wheels().left == 0);
   REQUIRE(dd.get_wheels().right == 0);
 
-  // 1 quarter rotation should move pi/2 in x direction
-  dd.fk(pi / 2, pi / 2, 1);
-  REQUIRE(dd.get_transform().translation().x == pi / 2);
+  // small equal rotation on both wheels should result in x translation of that rotation amount
+  double rot = pi/4;
+  dd.fk(rot, rot, 1);
+  REQUIRE(dd.get_transform().translation().x == rot);
   REQUIRE(dd.get_transform().translation().y == 0);
   REQUIRE(dd.get_transform().rotation() == 0);
-  REQUIRE(dd.get_wheels().left == pi / 2);
-  REQUIRE(dd.get_wheels().right == pi / 2);
+  REQUIRE(dd.get_wheels().left == rot);
+  REQUIRE(dd.get_wheels().right == rot);
 
   // Returning to the previous position should return state to original
   dd.fk(0, 0, 1);
@@ -41,7 +42,6 @@ TEST_CASE("Test fk", "DiffDrive::fk")
   REQUIRE(dd.get_wheels().right == 0.0);
 
   // Wheels rotation equal distances in opposite direction should spin with no translation
-  auto rot = pi / 2;
   dd.fk(-rot, rot, 1);
   REQUIRE(dd.get_transform().translation().x == 0.0);
   REQUIRE(dd.get_transform().translation().y == 0.0);
@@ -60,10 +60,29 @@ TEST_CASE("Test fk", "DiffDrive::fk")
 
   // Rotate only one wheel should result in an x, y, and theta change (multiple iterations so I get to a location with easy numbers)
   DiffDrive dd2{2.0, 1.0};  // Wheels have circumference 2*pi
-  dd2.fk(0, dd2.get_wheels().right + pi / 2, 1);
-  dd2.fk(0, dd2.get_wheels().right + pi / 2, 1);
-  dd2.fk(0, dd2.get_wheels().right + pi / 2, 1);
-  dd2.fk(0, dd2.get_wheels().right + pi / 2, 1);
+  // dd2.fk(0, dd2.get_wheels().right + pi / 2, 1);
+  // dd2.fk(0, dd2.get_wheels().right + pi / 2, 1);
+  // dd2.fk(0, dd2.get_wheels().right + pi / 2, 1);
+  // dd2.fk(0, dd2.get_wheels().right + pi / 2, 1);
+
+  dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
+  std::cout << "(" << dd2.get_transform().translation().x << ", " <<dd2.get_transform().translation().y << ")\n";
+  dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
+  std::cout << "(" << dd2.get_transform().translation().x << ", " <<dd2.get_transform().translation().y << ")\n";
+  dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
+  std::cout << "(" << dd2.get_transform().translation().x << ", " <<dd2.get_transform().translation().y << ")\n";
+  dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
+  std::cout << "(" << dd2.get_transform().translation().x << ", " <<dd2.get_transform().translation().y << ")\n";
+  dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
+  std::cout << "(" << dd2.get_transform().translation().x << ", " <<dd2.get_transform().translation().y << ")\n";
+  dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
+  std::cout << "(" << dd2.get_transform().translation().x << ", " <<dd2.get_transform().translation().y << ")\n";
+  dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
+  std::cout << "(" << dd2.get_transform().translation().x << ", " <<dd2.get_transform().translation().y << ")\n";
+  dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
+  std::cout << "(" << dd2.get_transform().translation().x << ", " <<dd2.get_transform().translation().y << ")\n";
+
+
 
   REQUIRE(dd2.get_wheels().left == 0);
   REQUIRE(dd2.get_wheels().right == normalize_angle(2 * pi));

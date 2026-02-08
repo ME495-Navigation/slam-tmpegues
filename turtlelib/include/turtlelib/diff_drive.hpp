@@ -13,6 +13,13 @@ struct wheels
   double left{0.0};
   /// \brief the right wheel position
   double right = {0.0};
+
+  void update(wheels new_wheels)
+  {
+      left = new_wheels.left;
+      right = new_wheels.right;
+  }
+
 };
 /// \brief represent wheel speeds
 
@@ -28,8 +35,14 @@ class DiffDrive
 private:
   Transform2D q;
   wheels phi;
+  wheelspeed phidot;
+  Twist2D vel;
   double track = 0;
   double radius = 0;
+
+  // Update both the wheel positions and wheelspeeds by calculating the smallest path between
+  // the current wheel angles and the newly provided ones
+  void update_wheels(wheels new_wheels, double time);
 
 public:
   /// \brief Create a base DiffDrive
@@ -43,7 +56,7 @@ public:
   /// \param phir2 The new right wheel angle
   /// \param phil2 The new left wheel angle
   /// \param time Time elapsed since the wheel angles were last collected
-  wheelspeed fk(double phil2, double phir2, double time);
+  void fk(double phil2, double phir2, double time);
 
   /// \brief Calculate wheel velocities needed to achive the provided twist
   /// \param tw The desired twist
@@ -55,8 +68,12 @@ public:
   Transform2D get_transform();
 
   /// \brief Get wheel positions
-  /// \return phir, phil: the left and right wheel angles
+  /// \return phi, where phi.left and phi.right the left and right wheel angles in radians
   wheels get_wheels();
+
+  /// \brief Get wheel speeds
+  /// \return phidot, where phidot.left and phidot.right the left and right wheel speeds in rad/sec
+  wheelspeed get_wheelspeed();
 
   /// \brief Get track width
   /// \return Track width
