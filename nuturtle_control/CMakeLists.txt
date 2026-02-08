@@ -36,6 +36,8 @@ target_link_libraries(odometry
                       PUBLIC
                       rclcpp::rclcpp
                       turtlelib::turtlelib
+
+                      ${nav_msgs_TARGETS}
                       ${nuturtlebot_msgs_TARGETS}
                       ${std_srvs_TARGETS}
                       ${std_msgs_TARGETS}
