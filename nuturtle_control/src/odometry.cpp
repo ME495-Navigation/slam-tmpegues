@@ -12,23 +12,19 @@ public:
     this->declare_parameter<std::string>("wheel_left");
     this->declare_parameter<std::string>("right_left");
 
-body_id = this->get_parameter("body_id").as_string();
-odom_id = this->get_parameter("odom_id").as_string();
-try
-{
-wheel_left = this->get_parameter("wheel_left").as_string();
-}
-catch (rclcpp::exceptions::UninitializedStaticallyTypedParameterException &error_msg)
-{      RCLCPP_ERROR_STREAM(this->get_logger(), "Parameter 'wheel_left' not specified");
-}
+    body_id = this->get_parameter("body_id").as_string();
+    odom_id = this->get_parameter("odom_id").as_string();
+    try {
+      wheel_left = this->get_parameter("wheel_left").as_string();
+    } catch (rclcpp::exceptions::UninitializedStaticallyTypedParameterException & error_msg) {
+      RCLCPP_ERROR_STREAM(this->get_logger(), "Parameter 'wheel_left' not specified");
+    }
 
-try
-{
-wheel_right = this->get_parameter("wheel_right").as_string();
-}
-catch (rclcpp::exceptions::UninitializedStaticallyTypedParameterException &error_msg)
-{      RCLCPP_ERROR_STREAM(this->get_logger(), "Parameter 'wheel_right' not specified");
-}
+    try {
+      wheel_right = this->get_parameter("wheel_right").as_string();
+    } catch (rclcpp::exceptions::UninitializedStaticallyTypedParameterException & error_msg) {
+      RCLCPP_ERROR_STREAM(this->get_logger(), "Parameter 'wheel_right' not specified");
+    }
 
 
   }
@@ -36,8 +32,8 @@ catch (rclcpp::exceptions::UninitializedStaticallyTypedParameterException &error
 private:
   std::string body_id {"base_footprint"};
   std::string odom_id {"odom"};
-std::string wheel_left {"x"};
-std::string wheel_right {"x"};
+  std::string wheel_left {"x"};
+  std::string wheel_right {"x"};
 };
 
 std::shared_ptr<odometry> my_node = nullptr;

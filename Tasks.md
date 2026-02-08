@@ -50,3 +50,8 @@ Task D.1
 Task D.2
 Task D.3
     Need to add equation numbers
+
+Task E.1
+    Should go through and remove unused parameters
+Task E.2
+    Begun
