@@ -39,7 +39,8 @@ public:
     collision_radius = this->get_parameter("collision_radius").as_double();
     dd_calc = turtlelib::DiffDrive(
       track_width,
-      wheel_radius);  // DiffDrive initial wheel positions will need to be set once the first encoder readings are received
+      wheel_radius);
+// DiffDrive initial wheel positions will need to be set once the first encoder readings are received
 
     // Define functions
 

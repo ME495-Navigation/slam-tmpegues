@@ -18,6 +18,7 @@ find_package(turtlelib REQUIRED)
 find_package(nuturtlebot_msgs REQUIRED)
 
 add_executable(turtle_control src/turtle_control.cpp)
+add_executable(odometry src/odometry.cpp)
 
 
 target_link_libraries(turtle_control
@@ -31,8 +32,20 @@ target_link_libraries(turtle_control
                       ${geometry_msgs_TARGETS}
                       ${sensor_msgs_TARGETS})
 
+target_link_libraries(odometry
+                      PUBLIC
+                      rclcpp::rclcpp
+                      turtlelib::turtlelib
+                      ${nuturtlebot_msgs_TARGETS}
+                      ${std_srvs_TARGETS}
+                      ${std_msgs_TARGETS}
+                      ${visualization_msgs_TARGETS}
+                      ${geometry_msgs_TARGETS}
+                      ${sensor_msgs_TARGETS})
+
 install(TARGETS
   turtle_control
+  odometry
   DESTINATION lib/${PROJECT_NAME})
 
 if(NOT CMAKE_BUILD_TYPE)        # If no build type is set, set one
