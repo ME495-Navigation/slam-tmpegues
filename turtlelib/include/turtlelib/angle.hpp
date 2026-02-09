@@ -62,7 +62,7 @@ constexpr double normalize_angle(double rad)
     result -= std::numbers::pi;
   }
 
-  if (result == -std::numbers::pi) {
+  if (almost_equal(result, -std::numbers::pi)) {
     result = std::numbers::pi;
   }
   return result;
