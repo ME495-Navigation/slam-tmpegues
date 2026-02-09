@@ -80,7 +80,10 @@ private:
 
   nav_msgs::msg::Odometry odom_state = nav_msgs::msg::Odometry();
 
-  void initial_pose_cb_(const std::shared_ptr<nuturtle_control_interfaces::srv::InitialPose::Request> request, [[maybe_unused]] const std::shared_ptr<nuturtle_control_interfaces::srv::InitialPose::Response> response)
+  void initial_pose_cb_(
+    const std::shared_ptr<nuturtle_control_interfaces::srv::InitialPose::Request> request,
+    [[maybe_unused]] const std::shared_ptr<nuturtle_control_interfaces::srv::InitialPose::Response>
+    response)
   { // Reset the internal odom state to the newly received initial position
     odom_state.pose.pose.position.x = request->x0;
     odom_state.pose.pose.position.y = request->y0;

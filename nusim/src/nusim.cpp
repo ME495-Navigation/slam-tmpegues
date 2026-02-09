@@ -35,7 +35,8 @@ public:
     this->declare_parameter("track_width", 0.16);
 
     // Create all publishers/broadcasters
-    wheel_cmd_sub_ = this->create_subscription<nuturtlebot_msgs::msg::WheelCommands>("~/wheel_cmd", 10, std::bind(&nusim_node::wheel_cmd_cb_, this, std::placeholders::_1));
+    wheel_cmd_sub_ = this->create_subscription<nuturtlebot_msgs::msg::WheelCommands>("~/wheel_cmd",
+      10, std::bind(&nusim_node::wheel_cmd_cb_, this, std::placeholders::_1));
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     rclcpp::QoS marker_qos_ = rclcpp::QoS(rclcpp::KeepLast(10)).transient_local();
     wall_pub_ =
@@ -67,13 +68,15 @@ public:
     track_width = this->get_parameter("track_width").as_double();
     motor_cmd_per_rad_sec = this->get_parameter("motor_cmd_per_rad_sec").as_double();
 
-    red_dd = turtlelib::DiffDrive(track_width, wheel_radius, turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta));
+    red_dd = turtlelib::DiffDrive(track_width, wheel_radius,
+      turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta));
 
     // Define functions
 
     auto timer_callback = [this]()
       -> void {  // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
-        auto t = tl_point_to_pose(red_dd.get_transform().translation().x, red_dd.get_transform().translation().y, red_dd.get_transform().rotation());
+        auto t = tl_point_to_pose(red_dd.get_transform().translation().x,
+        red_dd.get_transform().translation().y, red_dd.get_transform().rotation());
         tf_broadcaster_->sendTransform(t);
         timestep_pub_->publish(timestep);
         timestep.data++;
@@ -121,7 +124,8 @@ private:
   void wheel_cmd_cb_(const std::shared_ptr<nuturtlebot_msgs::msg::WheelCommands> msg)
   {
     // Receive commands and convert to radians
-    turtlelib::wheelspeed new_wheelspeeds {msg->left_velocity * motor_cmd_per_rad_sec, msg->right_velocity * motor_cmd_per_rad_sec};
+    turtlelib::wheelspeed new_wheelspeeds {msg->left_velocity * motor_cmd_per_rad_sec,
+      msg->right_velocity * motor_cmd_per_rad_sec};
     // fk
     // Publish frame
   }
@@ -242,8 +246,9 @@ private:
     auto x = this->get_parameter("x0").as_double();
     auto y = this->get_parameter("y0").as_double();
     auto theta = this->get_parameter("theta0").as_double();
-    red_dd = turtlelib::DiffDrive(track_width, wheel_radius, turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta));
-    }
+    red_dd = turtlelib::DiffDrive(track_width, wheel_radius,
+      turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta));
+  }
 };
 
 std::shared_ptr<nusim_node> my_node = nullptr;
