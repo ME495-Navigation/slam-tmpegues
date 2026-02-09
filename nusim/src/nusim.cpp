@@ -11,8 +11,6 @@
 #include "nuturtlebot_msgs/msg/wheel_commands.hpp"
 #include "visualization_msgs/msg/marker_array.hpp"
 
-// #include "turtlelib"
-
 class nusim_node : public rclcpp::Node
 {
 public:
@@ -71,6 +69,8 @@ public:
     red_dd = turtlelib::DiffDrive(track_width, wheel_radius,
       turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta));
 
+    last_time = this->get_clock()->now();
+
     // Define functions
 
     auto timer_callback = [this]()
@@ -91,6 +91,7 @@ public:
 
 private:
   rclcpp::TimerBase::SharedPtr timer_;
+  rclcpp::Time last_time{};
 
   rclcpp::QoS marker_qos_ = rclcpp::QoS(rclcpp::KeepLast(10)).transient_local();
   rclcpp::Subscription<nuturtlebot_msgs::msg::WheelCommands>::SharedPtr wheel_cmd_sub_;
@@ -123,10 +124,14 @@ private:
 
   void wheel_cmd_cb_(const std::shared_ptr<nuturtlebot_msgs::msg::WheelCommands> msg)
   {
-    // Receive commands and convert to radians
-    turtlelib::wheelspeed new_wheelspeeds {msg->left_velocity * motor_cmd_per_rad_sec,
-      msg->right_velocity * motor_cmd_per_rad_sec};
-    // fk
+    // Receive commands, convert to radians, then fk
+    auto now = this->get_clock()->now();
+    auto time_diff{
+      (now.nanoseconds() - last_time.nanoseconds()) / 10e9};
+
+    red_dd.fk(msg->left_velocity * motor_cmd_per_rad_sec,
+      msg->right_velocity * motor_cmd_per_rad_sec, time_diff);
+    last_time = now;
     // Publish frame
   }
 
