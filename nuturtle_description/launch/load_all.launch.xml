@@ -17,21 +17,23 @@
         args="-0.5 0 0 0 0 0 nusim/world blue/base_footprint" />
 
     <!-- 2. Launch the urdfs -->
-    <include file="$(find-pkg-share nuturtle_description)/launch/load_one.launch.xml">
-        <arg name="use_rviz" value="False"/>
-        <arg name="color" value="purple"/>
-    </include>
-    <include file="$(find-pkg-share nuturtle_description)/launch/load_one.launch.xml">
-        <arg name="use_rviz" value="False"/>
-        <arg name="color" value="red"/>
-    </include>
-    <include file="$(find-pkg-share nuturtle_description)/launch/load_one.launch.xml">
-        <arg name="use_rviz" value="False"/>
-        <arg name="color" value="blue"/>
-    </include>
+    <group>
         <include file="$(find-pkg-share nuturtle_description)/launch/load_one.launch.xml">
-        <arg name="use_rviz" value="False"/>
-        <arg name="color" value="green"/>
-    </include>
+            <arg name="use_rviz" value="False"/>
+            <arg name="color" value="purple"/>
+        </include>
+        <include file="$(find-pkg-share nuturtle_description)/launch/load_one.launch.xml">
+            <arg name="use_rviz" value="False"/>
+            <arg name="color" value="red"/>
+        </include>
+        <include file="$(find-pkg-share nuturtle_description)/launch/load_one.launch.xml">
+            <arg name="use_rviz" value="False"/>
+            <arg name="color" value="blue"/>
+        </include>
+            <include file="$(find-pkg-share nuturtle_description)/launch/load_one.launch.xml">
+            <arg name="use_rviz" value="False"/>
+            <arg name="color" value="green"/>
+        </include>
+    </group>
 
 </launch>
