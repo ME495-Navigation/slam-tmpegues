@@ -13,6 +13,13 @@ DiffDrive::DiffDrive(double input_track, double input_radius)
   radius = input_radius;
 }
 
+DiffDrive::DiffDrive(double input_track, double input_radius, Transform2D tf)
+{
+  track = input_track;
+  radius = input_radius;
+  q = tf;
+}
+
 // Update both the wheel positions and wheelspeeds by calculating the smallest path between
 // the current wheel angles and the newly provided ones
 void DiffDrive::update_wheels(wheels new_wheels, double time)

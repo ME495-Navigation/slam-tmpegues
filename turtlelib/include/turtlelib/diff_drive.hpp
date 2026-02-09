@@ -47,10 +47,17 @@ private:
 public:
   /// \brief Create a base DiffDrive
   DiffDrive();
+
   /// \brief  Create a DiffDrive representation with given wheel track and wheel radius
   /// \param input_track The distance between the wheel contact points
   /// \param input_radius The radius of the wheels
   explicit DiffDrive(double input_track, double input_radius);
+
+  /// \brief  Create a DiffDrive representation with given wheel track and wheel radius, and a non-identity Transform2D
+  /// \param input_track The distance between the wheel contact points
+  /// \param input_radius The radius of the wheels
+  /// \param tf The initial configuration of the turtlebot
+  explicit DiffDrive(double input_track, double input_radius, Transform2D tf);
 
   /// \brief Update the state of the robot based on new wheel positions
   /// \param phir2 The new right wheel angle
