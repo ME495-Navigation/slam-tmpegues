@@ -1,6 +1,12 @@
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/joint_state.hpp"
 #include "nav_msgs/msg/odometry.hpp"
+#include "tf2/LinearMath/Quaternion.hpp"
+#include "tf2_ros/transform_broadcaster.h"
+#include "geometry_msgs/msg/pose.hpp"
+#include "geometry_msgs/msg/twist.hpp"
+
+#include "turtlelib/diff_drive.hpp"
 
 
 class odometry : public rclcpp::Node
@@ -14,6 +20,10 @@ public:
     this->declare_parameter<std::string>("wheel_left");
     this->declare_parameter<std::string>("right_left");
 
+    this->declare_parameter("wheel_radius", 0.033);
+    this->declare_parameter("track_width", 0.16);
+    wheel_radius = this->get_parameter("wheel_radius").as_double();
+    track_width = this->get_parameter("track_width").as_double();
 
 
     body_id = this->get_parameter("body_id").as_string();
@@ -31,14 +41,33 @@ public:
       RCLCPP_ERROR_STREAM(this->get_logger(), "Parameter 'wheel_right' not specified");
     }
 
-
     last_time = this->get_clock()->now();
+    dd_calc = turtlelib::DiffDrive(track_width, wheel_radius);
 
-    joint_state_sub_ = this->create_subscription<sensor_msgs::msg::JointState>("joint_state", 10, std::bind(&odometry::joint_state_cb_, this, std::placeholders::_1));
+    odom_state.header.frame_id = odom_id;
+    odom_state.child_frame_id = body_id;
+
+
+  // initial_pose_service_ = this->create_service<geometry_msgs::msg::Pose>(
+  //     "initial_pose",
+  //     std::bind(&nusim_node::initial_pose_cb_, this, std::placeholders::_1, std::placeholders::_2));
+
+  joint_state_sub_ = this->create_subscription<sensor_msgs::msg::JointState>("joint_state", 10,
+    std::bind(&odometry::joint_state_cb_, this, std::placeholders::_1));
+
+      odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("odom", 10);
+  tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
   }
 
+
+
 private:
+  rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr joint_state_sub_;
+  rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
+  std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
+
+
   builtin_interfaces::msg::Time last_time{};
 
   std::string body_id {"base_footprint"};
@@ -46,18 +75,83 @@ private:
   std::string wheel_left {"x"};
   std::string wheel_right {"x"};
 
-  nav_msgs::msg::Odometry()
+  double wheel_radius{0.0};
+  double track_width{0.0};
 
-  void joint_state_cb_(const std::shared_prt<sensor_msgs::msg::JointState> msg)
+  turtlelib::DiffDrive dd_calc{track_width, wheel_radius};
+
+  nav_msgs::msg::Odometry odom_state = nav_msgs::msg::Odometry();
+
+  // void initial_pose_cb_(const std::shared_prt<geometry_msgs::msg::Pose> msg)
+
+  void joint_state_cb_(const std::shared_ptr<sensor_msgs::msg::JointState> msg)
   {
     // JointState includes left and right positions, velocities, and time
 
-    // 1st, fk to get new position
+    // FK to get position and velocity based on received wheel positions
     auto time_diff{
       msg->stamp.sec + msg->stamp.nanosec / 10e9 - last_time.sec - last_time.nanosec / 10e9};
 
+    dd_calc.fk(msg->position[0], msg->position[1], time _diff);
 
+    // Convert turtlelib format to ROS messages
+    odom_state.pose.pose = turtlelib_transform_to_pose(dd_calc.get_transform());
+    odom_state.twist.twist = turtlelib_twist2d_to_msg(dd_calc.get_twist());
+    odom_state.header.stamp = msg->stamp;
+
+    odom_pub_->publish(odom_state)
+    tf_broadcaster_->sendTransform((turtlelib_transform2d_to_msg(dd_calc.get_transform())))
   }
+
+  geometry_msgs::msg::Pose turtlelib_transform_to_pose(
+    const turtlelib::Transform2D tf)
+  {
+    geometry_msgs::msg::Pose p{};
+
+    p.position.x= tf.translation().x;
+    p.position.y = tf.translation().y;
+
+    tf2::Quaternion q;
+    q.setRPY(0, 0, tf.rotation());
+    p.orientation.x = q.x();
+    p.orientation.y = q.y();
+    p.orientation.z = q.z();
+    p.orientationw = q.w();
+
+    return p;
+  }
+
+  geometry_msgs::msg::TransformStamped turtlelib_transform2d_to_msg(
+    const turtlelib::Transform2D tf)
+  {
+    geometry_msgs::msg::TransformStamped t{};
+    t.header.stamp = this->get_clock()->now();
+    t.header.frame_id = odom_id;
+    t.child_frame_id = body_id;
+
+    t.position.x= tf.translation().x;
+    t.position.y = tf.translation().y;
+
+    tf2::Quaternion q;
+    q.setRPY(0, 0, tf.rotation());
+    t.orientation.x = q.x();
+    t.orientation.y = q.y();
+    t.orientation.z = q.z();
+    t.orientationw = q.w();
+
+    return t;
+  }
+
+  geometry_msgs::msg::Twist turtlelib_twist2d_to_msg(const turtlelib::Twist2D tw)
+  {
+    geometry_msgs::msg::Twist t{};
+    t.linear.x= tw.x;
+    t.linear.y= tw.y;
+    t.angular.z = tw.omega;
+
+    return t;
+  }
+
 };
 
 std::shared_ptr<odometry> my_node = nullptr;

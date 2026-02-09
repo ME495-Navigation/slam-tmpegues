@@ -56,7 +56,7 @@ public:
     red_y = this->get_parameter("y0").as_double();
     red_theta = this->get_parameter("theta0").as_double();
 
-    // Define  functions
+    // Define functions
 
     auto timer_callback = [this]()
       -> void {  // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture

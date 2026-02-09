@@ -101,7 +101,7 @@ private:
     auto time_diff{
       msg->stamp.sec + msg->stamp.nanosec / 10e9 - last_time.sec - last_time.nanosec / 10e9};
 
-    auto speeds = dd_calc.fk(
+    dd_calc.fk(
       msg->left_encoder * encoder_ticks_per_rad, msg->right_encoder * encoder_ticks_per_rad,
       time_diff);
 
@@ -114,8 +114,8 @@ private:
     joint_state_msg.position.push_back(dd_calc.get_wheels().left);
     joint_state_msg.position.push_back(dd_calc.get_wheels().right);
 
-    joint_state_msg.velocity.push_back(speeds.left);
-    joint_state_msg.velocity.push_back(speeds.right);
+    joint_state_msg.velocity.push_back(dd_calc->phidot.left);
+    joint_state_msg.velocity.push_back(dd_calc->phidot.right);
 
     joint_state_pub_->publish(joint_state_msg);
   }
