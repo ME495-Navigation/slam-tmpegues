@@ -14,7 +14,9 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
 find_package(turtlelib REQUIRED)
+find_package(nuturtle_control_interfaces REQUIRED)
 find_package(nuturtlebot_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
@@ -43,14 +45,18 @@ target_link_libraries(odometry
                       tf2_ros::tf2_ros
                       ${nav_msgs_TARGETS}
                       ${geometry_msgs_TARGETS}
-                      ${sensor_msgs_TARGETS})
+                      ${sensor_msgs_TARGETS}
+                      ${nuturtle_control_interfaces_TARGETS})
+
 
 target_link_libraries(circle
                       PUBLIC
                       rclcpp::rclcpp
                       turtlelib::turtlelib
+                      ${std_srvs_TARGETS}
                       ${geometry_msgs_TARGETS}
-                      ${sensor_msgs_TARGETS})
+                      ${sensor_msgs_TARGETS}
+                      ${nuturtle_control_interfaces_TARGETS})
 
 
 install(TARGETS

@@ -41,10 +41,6 @@ public:
       track_width,
       wheel_radius);
 // DiffDrive initial wheel positions will need to be set once the first encoder readings are received
-
-    // Define functions
-
-    // Call setup functions
   }
 
 private:
