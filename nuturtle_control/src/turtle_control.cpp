@@ -72,14 +72,17 @@ private:
 
     turtlelib::Twist2D twist_cmd{msg->angular.z, msg->linear.x, msg->linear.y};
     turtlelib::wheelspeed wheelrad_cmd;
+
     try {
       wheelrad_cmd = dd_calc.ik(twist_cmd);  // These are in radians per second
     } catch (std::logic_error & error_msg) {
       RCLCPP_ERROR_STREAM(this->get_logger(), "Invalid cmd_vel: y component must be 0");
       return;
     }
+
     int lefttick_cmd{static_cast<int>(wheelrad_cmd.left / motor_cmd_per_rad_sec)};
     int righttick_cmd{static_cast<int>(wheelrad_cmd.right / motor_cmd_per_rad_sec)};
+
     lefttick_cmd = ((lefttick_cmd > motor_cmd_max) ? motor_cmd_max : lefttick_cmd);
     righttick_cmd = ((righttick_cmd > motor_cmd_max) ? motor_cmd_max : righttick_cmd);
 
