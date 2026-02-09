@@ -6,6 +6,7 @@
 #include "tf2/LinearMath/Quaternion.hpp"
 #include "tf2_ros/transform_broadcaster.h"
 #include "turtlelib/se2d.hpp"
+#include "turtlelib/geometry2d.hpp"
 #include "visualization_msgs/msg/marker.hpp"
 #include "nuturtlebot_msgs/msg/wheel_commands.hpp"
 #include "visualization_msgs/msg/marker_array.hpp"
@@ -30,7 +31,7 @@ public:
     this->declare_parameter("theta0", 0.0);
 
     // Create all publishers/broadcasters
-    wheel_cmd_sub_ = this->create_subscription<nuturtlebot_msgs::msg::WheelCommands>("~/wheel_cmd", 10, std::bind(&nusim::wheel_cmd_cb_, this, std::placeholders::_1));
+    wheel_cmd_sub_ = this->create_subscription<nuturtlebot_msgs::msg::WheelCommands>("~/wheel_cmd", 10, std::bind(&nusim_node::wheel_cmd_cb_, this, std::placeholders::_1));
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     rclcpp::QoS marker_qos_ = rclcpp::QoS(rclcpp::KeepLast(10)).transient_local();
     wall_pub_ =
@@ -54,15 +55,17 @@ public:
     obs_y = this->get_parameter("obstacles.y").as_double_array();
     obs_r = this->get_parameter("obstacles.r").as_double();
 
-    red_x = this->get_parameter("x0").as_double();
-    red_y = this->get_parameter("y0").as_double();
-    red_theta = this->get_parameter("theta0").as_double();
+    auto x = this->get_parameter("x0").as_double();
+    auto y = this->get_parameter("y0").as_double();
+    auto theta = this->get_parameter("theta0").as_double();
+
+    red_tf = turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta);
 
     // Define functions
 
     auto timer_callback = [this]()
       -> void {  // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
-        auto t = tl_point_to_pose(red_x, red_y, red_theta);
+        auto t = tl_point_to_pose(red_tf.translation().x, red_tf.translation().y, red_tf.rotation());
         tf_broadcaster_->sendTransform(t);
         timestep_pub_->publish(timestep);
         timestep.data++;
@@ -96,9 +99,7 @@ private:
   double obs_r{0.25};
 
   // Red robot location
-  double red_x{0};
-  double red_y{0};
-  double red_theta{0};
+  turtlelib::Transform2D red_tf {};
 
   // Timer rate
   int rate{};
@@ -223,9 +224,12 @@ private:
   {
     RCLCPP_INFO_STREAM(this->get_logger(), "Reset acknowledged at timestep " << timestep.data);
     timestep.data = 0;
-    red_x = this->get_parameter("x0").as_double();
-    red_y = this->get_parameter("y0").as_double();
-    red_theta = this->get_parameter("theta0").as_double();
+
+    auto x = this->get_parameter("x0").as_double();
+    auto y = this->get_parameter("y0").as_double();
+    auto theta = this->get_parameter("theta0").as_double();
+
+    red_tf = turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta);
   }
 };
 
