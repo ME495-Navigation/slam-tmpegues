@@ -64,24 +64,14 @@ TEST_CASE("Test fk", "DiffDrive::fk")
   // dd2.fk(0, dd2.get_wheels().right + pi / 2, 1);
   // dd2.fk(0, dd2.get_wheels().right + pi / 2, 1);
   // dd2.fk(0, dd2.get_wheels().right + pi / 2, 1);
-
   dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
-  std::cout << "(" << dd2.get_transform().translation().x << ", " <<dd2.get_transform().translation().y << ")\n";
   dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
-  std::cout << "(" << dd2.get_transform().translation().x << ", " <<dd2.get_transform().translation().y << ")\n";
   dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
-  std::cout << "(" << dd2.get_transform().translation().x << ", " <<dd2.get_transform().translation().y << ")\n";
   dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
-  std::cout << "(" << dd2.get_transform().translation().x << ", " <<dd2.get_transform().translation().y << ")\n";
   dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
-  std::cout << "(" << dd2.get_transform().translation().x << ", " <<dd2.get_transform().translation().y << ")\n";
   dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
-  std::cout << "(" << dd2.get_transform().translation().x << ", " <<dd2.get_transform().translation().y << ")\n";
   dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
-  std::cout << "(" << dd2.get_transform().translation().x << ", " <<dd2.get_transform().translation().y << ")\n";
   dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
-  std::cout << "(" << dd2.get_transform().translation().x << ", " <<dd2.get_transform().translation().y << ")\n";
-
 
 
   REQUIRE(dd2.get_wheels().left == 0);

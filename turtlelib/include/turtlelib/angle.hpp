@@ -4,8 +4,9 @@
 /// \brief Functions for handling angles
 /// NOTE: Include any needed header files here
 #include <cmath>
-#include <iostream>
 #include <numbers>
+
+
 
 namespace turtlelib
 {
@@ -14,7 +15,7 @@ namespace turtlelib
 /// \param d1 A number to compare
 /// \param d2 A second number to compare
 /// \param epsilon Absolute threshold required for equality
-/// \return true if abs(d1 - d2) < epsilon
+/// \return true if std::abs(d1 - d2) < epsilon
 constexpr bool almost_equal(double d1, double d2, double epsilon = 1.0e-12)
 {
   // HINT: This function must be implemented in the header file in order to be
@@ -65,6 +66,26 @@ constexpr double normalize_angle(double rad)
     result = std::numbers::pi;
   }
   return result;
+}
+/// \brief Get the smallest angle (<= pi) difference angle2 - angle1
+/// \param angle2 - The result/final angle
+/// \param angle1 - The initial angle
+constexpr double shortest_angle_diff(double angle2, double angle1)
+{
+  auto diff = normalize_angle(angle2) - normalize_angle(angle1);
+  if (std::abs(diff) <= std::numbers::pi)
+  {
+    ;
+  }
+  else if (diff < 0.0)
+  {
+    diff += 2*std::numbers::pi;
+  }
+  else if (diff > 0.0)
+  {
+    diff -= 2*std::numbers::pi;
+  }
+  return diff;
 }
 
 /// static_assertions test compile time assumptions.
@@ -125,5 +146,7 @@ static_assert(
   almost_equal(
     normalize_angle(100.0 * std::numbers::pi + std::numbers::pi / 2.0), std::numbers::pi / 2.0),
   "norm_angle failed");
+  // Check my angle difference calculator
+// static_assert(almost_equal(shortest_angle_diff(-3/4 *std::numbers::pi, 3/4 * std::numbers::pi), std::numbers::pi/4), "shortest_angle_diff failed");
 }  // namespace turtlelib
 #endif
