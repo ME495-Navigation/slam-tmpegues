@@ -1,2 +1,4 @@
-geometry_msgs/Pose initial_pose
+float64 x0
+float64 y0
+float64 theta0
 ---

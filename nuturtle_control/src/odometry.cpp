@@ -5,6 +5,7 @@
 #include "tf2_ros/transform_broadcaster.h"
 #include "geometry_msgs/msg/pose.hpp"
 #include "geometry_msgs/msg/twist.hpp"
+#include "nuturtle_control_interfaces/srv/initial_pose.hpp"
 
 #include "turtlelib/diff_drive.hpp"
 
@@ -47,10 +48,9 @@ public:
     odom_state.header.frame_id = odom_id;
     odom_state.child_frame_id = body_id;
 
-
-  // initial_pose_service_ = this->create_service<geometry_msgs::msg::Pose>(
-  //     "initial_pose",
-  //     std::bind(&nusim_node::initial_pose_cb_, this, std::placeholders::_1, std::placeholders::_2));
+    initial_pose_service_ = this->create_service<nuturtle_control_interfaces::srv::InitialPose>(
+        "initial_pose",
+        std::bind(&odometry::initial_pose_cb_, this, std::placeholders::_1, std::placeholders::_2));
 
     joint_state_sub_ = this->create_subscription<sensor_msgs::msg::JointState>("joint_state", 10,
     std::bind(&odometry::joint_state_cb_, this, std::placeholders::_1));
@@ -64,7 +64,7 @@ private:
   rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr joint_state_sub_;
   rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
   std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
-
+  rclcpp::Service<nuturtle_control_interfaces::srv::InitialPose>::SharedPtr initial_pose_service_;
 
   builtin_interfaces::msg::Time last_time{};
 
@@ -80,12 +80,22 @@ private:
 
   nav_msgs::msg::Odometry odom_state = nav_msgs::msg::Odometry();
 
-  // void initial_pose_cb_(const std::shared_prt<geometry_msgs::msg::Pose> msg)
+  void initial_pose_cb_(const std::shared_ptr<nuturtle_control_interfaces::srv::InitialPose::Request> request, [[maybe_unused]] const std::shared_ptr<nuturtle_control_interfaces::srv::InitialPose::Response> response)
+  { // Reset the internal odom state to the newly received initial position
+    odom_state.pose.pose.position.x = request->x0;
+    odom_state.pose.pose.position.y = request->y0;
+
+    tf2::Quaternion q;
+    q.setRPY(0, 0, request->theta0);
+    odom_state.pose.pose.orientation.x = q.x();
+    odom_state.pose.pose.orientation.y = q.y();
+    odom_state.pose.pose.orientation.z = q.z();
+    odom_state.pose.pose.orientation.w = q.w();
+  }
 
   void joint_state_cb_(const std::shared_ptr<sensor_msgs::msg::JointState> msg)
   {
     // JointState includes left and right positions, velocities, and time
-
     // FK to get position and velocity based on received wheel positions
     auto time_diff{
       msg->header.stamp.sec + msg->header.stamp.nanosec / 10e9 - last_time.sec - last_time.nanosec /

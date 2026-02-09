@@ -55,4 +55,7 @@ Task E.1
 Task E.2
     Unsure how to do the initial_pose service without creating a service type. This doesn't seem like what I should do.
 Task E.3
+Task E.4
+    Skipping
+Task E.5
     Begun
