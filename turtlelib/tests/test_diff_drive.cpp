@@ -25,7 +25,7 @@ TEST_CASE("Test fk", "DiffDrive::fk")
   REQUIRE(dd.get_wheels().right == 0);
 
   // small equal rotation on both wheels should result in x translation of that rotation amount
-  double rot = pi/4;
+  double rot = pi / 4;
   dd.fk(rot, rot, 1);
   REQUIRE(dd.get_transform().translation().x == rot);
   REQUIRE(dd.get_transform().translation().y == 0);

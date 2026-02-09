@@ -16,8 +16,8 @@ struct wheels
 
   void update(wheels new_wheels)
   {
-      left = new_wheels.left;
-      right = new_wheels.right;
+    left = new_wheels.left;
+    right = new_wheels.right;
   }
 
 };
@@ -36,7 +36,7 @@ private:
   Transform2D q;
   wheels phi;
   wheelspeed phidot;
-  Twist2D vel;
+  Twist2D body_vel;
   double track = 0;
   double radius = 0;
 
@@ -82,6 +82,10 @@ public:
   /// \brief Get wheel radius
   /// \return Wheel Radius
   double get_radius();
+
+  /// \brief Get current body twist
+  /// \return Current body twist
+  Twist2D get_twist();
 };
 }  // namespace turtlelib
 

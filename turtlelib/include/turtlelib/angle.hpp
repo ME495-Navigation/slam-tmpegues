@@ -7,7 +7,6 @@
 #include <numbers>
 
 
-
 namespace turtlelib
 {
 /// \brief Approximately compare two floating-point numbers using
@@ -73,17 +72,11 @@ constexpr double normalize_angle(double rad)
 constexpr double shortest_angle_diff(double angle2, double angle1)
 {
   auto diff = normalize_angle(angle2) - normalize_angle(angle1);
-  if (std::abs(diff) <= std::numbers::pi)
-  {
-    ;
-  }
-  else if (diff < 0.0)
-  {
-    diff += 2*std::numbers::pi;
-  }
-  else if (diff > 0.0)
-  {
-    diff -= 2*std::numbers::pi;
+  if (std::abs(diff) <= std::numbers::pi) {
+  } else if (diff < 0.0) {
+    diff += 2 * std::numbers::pi;
+  } else if (diff > 0.0) {
+    diff -= 2 * std::numbers::pi;
   }
   return diff;
 }

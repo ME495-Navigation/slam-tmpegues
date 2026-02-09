@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <stdexcept>
+
 #include "turtlelib/angle.hpp"
 
 namespace turtlelib
@@ -23,9 +24,8 @@ void DiffDrive::update_wheels(wheels new_wheels, double time)
 
   // What's the shortest path for each wheel?
   auto left_diff = shortest_angle_diff(new_wheels.left, phi.left);
+  auto right_diff = shortest_angle_diff(new_wheels.right, phi.right);
 
-  // auto right_diff = abs(new_wheels.right - phi.right) <= std::numbers::pi ? new_wheels.right - phi.right : phi.right -new_wheels.right;
-  auto right_diff =  shortest_angle_diff(new_wheels.right, phi.right);
   phi.update(new_wheels);
 
   phidot = wheelspeed{left_diff / time, right_diff / time};
@@ -51,9 +51,9 @@ void DiffDrive::fk(double phil2, double phir2, double time)
   auto x = radius / 2.0 * (phidot.right + phidot.left);
   auto y = 0.0;
 
-  Twist2D body_twist{omega, x, y};
+  body_vel = Twist2D{omega, x, y};
 
-  auto world_twist = q(time * body_twist);
+  auto world_twist = q(time * body_vel);
   auto tf_current_to_new = integrate_twist(world_twist);
   q *= tf_current_to_new;
 
@@ -86,4 +86,9 @@ wheelspeed DiffDrive::get_wheelspeed()
 double DiffDrive::get_track() {return track;}
 
 double DiffDrive::get_radius() {return radius;}
+
+Twist2D DiffDrive::get_twist()
+{
+  return body_vel;
+}
 }  // namespace turtlelib
