@@ -7,6 +7,7 @@
 #include "tf2_ros/transform_broadcaster.h"
 #include "turtlelib/se2d.hpp"
 #include "visualization_msgs/msg/marker.hpp"
+#include "nuturtlebot_msgs/msg/wheel_commands.hpp"
 #include "visualization_msgs/msg/marker_array.hpp"
 
 // #include "turtlelib"
@@ -29,6 +30,7 @@ public:
     this->declare_parameter("theta0", 0.0);
 
     // Create all publishers/broadcasters
+    wheel_cmd_sub_ = this->create_subscription<nuturtlebot_msgs::msg::WheelCommands>("~/wheel_cmd", 10, std::bind(&nusim::wheel_cmd_cb_, this, std::placeholders::_1));
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     rclcpp::QoS marker_qos_ = rclcpp::QoS(rclcpp::KeepLast(10)).transient_local();
     wall_pub_ =
@@ -77,6 +79,7 @@ private:
   rclcpp::TimerBase::SharedPtr timer_;
 
   rclcpp::QoS marker_qos_ = rclcpp::QoS(rclcpp::KeepLast(10)).transient_local();
+  rclcpp::Subscription<nuturtlebot_msgs::msg::WheelCommands>::SharedPtr wheel_cmd_sub_;
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr wall_pub_;
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr obs_pub_;
   rclcpp::Publisher<std_msgs::msg::UInt64>::SharedPtr timestep_pub_;
@@ -186,6 +189,11 @@ private:
       }
       obs_pub_->publish(marker_array);
     }
+  }
+
+  void wheel_cmd_cb_(const std::shared_ptr<nuturtlebot_msgs::msg::WheelCommands> msg)
+  {
+    ;
   }
 
   geometry_msgs::msg::TransformStamped tl_point_to_pose(

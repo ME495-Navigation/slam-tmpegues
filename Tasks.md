@@ -45,6 +45,7 @@ Task C.5
 * Node does not exit when lists aren't the same size
 Task C.6
 Task C.7
+Task C.8 begun
 
 Task D.1
 Task D.2
@@ -53,9 +54,8 @@ Task D.3
 
 Task E.1
 Task E.2
-    Unsure how to do the initial_pose service without creating a service type. This doesn't seem like what I should do.
+    Uncertain how to catch the issue of not providing parameters.
 Task E.3
 Task E.4
     Skipping
 Task E.5
-    Begun
