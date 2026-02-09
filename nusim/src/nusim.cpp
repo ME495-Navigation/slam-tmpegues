@@ -66,7 +66,7 @@ public:
     track_width = this->get_parameter("track_width").as_double();
     motor_cmd_per_rad_sec = this->get_parameter("motor_cmd_per_rad_sec").as_double();
 
-    red_dd = turtlelib::DiffDrive(track_width, wheel_radius,
+    red_dd_ = std::make_unique<turtlelib::DiffDrive>(track_width, wheel_radius,
       turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta));
 
     last_time = this->get_clock()->now();
@@ -75,8 +75,8 @@ public:
 
     auto timer_callback = [this]()
       -> void {  // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
-        auto t = tl_point_to_pose(red_dd.get_transform().translation().x,
-        red_dd.get_transform().translation().y, red_dd.get_transform().rotation());
+        auto t = tl_point_to_pose(red_dd_->get_transform().translation().x,
+        red_dd_->get_transform().translation().y, red_dd_->get_transform().rotation());
         tf_broadcaster_->sendTransform(t);
         timestep_pub_->publish(timestep);
         timestep.data++;
@@ -113,7 +113,7 @@ private:
   // Red robot info
   double wheel_radius{0.0};
   double track_width{0.0};
-  turtlelib::DiffDrive red_dd {};
+  std::unique_ptr<turtlelib::DiffDrive> red_dd_;
   double motor_cmd_per_rad_sec{0.0};
 
   // Timer rate
@@ -129,7 +129,7 @@ private:
     auto time_diff{
       (now.nanoseconds() - last_time.nanoseconds()) / 10e9};
 
-    red_dd.fk(msg->left_velocity * motor_cmd_per_rad_sec,
+    red_dd_->fk(msg->left_velocity * motor_cmd_per_rad_sec,
       msg->right_velocity * motor_cmd_per_rad_sec, time_diff);
     last_time = now;
     // Publish frame
@@ -251,7 +251,7 @@ private:
     auto x = this->get_parameter("x0").as_double();
     auto y = this->get_parameter("y0").as_double();
     auto theta = this->get_parameter("theta0").as_double();
-    red_dd = turtlelib::DiffDrive(track_width, wheel_radius,
+    red_dd_ = std::make_unique<turtlelib::DiffDrive>(track_width, wheel_radius,
       turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta));
   }
 };
