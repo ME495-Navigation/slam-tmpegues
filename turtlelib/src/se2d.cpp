@@ -1,7 +1,6 @@
 #include "turtlelib/se2d.hpp"
 
 #include <cmath>
-#include <print>
 #include <sstream>
 
 #include "turtlelib/angle.hpp"
@@ -164,7 +163,6 @@ std::istream & operator>>(std::istream & is, Transform2D & tf)
                  // If we're not getting a unit, then the peek would be a comma.
     }
   }
-  std::print("Peek 1: {}\n", static_cast<char>(is.peek()));
   switch (is.peek()) { // either we get a '<', indicating that we're being given a unit,
                        // or a ',' or  ' ', or a digit indicating we aren't.
                        // Anything else is a problem.
@@ -176,7 +174,6 @@ std::istream & operator>>(std::istream & is, Transform2D & tf)
       }
     case '<':  // this means we need to check the unit
       {
-        std::print("in the unit case\n");
         is.get();            // Purge the <
         if (is.peek() == 'r') { // We have radians again, but we need to purge the string
           theta = angle;
@@ -192,7 +189,6 @@ std::istream & operator>>(std::istream & is, Transform2D & tf)
         break;
       }
   }
-  std::print("Peek 2: {}\n", static_cast<char>(is.peek()));
   if (is.peek() == ',') {
     is.get();  // purge ,
     is.get();  // purge ' ' space

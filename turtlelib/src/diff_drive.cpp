@@ -1,9 +1,8 @@
-#include "turtlelib/diff_drive.hpp"
-
 #include <cmath>
 #include <stdexcept>
 
 #include "turtlelib/angle.hpp"
+#include "turtlelib/diff_drive.hpp"
 
 namespace turtlelib
 {

@@ -60,7 +60,6 @@ public:
 
     auto timer_callback = [this]()
       -> void {  // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
-      // RCLCPP_INFO_STREAM(this->get_logger(), "Tick Tock: " << timestep.data);
         auto t = tl_point_to_pose(red_x, red_y, red_theta);
         tf_broadcaster_->sendTransform(t);
         timestep_pub_->publish(timestep);
@@ -224,18 +223,10 @@ private:
 
 std::shared_ptr<nusim_node> my_node = nullptr;
 
-// auto reset_cb(
-//     [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Empty::Request> request,
-//     [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Empty::Response> response) -> void
-// {
-//     RCLCPP_INFO_STREAM(my_node->get_logger(), "Reset acknowledged, timestep " << my_node->timestep.data << "is now " << my_node->timestep.data = 0);
-// };
-
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
   my_node = std::make_shared<nusim_node>();
-  // auto reset_service = my_node->create_service<std_srvs::srv::Empty>("~/reset", reset_cb);
   rclcpp::spin(my_node);
   rclcpp::shutdown();
   return 0;

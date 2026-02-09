@@ -16,13 +16,15 @@ find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(turtlelib REQUIRED)
 find_package(nuturtlebot_msgs REQUIRED)
-  find_package(tf2 REQUIRED)
-  find_package(tf2_ros REQUIRED)
-    find_package(nav_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(nav_msgs REQUIRED)
 
 
 add_executable(turtle_control src/turtle_control.cpp)
 add_executable(odometry src/odometry.cpp)
+add_executable(circle src/circle.cpp)
+
 
 
 target_link_libraries(turtle_control
@@ -30,8 +32,6 @@ target_link_libraries(turtle_control
                       rclcpp::rclcpp
                       turtlelib::turtlelib
                       ${nuturtlebot_msgs_TARGETS}
-                      ${std_srvs_TARGETS}
-                      ${std_msgs_TARGETS}
                       ${geometry_msgs_TARGETS}
                       ${sensor_msgs_TARGETS})
 
@@ -42,13 +42,19 @@ target_link_libraries(odometry
                       tf2::tf2
                       tf2_ros::tf2_ros
                       ${nav_msgs_TARGETS}
-                      ${nuturtlebot_msgs_TARGETS}
-                      ${std_srvs_TARGETS}
-                      ${std_msgs_TARGETS}
                       ${geometry_msgs_TARGETS}
                       ${sensor_msgs_TARGETS})
 
+target_link_libraries(circle
+                      PUBLIC
+                      rclcpp::rclcpp
+                      turtlelib::turtlelib
+                      ${geometry_msgs_TARGETS}
+                      ${sensor_msgs_TARGETS})
+
+
 install(TARGETS
+  circle
   turtle_control
   odometry
   DESTINATION lib/${PROJECT_NAME})
