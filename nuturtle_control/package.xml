@@ -19,6 +19,8 @@
   <depend>sensor_msgs</depend>
   <depend>nav_msgs</depend>
   <depend>nuturtle_control_interfaces</depend>
+  <depend>turtlebot3_teleop</depend>
+
 
   <depend>turtlelib</depend>
   <depend>tf2</depend>
