@@ -52,6 +52,7 @@ Task D.3
     Need to add equation numbers
 
 Task E.1
-    Should go through and remove unused parameters
 Task E.2
+    Unsure how to do the initial_pose service without creating a service type. This doesn't seem like what I should do.
+Task E.3
     Begun
