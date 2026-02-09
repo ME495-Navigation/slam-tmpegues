@@ -9,6 +9,7 @@
 #include "turtlelib/diff_drive.hpp"
 #include "visualization_msgs/msg/marker.hpp"
 #include "nuturtlebot_msgs/msg/wheel_commands.hpp"
+#include "nuturtlebot_msgs/msg/sensor_data.hpp"
 #include "visualization_msgs/msg/marker_array.hpp"
 
 class nusim_node : public rclcpp::Node
@@ -33,7 +34,7 @@ public:
     this->declare_parameter("track_width", 0.16);
 
     // Create all publishers/broadcasters
-    wheel_cmd_sub_ = this->create_subscription<nuturtlebot_msgs::msg::WheelCommands>("~/wheel_cmd",
+    wheel_cmd_sub_ = this->create_subscription<nuturtlebot_msgs::msg::WheelCommands>("red/wheel_cmd",
       10, std::bind(&nusim_node::wheel_cmd_cb_, this, std::placeholders::_1));
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     rclcpp::QoS marker_qos_ = rclcpp::QoS(rclcpp::KeepLast(10)).transient_local();
@@ -45,6 +46,7 @@ public:
       "~/reset",
       std::bind(&nusim_node::reset_cb_, this, std::placeholders::_1, std::placeholders::_2));
     timestep_pub_ = this->create_publisher<std_msgs::msg::UInt64>("~/timestep", 10);
+    sensor_pub_ = this->create_publisher<nuturtlebot_msgs::msg::SensorData>("red/sensor_data",10);
 
     // Define all variables
     timestep.data = 0;
@@ -98,6 +100,7 @@ private:
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr wall_pub_;
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr obs_pub_;
   rclcpp::Publisher<std_msgs::msg::UInt64>::SharedPtr timestep_pub_;
+  rclcpp::Publisher<nuturtlebot_msgs::msg::SensorData>::SharedPtr sensor_pub_;
   rclcpp::Service<std_srvs::srv::Empty>::SharedPtr reset_service_;
   std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
