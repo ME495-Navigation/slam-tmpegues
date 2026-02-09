@@ -114,8 +114,8 @@ private:
     joint_state_msg.position.push_back(dd_calc.get_wheels().left);
     joint_state_msg.position.push_back(dd_calc.get_wheels().right);
 
-    joint_state_msg.velocity.push_back(dd_calc->phidot.left);
-    joint_state_msg.velocity.push_back(dd_calc->phidot.right);
+    joint_state_msg.velocity.push_back(dd_calc.get_wheelspeed().left);
+    joint_state_msg.velocity.push_back(dd_calc.get_wheelspeed().right);
 
     joint_state_pub_->publish(joint_state_msg);
   }
