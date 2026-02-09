@@ -5,59 +5,69 @@
         <choice value="teleop"/>
         <choice value="none"/>
     </arg>
-    <arg name="robot" default="nusim" description="nusim will launch a simulated robot, 'localhost' should be used to run this launchfile on the turtlebot. 'none' will not launch any robot nodes.">
+    <arg name="robot" default="none" description="nusim will launch a simulated robot, 'localhost' should be used to run this launchfile on the turtlebot. 'none' will not launch any robot nodes.">
         <choice value="nusim"/>
         <choice value="localhost"/>
         <choice value="none"/>
     </arg>
     <arg name="use_rviz" default="true" description="(bool): Do you want to launch rviz?"/>
 
-    <!-- Nodes that always run when robot != localhost -->
-    <node pkg="nuturtle_control" exec="turtle_control" if="$(eval '!$(equals $(var robot) localhost)')">
-        <param from="$(find-pkg-share nuturtle_description)/config/$(var diff_drive_params)"/>
-    </node>
+    <!-- If robot == localhost -->
+    <group if="$(equals $(var robot) localhost)">
 
-    <node pkg="nuturtle_control" exec="odometry" if="$(eval '!$(equals $(var robot) localhost)')">
-        <param from="$(find-pkg-share nuturtle_description)/config/$(var diff_drive_params)"/>
-        <param name="wheel_left" value="'left'"/>
-        <param name="wheel_right" value="'right'"/>
-        <param name="body_id" value="'blue/base_footprint'">
-    </node>
+        <node pkg="nuturtle_control" exec="turtle_control">
+            <param from="$(find-pkg-share nuturtle_description)/config/$(var diff_drive_params)"/>
+        </node>
 
-    <include file="$(find-pkg-share nuturtle_description)/launch/load_one.launch.xml" if="$(eval '!$(equals $(var robot) localhost)')">
-        <arg name="use_rviz" value="False"/>
-        <arg name="color" value="blue"/>
-        <arg name="use_jsp" value="False"/>
-    </include>
+        <node pkg="nuturtle_control" exec="odometry">
+            <param from="$(find-pkg-share nuturtle_description)/config/$(var diff_drive_params)"/>
+            <param name="wheel_left" value="'left'"/>
+            <param name="wheel_right" value="'right'"/>
+            <param name="body_id" value="'blue/base_footprint'"/>
+        </node>
 
-    <node pkg="tf2_ros" exec="static_transform_publisher" if="$(eval '!$(equals $(var robot) localhost)')"
-        args="0 0 0 0 0 0 nusim/world odom" />
+        <!-- Placeholder spot for numsr_turtlebot node -->
+    </group>
 
-    <!-- Arg: cmd_src -->
-    <node pkg="nuturtle_control" exec="circle" if="$(eval '!$(equals $(var robot) localhost) and $(equals $(var cmd_src) circle)')">
-    <node pkg="turtlebot3_teleop teleop_twist_keyboard" exec="teleop_twist_keyboard" if="$(equals $(var cmd_src) teleop)"/>
+    <!-- If robot != localhost -->
+    <group unless="$(equals $(var robot) localhost)">
 
-    <!-- Arg: robot -->
-    <include file="$(find-pkg-share nuturtle_description)/launch/load_one.launch.xml" if="$(equals $(var robot) nusim)"/>
-        <arg name="use_rviz" value="False"/>
-        <arg name="color" value="red"/>
-    </include>
+        <!-- If robot == nusim -->
+        <group if="$(equals $(var robot) nusim)">
 
-    <!-- Arg: use_rviz -->
-        <!-- 1st one is for robot == nusim, 2nd is for robot != localhost -->
-        <node pkg="rviz2" exec="rviz2" on_exit="shutdown" args="-d $(find-pkg-share nuturtle_control)/config/nusim.rviz"  if="$(eval '$(var use_rviz) and $(equals $(var robot) nusim)' )"/>
-        <node pkg="rviz2" exec="rviz2" on_exit="shutdown" args="-d $(find-pkg-share nuturtle_control)/config/blueonly.rviz"  if="$(eval '$(var use_rviz) and !$(equals $(var robot) localhost)' )"/>
+            <include file="$(find-pkg-share nuturtle_description)/launch/load_one.launch.xml">
+                <arg name="use_rviz" value="False"/>
+                <arg name="color" value="red"/>
+            </include>
 
+            <node pkg="nuturtle_control" exec="odometry">
+                <param from="$(find-pkg-share nuturtle_description)/config/$(var diff_drive_params)"/>
+                <param name="wheel_left" value="'left'"/>
+                <param name="wheel_right" value="'right'"/>
+                <param name="body_id" value="'blue/base_footprint'"/>
+            </node>
 
+            <node pkg="nuturtle_control" exec="turtle_control">
+                <param from="$(find-pkg-share nuturtle_description)/config/$(var diff_drive_params)"/>
+            </node>
+        </group>
 
+        <!-- If robot == none, then no extra stuff is launched-->
 
+        <!-- Rviz with a blue robot is launched no matter if robot is nusim or none -->
+        <node if="$(var use_rviz)" pkg="rviz2" exec="rviz2" on_exit="shutdown" args="-d $(find-pkg-share nuturtle_control)/config/$(var robot).rviz"/>
+        <include file="$(find-pkg-share nuturtle_description)/launch/load_one.launch.xml">
+            <arg name="use_rviz" value="False"/>
+            <arg name="color" value="blue"/>
+        </include>
 
+        <!-- Deal with cmd_src -->
+        <node pkg="nuturtle_control" exec="circle" if="$(equals $(var cmd_src) circle)">
+            <param name="frequency" value="100"/>
+        </node>
 
-<!-- 1. Put in arguments
-    Restrict rviz = false when localhost
-2.Publish static_transform_publisher
-3. Set odom frames
-4. Rviz should always show blue
-5. Rviz should display red if robot == nusim -->
+        <node pkg="turtlebot3_teleop" exec="teleop_twist_keyboard" if="$(equals $(var cmd_src) teleop)"/>
+
+    </group>
 
 </launch>
