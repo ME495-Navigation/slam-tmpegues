@@ -16,6 +16,7 @@ public:
   odometry()
   : Node("odometry")
   {
+
     this->declare_parameter("body_id", "base_footprint");
     this->declare_parameter("odom_id", "odom");
     this->declare_parameter<std::string>("wheel_left");
@@ -48,6 +49,9 @@ public:
     odom_state.header.frame_id = odom_id;
     odom_state.child_frame_id = body_id;
 
+    timer_ = this->create_wall_timer(std::chrono::milliseconds(1000 / 100),
+                                     std::bind(&odometry::timer_cb_, this));
+
     initial_pose_service_ = this->create_service<nuturtle_control_interfaces::srv::InitialPose>(
         "initial_pose",
         std::bind(&odometry::initial_pose_cb_, this, std::placeholders::_1, std::placeholders::_2));
@@ -61,6 +65,7 @@ public:
   }
 
 private:
+  rclcpp::TimerBase::SharedPtr timer_;
   rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr joint_state_sub_;
   rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
   std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
@@ -113,9 +118,12 @@ private:
     odom_state.header.stamp.nanosec = msg->header.stamp.nanosec;
 
     odom_pub_->publish(odom_state);
+
+  }
+  void timer_cb_()
+  {
     tf_broadcaster_->sendTransform((turtlelib_transform2d_to_msg(dd_calc.get_transform())));
   }
-
   geometry_msgs::msg::Pose turtlelib_transform_to_pose(
     const turtlelib::Transform2D tf)
   {
