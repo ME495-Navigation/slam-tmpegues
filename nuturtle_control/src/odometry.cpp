@@ -17,49 +17,49 @@ public:
   : Node("odometry")
   {
 
-    this->declare_parameter("body_id", "base_footprint");
-    this->declare_parameter("odom_id", "odom");
-    this->declare_parameter<std::string>("wheel_left");
-    this->declare_parameter<std::string>("wheel_right");
+    declare_parameter("body_id", "base_footprint");
+    declare_parameter("odom_id", "odom");
+    declare_parameter<std::string>("wheel_left");
+    declare_parameter<std::string>("wheel_right");
 
-    this->declare_parameter("wheel_radius", 0.033);
-    this->declare_parameter("track_width", 0.16);
-    wheel_radius = this->get_parameter("wheel_radius").as_double();
-    track_width = this->get_parameter("track_width").as_double();
+    declare_parameter("wheel_radius", 0.033);
+    declare_parameter("track_width", 0.16);
+    wheel_radius = get_parameter("wheel_radius").as_double();
+    track_width = get_parameter("track_width").as_double();
 
 
-    body_id = this->get_parameter("body_id").as_string();
-    odom_id = this->get_parameter("odom_id").as_string();
+    body_id = get_parameter("body_id").as_string();
+    odom_id = get_parameter("odom_id").as_string();
     // wheel_left and wheel_right MUST be provided, there is no default value
     try {
-      wheel_left = this->get_parameter("wheel_left").as_string();
+      wheel_left = get_parameter("wheel_left").as_string();
     } catch (rclcpp::exceptions::UninitializedStaticallyTypedParameterException & error_msg) {
-      RCLCPP_ERROR_STREAM(this->get_logger(), "Parameter 'wheel_left' not specified");
+      RCLCPP_ERROR_STREAM(get_logger(), "Parameter 'wheel_left' not specified");
     }
 
     try {
-      wheel_right = this->get_parameter("wheel_right").as_string();
+      wheel_right = get_parameter("wheel_right").as_string();
     } catch (rclcpp::exceptions::UninitializedStaticallyTypedParameterException & error_msg) {
-      RCLCPP_ERROR_STREAM(this->get_logger(), "Parameter 'wheel_right' not specified");
+      RCLCPP_ERROR_STREAM(get_logger(), "Parameter 'wheel_right' not specified");
     }
 
-    last_time = this->get_clock()->now();
+    last_time = get_clock()->now();
     dd_calc = turtlelib::DiffDrive(track_width, wheel_radius);
 
     odom_state.header.frame_id = odom_id;
     odom_state.child_frame_id = body_id;
 
-    timer_ = this->create_wall_timer(std::chrono::milliseconds(1000 / 100),
+    timer_ = create_wall_timer(std::chrono::milliseconds(1000 / 100),
                                      std::bind(&odometry::timer_cb_, this));
 
-    initial_pose_service_ = this->create_service<nuturtle_control_interfaces::srv::InitialPose>(
+    initial_pose_service_ = create_service<nuturtle_control_interfaces::srv::InitialPose>(
         "initial_pose",
         std::bind(&odometry::initial_pose_cb_, this, std::placeholders::_1, std::placeholders::_2));
 
-    joint_state_sub_ = this->create_subscription<sensor_msgs::msg::JointState>("joint_state", 10,
+    joint_state_sub_ = create_subscription<sensor_msgs::msg::JointState>("joint_state", 10,
     std::bind(&odometry::joint_state_cb_, this, std::placeholders::_1));
 
-    odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("odom", 10);
+    odom_pub_ = create_publisher<nav_msgs::msg::Odometry>("odom", 10);
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
   }
@@ -90,8 +90,7 @@ private:
     [[maybe_unused]] const std::shared_ptr<nuturtle_control_interfaces::srv::InitialPose::Response>
     response)
   { // Reset the internal odom state to the newly received initial position
-    RCLCPP_INFO_STREAM(this->get_logger(),
-      "Initial pose service" << request->x0 << request->y0 << request->theta0);
+    RCLCPP_INFO_STREAM(get_logger(), "Initial pose service" << request->x0 << request->y0 << request->theta0);
     double x = request->x0;
     double y = request->y0;
     double theta = request->theta0;
@@ -155,7 +154,7 @@ private:
     const turtlelib::Transform2D tf)
   {
     geometry_msgs::msg::TransformStamped t{};
-    t.header.stamp = this->get_clock()->now();
+    t.header.stamp = get_clock()->now();
     t.header.frame_id = odom_id;
     t.child_frame_id = body_id;
 
