@@ -90,15 +90,21 @@ private:
     [[maybe_unused]] const std::shared_ptr<nuturtle_control_interfaces::srv::InitialPose::Response>
     response)
   { // Reset the internal odom state to the newly received initial position
-    odom_state.pose.pose.position.x = request->x0;
-    odom_state.pose.pose.position.y = request->y0;
+    RCLCPP_INFO_STREAM(this->get_logger(), "Initial pose service" << request->x0 << request->y0 << request->theta0);
+    double x = request->x0;
+    double y = request -> y0;
+    double theta = request -> theta0;
+    dd_calc = turtlelib::DiffDrive(track_width, wheel_radius, turtlelib::Transform2D(turtlelib::Vector2D(x, y), theta));
 
-    tf2::Quaternion q;
-    q.setRPY(0, 0, request->theta0);
-    odom_state.pose.pose.orientation.x = q.x();
-    odom_state.pose.pose.orientation.y = q.y();
-    odom_state.pose.pose.orientation.z = q.z();
-    odom_state.pose.pose.orientation.w = q.w();
+    // odom_state.pose.pose.position.x = request->x0;
+    // odom_state.pose.pose.position.y = request->y0;
+
+    // tf2::Quaternion q;
+    // q.setRPY(0, 0, request->theta0);
+    // odom_state.pose.pose.orientation.x = q.x();
+    // odom_state.pose.pose.orientation.y = q.y();
+    // odom_state.pose.pose.orientation.z = q.z();
+    // odom_state.pose.pose.orientation.w = q.w();
   }
 
   void joint_state_cb_(const std::shared_ptr<sensor_msgs::msg::JointState> msg)
