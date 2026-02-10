@@ -13,30 +13,30 @@ public:
   : Node("turtle_control")
   {
     // Create all parameters
-    this->declare_parameter("wheel_radius", 0.033);
-    this->declare_parameter("track_width", 0.16);
-    this->declare_parameter("motor_cmd_max", 256);
-    this->declare_parameter("motor_cmd_per_rad_sec", 0.024);
-    this->declare_parameter("encoder_ticks_per_rad", 651.89864);
-    this->declare_parameter("collision_radius", 0.11);
+    declare_parameter("wheel_radius", 0.033);
+    declare_parameter("track_width", 0.16);
+    declare_parameter("motor_cmd_max", 256);
+    declare_parameter("motor_cmd_per_rad_sec", 0.024);
+    declare_parameter("encoder_ticks_per_rad", 651.89864);
+    declare_parameter("collision_radius", 0.11);
 
     // Create all publishers/broadcasters and subscribers
-    cmd_vel_sub_ = this->create_subscription<geometry_msgs::msg::Twist>(
+    cmd_vel_sub_ = create_subscription<geometry_msgs::msg::Twist>(
       "cmd_vel", 10, std::bind(&turtle_control::cmd_vel_cb_, this, std::placeholders::_1));
-    sensor_data_sub_ = this->create_subscription<nuturtlebot_msgs::msg::SensorData>(
+    sensor_data_sub_ = create_subscription<nuturtlebot_msgs::msg::SensorData>(
       "sensor_data", 10, std::bind(&turtle_control::sensor_data_cb_, this, std::placeholders::_1));
 
-    joint_state_pub_ = this->create_publisher<sensor_msgs::msg::JointState>("joint_states", 10);
-    wheel_cmd_pub_ = this->create_publisher<nuturtlebot_msgs::msg::WheelCommands>("wheel_cmd", 10);
+    joint_state_pub_ = create_publisher<sensor_msgs::msg::JointState>("joint_states", 10);
+    wheel_cmd_pub_ = create_publisher<nuturtlebot_msgs::msg::WheelCommands>("wheel_cmd", 10);
 
     // Define all variables
-    last_time = this->get_clock()->now();
-    wheel_radius = this->get_parameter("wheel_radius").as_double();
-    track_width = this->get_parameter("track_width").as_double();
-    motor_cmd_max = this->get_parameter("motor_cmd_max").as_int();
-    motor_cmd_per_rad_sec = this->get_parameter("motor_cmd_per_rad_sec").as_double();
-    encoder_ticks_per_rad = this->get_parameter("encoder_ticks_per_rad").as_double();
-    collision_radius = this->get_parameter("collision_radius").as_double();
+    last_time = get_clock()->now();
+    wheel_radius = get_parameter("wheel_radius").as_double();
+    track_width = get_parameter("track_width").as_double();
+    motor_cmd_max = get_parameter("motor_cmd_max").as_int();
+    motor_cmd_per_rad_sec = get_parameter("motor_cmd_per_rad_sec").as_double();
+    encoder_ticks_per_rad = get_parameter("encoder_ticks_per_rad").as_double();
+    collision_radius = get_parameter("collision_radius").as_double();
     dd_calc = turtlelib::DiffDrive(
       track_width,
       wheel_radius);
@@ -64,9 +64,9 @@ private:
 
   void cmd_vel_cb_(const std::shared_ptr<geometry_msgs::msg::Twist> msg)
   {
-    RCLCPP_INFO_STREAM(this->get_logger(), "Twist received: " << msg);
+    RCLCPP_INFO_STREAM(get_logger(), "Twist received: " << msg);
     if (msg->angular.x or msg->angular.y or msg->linear.z) {
-      RCLCPP_ERROR_STREAM(this->get_logger(), "Please provide a twist in the x-y plane.");
+      RCLCPP_ERROR_STREAM(get_logger(), "Please provide a twist in the x-y plane.");
       return;
     }
 
@@ -76,7 +76,7 @@ private:
     try {
       wheelrad_cmd = dd_calc.ik(twist_cmd);  // These are in radians per second
     } catch (std::logic_error & error_msg) {
-      RCLCPP_ERROR_STREAM(this->get_logger(), "Invalid cmd_vel: y component must be 0");
+      RCLCPP_ERROR_STREAM(get_logger(), "Invalid cmd_vel: y component must be 0");
       return;
     }
 
@@ -95,7 +95,7 @@ private:
 
   void sensor_data_cb_(const std::shared_ptr<nuturtlebot_msgs::msg::SensorData> msg)
   {
-    RCLCPP_INFO_STREAM(this->get_logger(), "SensorData received: " << msg);
+    RCLCPP_INFO_STREAM(get_logger(), "SensorData received: " << msg);
 
     auto time_diff{
       msg->stamp.sec + msg->stamp.nanosec / 10e9 - last_time.sec - last_time.nanosec / 10e9};
