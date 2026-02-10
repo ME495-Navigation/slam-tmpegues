@@ -1,6 +1,6 @@
 <launch>
     <arg name="diff_drive_params" default="diff_params.yaml" description="Which yaml file (in pkg nuturltebot_description) should be used for the diff drive robot parameters?"/>
-    <arg name="cmd_src" default="circle" description="launch circle node, turtlebot3_teleop teleop_twist_keyboard, or no control node">
+    <arg name="cmd_src" default="none" description="launch circle node, turtlebot3_teleop teleop_twist_keyboard, or no control node">
         <choice value="circle"/>
         <choice value="teleop"/>
         <choice value="none"/>
@@ -50,7 +50,7 @@
 
             <node pkg="nuturtle_control" exec="turtle_control">
                 <param from="$(find-pkg-share nuturtle_description)/config/$(var diff_drive_params)"/>
-                <remap from="wheel_cmd" to="red_wheel_cmd"/>
+                <remap from="wheel_cmd" to="red/wheel_cmd"/>
             </node>
 
         </group>
@@ -69,7 +69,7 @@
             <param name="frequency" value="100"/>
         </node>
 
-        <node pkg="turtlebot3_teleop" exec="teleop_twist_keyboard" if="$(equals $(var cmd_src) teleop)"/>
+        <node pkg="teleop_twist_keyboard" exec="teleop_twist_keyboard" if="$(equals $(var cmd_src) teleop)"/>
 
     </group>
 
