@@ -9,17 +9,17 @@ public:
   circle()
   : Node("circle")
   {
-    this->declare_parameter("frequency", 100);
-    frequency = this->get_parameter("frequency").as_int();
-    timer_ = this->create_wall_timer(std::chrono::milliseconds(1000 / frequency),
+    declare_parameter("frequency", 100);
+    frequency = get_parameter("frequency").as_int();
+    timer_ = create_wall_timer(std::chrono::milliseconds(1000 / frequency),
       std::bind(&circle::timer_cb_, this));
-    cmd_vel_pub_ = this->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 10);
-    control_service_ = this->create_service<nuturtle_control_interfaces::srv::Control>("control",
+    cmd_vel_pub_ = create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 10);
+    control_service_ = create_service<nuturtle_control_interfaces::srv::Control>("control",
       std::bind(&circle::control_cb_, this, std::placeholders::_1, std::placeholders::_2));
-    reverse_service_ = this->create_service<std_srvs::srv::Empty>(
+    reverse_service_ = create_service<std_srvs::srv::Empty>(
             "reverse",
             std::bind(&circle::reverse_cb_, this, std::placeholders::_1, std::placeholders::_2));
-    stop_service_ = this->create_service<std_srvs::srv::Empty>(
+    stop_service_ = create_service<std_srvs::srv::Empty>(
             "stop",
             std::bind(&circle::stop_cb_, this, std::placeholders::_1, std::placeholders::_2));
   }
@@ -52,7 +52,7 @@ private:
   {
     circle_twist.angular.z *= -1;
     circle_twist.linear.x *= -1;
-    RCLCPP_INFO_STREAM(this->get_logger(), "Reversed");
+    RCLCPP_INFO_STREAM(get_logger(), "Reversed");
   }
 
   void stop_cb_(
@@ -60,7 +60,7 @@ private:
     [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Empty::Response> response)
   {
     stopped = !stopped;
-    RCLCPP_INFO_STREAM(this->get_logger(),
+    RCLCPP_INFO_STREAM(get_logger(),
       "Stop service, circle node stopped is now (0 stopped, 1 moving): " << !stopped);
   }
 
