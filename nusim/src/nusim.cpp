@@ -20,68 +20,85 @@ public:
   : Node("nusim")
   {
     // Create all parameters
-    this->declare_parameter("rate", 100);  // TODO: check removing the this->
-    this->declare_parameter("arena_x_length", 3.0);
-    this->declare_parameter("arena_y_length", 3.0);
-    this->declare_parameter("obstacles.x", std::vector<double>{});
-    this->declare_parameter("obstacles.y", std::vector<double>{});
-    this->declare_parameter("obstacles.r", 0.5);
-    this->declare_parameter("x0", 0.0);
-    this->declare_parameter("y0", 0.0);
-    this->declare_parameter("theta0", 0.0);
-    this->declare_parameter("motor_cmd_per_rad_sec", 0.024);
+    declare_parameter("rate", 100);  // TODO: check removing the
+    declare_parameter("arena_x_length", 3.0);
+    declare_parameter("arena_y_length", 3.0);
+    declare_parameter("obstacles.x", std::vector<double>{});
+    declare_parameter("obstacles.y", std::vector<double>{});
+    declare_parameter("obstacles.r", 0.5);
+    declare_parameter("x0", 0.0);
+    declare_parameter("y0", 0.0);
+    declare_parameter("theta0", 0.0);
+    declare_parameter("motor_cmd_per_rad_sec", 0.024);
 
-    this->declare_parameter("wheel_radius", 0.033);
-    this->declare_parameter("track_width", 0.16);
+    declare_parameter("wheel_radius", 0.033);
+    declare_parameter("track_width", 0.16);
 
     // Create all publishers/broadcasters
-    wheel_cmd_sub_ =
-      this->create_subscription<nuturtlebot_msgs::msg::WheelCommands>("red/wheel_cmd",
+    wheel_cmd_sub_ = create_subscription<nuturtlebot_msgs::msg::WheelCommands>("red/wheel_cmd",
       10, std::bind(&nusim_node::wheel_cmd_cb_, this, std::placeholders::_1));
 
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
     rclcpp::QoS marker_qos_ = rclcpp::QoS(rclcpp::KeepLast(10)).transient_local();
     wall_pub_ =
-      this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_walls", marker_qos_);
+      create_publisher<visualization_msgs::msg::MarkerArray>("~/real_walls", marker_qos_);
 
     obs_pub_ =
-      this->create_publisher<visualization_msgs::msg::MarkerArray>("~/real_obstacles", marker_qos_);
+      create_publisher<visualization_msgs::msg::MarkerArray>("~/real_obstacles", marker_qos_);
 
-    reset_service_ = this->create_service<std_srvs::srv::Empty>(
+    reset_service_ = create_service<std_srvs::srv::Empty>(
       "~/reset",
       std::bind(&nusim_node::reset_cb_, this, std::placeholders::_1, std::placeholders::_2));
 
-    timestep_pub_ = this->create_publisher<std_msgs::msg::UInt64>("~/timestep", 10);
+    timestep_pub_ = create_publisher<std_msgs::msg::UInt64>("~/timestep", 10);
 
-    sensor_pub_ = this->create_publisher<nuturtlebot_msgs::msg::SensorData>("red/sensor_data", 10);
+    sensor_pub_ = create_publisher<nuturtlebot_msgs::msg::SensorData>("red/sensor_data",10);
 
+    initial_pose_srv_cli_ = create_client<nuturtle_control_interfaces::srv::InitialPose>("initial_pose");
+    while (!initial_pose_srv_cli_->wait_for_service(std::chrono::seconds(5)))
+    {
+      if (!rclcpp::ok())
+      {
+        RCLCPP_ERROR(get_logger(), "initial_pose client interrupted while waiting for service to appear.");
+      }
+      RCLCPP_INFO(get_logger(), "Waiting for initial_pose service");
+    }
 
-    // Define all variables
-    timestep.data = 0;
-    rate = this->get_parameter("rate").as_int();
+      // Define all variables
+      timestep.data = 0;
+    rate = get_parameter("rate").as_int();
     timer_period = std::chrono::milliseconds(1000 / rate);
 
-    arena_x_length = this->get_parameter("arena_x_length").as_double();
-    arena_y_length = this->get_parameter("arena_y_length").as_double();
+    arena_x_length = get_parameter("arena_x_length").as_double();
+    arena_y_length = get_parameter("arena_y_length").as_double();
 
-    obs_x = this->get_parameter("obstacles.x").as_double_array();
-    obs_y = this->get_parameter("obstacles.y").as_double_array();
-    obs_r = this->get_parameter("obstacles.r").as_double();
+    obs_x = get_parameter("obstacles.x").as_double_array();
+    obs_y = get_parameter("obstacles.y").as_double_array();
+    obs_r = get_parameter("obstacles.r").as_double();
 
-    auto x = this->get_parameter("x0").as_double();
-    auto y = this->get_parameter("y0").as_double();
-    auto theta = this->get_parameter("theta0").as_double();
+    auto x = get_parameter("x0").as_double();
+    auto y = get_parameter("y0").as_double();
+    auto theta = get_parameter("theta0").as_double();
 
-    wheel_radius = this->get_parameter("wheel_radius").as_double();
-    track_width = this->get_parameter("track_width").as_double();
-    motor_cmd_per_rad_sec = this->get_parameter("motor_cmd_per_rad_sec").as_double();
+    wheel_radius = get_parameter("wheel_radius").as_double();
+    track_width = get_parameter("track_width").as_double();
+    motor_cmd_per_rad_sec = get_parameter("motor_cmd_per_rad_sec").as_double();
 
+    RCLCPP_INFO_STREAM(get_logger(), "Attempt Service");
+
+    auto initial_pose_rq = std::make_shared<nuturtle_control_interfaces::srv::InitialPose::Request>();
+    initial_pose_rq->x0 = x;
+    initial_pose_rq->y0 = y;
+    initial_pose_rq->theta0 = theta;
+    auto result_future = initial_pose_srv_cli_->async_send_request(initial_pose_rq, std::bind(&nusim_node::initial_pose_response_cb_,
+                                                                                              this, std::placeholders::_1));
+    rclcpp::spin_until_future_complete(get_node_base_interface(), result_future);
 
     red_dd_ = std::make_unique<turtlelib::DiffDrive>(track_width, wheel_radius,
       turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta));
 
-    last_time = this->get_clock()->now();
+    last_time = get_clock()->now();
 
     // Define functions
 
@@ -93,7 +110,7 @@ public:
         timestep.data++;
       };
 
-    timer_ = this->create_wall_timer(timer_period, timer_callback);
+    timer_ = create_wall_timer(timer_period, timer_callback);
 
     // Use setup functions
     create_walls();
@@ -137,7 +154,7 @@ private:
   void wheel_cmd_cb_(const std::shared_ptr<nuturtlebot_msgs::msg::WheelCommands> msg)
   {
     // Receive commands, convert to radians, then fk
-    auto now = this->get_clock()->now();
+    auto now = get_clock()->now();
     auto time_diff{
       (now.nanoseconds() - last_time.nanoseconds()) / 10e9};
 
@@ -145,6 +162,12 @@ private:
       msg->right_velocity * motor_cmd_per_rad_sec, time_diff);
     last_time = now;
     // Publish frame
+  }
+
+  void initial_pose_response_cb_(rclcpp::Client<nuturtle_control_interfaces::srv::InitialPose>::SharedFuture future)
+  {
+    auto service_response_ = future.get();
+    RCLCPP_INFO_STREAM(get_logger(), "Service response");
   }
 
   void create_walls()
@@ -202,7 +225,7 @@ private:
   {
     if (obs_x.size() != obs_y.size()) {
       RCLCPP_ERROR_STREAM(
-        this->get_logger(), "Obstacle coordinate list lengths do not match:"
+        get_logger(), "Obstacle coordinate list lengths do not match:"
                               << obs_x.size() << " and " << obs_y.size());
     } else {
       auto marker_array = visualization_msgs::msg::MarkerArray();
@@ -235,7 +258,7 @@ private:
     turtlelib::Transform2D tf)
   {
     geometry_msgs::msg::TransformStamped t{};
-    t.header.stamp = this->get_clock()->now();
+    t.header.stamp = get_clock()->now();
     t.header.frame_id = "nusim/world";
     t.child_frame_id = "red/base_footprint";
 
@@ -256,18 +279,20 @@ private:
     [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Empty::Request> request,
     [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Empty::Response> response)
   {
-    RCLCPP_INFO_STREAM(this->get_logger(), "Reset acknowledged at timestep " << timestep.data);
+    RCLCPP_INFO_STREAM(get_logger(), "Reset acknowledged at timestep " << timestep.data);
     timestep.data = 0;
 
 
-    auto x = this->get_parameter("x0").as_double();
-    auto y = this->get_parameter("y0").as_double();
-    auto theta = this->get_parameter("theta0").as_double();
-    auto initial_pose_rq =
-      std::make_shared<nuturtle_control_interfaces::srv::InitialPose::Request>();
+    auto x = get_parameter("x0").as_double();
+    auto y = get_parameter("y0").as_double();
+    auto theta = get_parameter("theta0").as_double();
+    auto initial_pose_rq = std::make_shared<nuturtle_control_interfaces::srv::InitialPose::Request>();
     initial_pose_rq->x0 = x;
     initial_pose_rq->y0 = y;
     initial_pose_rq->theta0 = theta;
+    auto result_future = initial_pose_srv_cli_->async_send_request(initial_pose_rq, std::bind(&nusim_node::initial_pose_response_cb_,
+                                                                                              this, std::placeholders::_1));
+    rclcpp::spin_until_future_complete(get_node_base_interface(), result_future);
 
     red_dd_ = std::make_unique<turtlelib::DiffDrive>(track_width, wheel_radius,
       turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta));
