@@ -35,7 +35,8 @@ public:
     this->declare_parameter("track_width", 0.16);
 
     // Create all publishers/broadcasters
-    wheel_cmd_sub_ = this->create_subscription<nuturtlebot_msgs::msg::WheelCommands>("red/wheel_cmd",
+    wheel_cmd_sub_ =
+      this->create_subscription<nuturtlebot_msgs::msg::WheelCommands>("red/wheel_cmd",
       10, std::bind(&nusim_node::wheel_cmd_cb_, this, std::placeholders::_1));
 
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
@@ -53,20 +54,11 @@ public:
 
     timestep_pub_ = this->create_publisher<std_msgs::msg::UInt64>("~/timestep", 10);
 
-    sensor_pub_ = this->create_publisher<nuturtlebot_msgs::msg::SensorData>("red/sensor_data",10);
+    sensor_pub_ = this->create_publisher<nuturtlebot_msgs::msg::SensorData>("red/sensor_data", 10);
 
-    // initial_pose_srv_cli_ = this->create_client<nuturtle_control_interfaces::srv::InitialPose>("initial_pose");
-    // while (!initial_pose_srv_cli_->wait_for_service(std::chrono::seconds(5)))
-    // {
-    //   if (!rclcpp::ok())
-    //   {
-    //     RCLCPP_ERROR(this->get_logger(), "initial_pose client interrupted while waiting for service to appear.");
-    //   }
-    //   RCLCPP_INFO(this->get_logger(), "Waiting for initial_pose service");
-    // }
 
-      // Define all variables
-      timestep.data = 0;
+    // Define all variables
+    timestep.data = 0;
     rate = this->get_parameter("rate").as_int();
     timer_period = std::chrono::milliseconds(1000 / rate);
 
@@ -85,15 +77,6 @@ public:
     track_width = this->get_parameter("track_width").as_double();
     motor_cmd_per_rad_sec = this->get_parameter("motor_cmd_per_rad_sec").as_double();
 
-    // RCLCPP_INFO_STREAM(this->get_logger(), "Attempt Service");
-
-    // auto initial_pose_rq = std::make_shared<nuturtle_control_interfaces::srv::InitialPose::Request>();
-    // initial_pose_rq->x0 = x;
-    // initial_pose_rq->y0 = y;
-    // initial_pose_rq->theta0 = theta;
-    // auto result_future = initial_pose_srv_cli_->async_send_request(initial_pose_rq, std::bind(&nusim_node::initial_pose_response_cb_,
-    //                                                                                           this, std::placeholders::_1));
-    // rclcpp::spin_until_future_complete(this->get_node_base_interface(), result_future);
 
     red_dd_ = std::make_unique<turtlelib::DiffDrive>(track_width, wheel_radius,
       turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta));
@@ -128,7 +111,6 @@ private:
   rclcpp::Publisher<std_msgs::msg::UInt64>::SharedPtr timestep_pub_;
   rclcpp::Publisher<nuturtlebot_msgs::msg::SensorData>::SharedPtr sensor_pub_;
   rclcpp::Service<std_srvs::srv::Empty>::SharedPtr reset_service_;
-  // rclcpp::Client<nuturtle_control_interfaces::srv::InitialPose>::SharedPtr initial_pose_srv_cli_;
   std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
   // Wall dimensions
@@ -164,12 +146,6 @@ private:
     last_time = now;
     // Publish frame
   }
-
-  // void initial_pose_response_cb_(rclcpp::Client<nuturtle_control_interfaces::srv::InitialPose>::SharedFuture future)
-  // {
-  //   auto service_response_ = future.get();
-  //   RCLCPP_INFO_STREAM(this->get_logger(), "Service response");
-  // }
 
   void create_walls()
   {  // The following section creates wall marker array and sets all variables that don't change
@@ -287,15 +263,14 @@ private:
     auto x = this->get_parameter("x0").as_double();
     auto y = this->get_parameter("y0").as_double();
     auto theta = this->get_parameter("theta0").as_double();
-    auto initial_pose_rq = std::make_shared<nuturtle_control_interfaces::srv::InitialPose::Request>();
+    auto initial_pose_rq =
+      std::make_shared<nuturtle_control_interfaces::srv::InitialPose::Request>();
     initial_pose_rq->x0 = x;
     initial_pose_rq->y0 = y;
     initial_pose_rq->theta0 = theta;
-    // auto result_future = initial_pose_srv_cli_->async_send_request(initial_pose_rq, std::bind(&nusim_node::initial_pose_response_cb_,
-    //                                                                                           this, std::placeholders::_1));
-    // rclcpp::spin_until_future_complete(this->get_node_base_interface(), result_future);
 
-    red_dd_ = std::make_unique<turtlelib::DiffDrive>(track_width, wheel_radius,turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta));
+    red_dd_ = std::make_unique<turtlelib::DiffDrive>(track_width, wheel_radius,
+      turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta));
   }
 
 };

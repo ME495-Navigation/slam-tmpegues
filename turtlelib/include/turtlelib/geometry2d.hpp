@@ -61,8 +61,8 @@ struct Vector2D
   /// \brief scale a vector by a scalar
   /// \param rhs The scalar to scale the vector by
   /// \return a reference to the scaled vector
-  template <typename T>
-  Vector2D &operator*=(const T &rhs)
+  template<typename T>
+  Vector2D & operator*=(const T & rhs)
   {
     x *= rhs;
     y *= rhs;
@@ -72,12 +72,12 @@ struct Vector2D
   /// \brief Add a vector to another
   /// \param rhs The vector to add to the other vector
   /// \return A reference to the summed vector
-  Vector2D &operator+=(const Vector2D &rhs);
+  Vector2D & operator+=(const Vector2D & rhs);
 
   /// \brief Subtract a vector from another
   /// \param rhs The vector to subtract from the other vector
   /// \return A reference to the subtracted vector
-  Vector2D &operator-=(const Vector2D &rhs);
+  Vector2D & operator-=(const Vector2D & rhs);
 };
 
 /// \brief Subtracting one point from another yields a vector
