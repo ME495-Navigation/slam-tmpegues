@@ -111,6 +111,8 @@ private:
 
   void joint_state_cb_(const std::shared_ptr<sensor_msgs::msg::JointState> msg)
   {
+    RCLCPP_INFO_STREAM(this->get_logger(), "JointState cb");
+
     // JointState includes left and right positions, velocities, and time
     // FK to get position and velocity based on received wheel positions
     auto time_diff{
@@ -126,7 +128,6 @@ private:
     odom_state.header.stamp.nanosec = msg->header.stamp.nanosec;
 
     odom_pub_->publish(odom_state);
-
   }
   void timer_cb_()
   {

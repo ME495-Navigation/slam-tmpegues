@@ -29,6 +29,7 @@ public:
     joint_state_pub_ = create_publisher<sensor_msgs::msg::JointState>("joint_states", 10);
     wheel_cmd_pub_ = create_publisher<nuturtlebot_msgs::msg::WheelCommands>("wheel_cmd", 10);
 
+
     // Define all variables
     last_time = get_clock()->now();
     wheel_radius = get_parameter("wheel_radius").as_double();
@@ -107,8 +108,8 @@ private:
     auto joint_state_msg = sensor_msgs::msg::JointState();
     joint_state_msg.header.stamp = msg->stamp;
 
-    joint_state_msg.name.push_back("left");
-    joint_state_msg.name.push_back("right");
+    joint_state_msg.name.push_back("blue/wheel_left_joint");
+    joint_state_msg.name.push_back("blue/wheel_right_joint");
 
     joint_state_msg.position.push_back(dd_calc.get_wheels().left);
     joint_state_msg.position.push_back(dd_calc.get_wheels().right);
@@ -116,6 +117,7 @@ private:
     joint_state_msg.velocity.push_back(dd_calc.get_wheelspeed().left);
     joint_state_msg.velocity.push_back(dd_calc.get_wheelspeed().right);
 
+    RCLCPP_INFO_STREAM(get_logger(), "publishing JointState" << joint_state_msg.position[0]);
     joint_state_pub_->publish(joint_state_msg);
   }
 };
