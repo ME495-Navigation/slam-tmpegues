@@ -131,11 +131,11 @@ Transform2D integrate_twist(const Twist2D & twist)
     return Transform2D(Vector2D{twist.x, twist.y}, 0.0);
   }
 
-  double sinom{std::sin(twist.omega)};
-  double cosom{std::cos(twist.omega)};
+  auto sinom{std::sin(twist.omega)};
+  auto cosom{std::cos(twist.omega)};
 
-  double x = (twist.x * sinom + twist.y * (1.0 - cosom)) / twist.omega;
-  double y = (-twist.y * sinom + twist.x * (1.0 - cosom)) / twist.omega;
+  auto x = (twist.x * sinom + twist.y * (1.0 - cosom)) / twist.omega;
+  auto y = (-twist.y * sinom + twist.x * (1.0 - cosom)) / twist.omega;
 
   Transform2D tf(Vector2D{x, y}, twist.omega);
   return tf;
@@ -143,9 +143,9 @@ Transform2D integrate_twist(const Twist2D & twist)
 
 std::istream & operator>>(std::istream & is, Transform2D & tf)
 {
-  double x{0.0};
-  double y{0.0};
-  double theta{0.0};
+  auto x{0.0};
+  auto y{0.0};
+  auto theta{0.0};
 
   // If first character is '{', get rid of it and the following '<'
   if (is.peek() == '{') {

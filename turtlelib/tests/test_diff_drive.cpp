@@ -83,36 +83,31 @@ TEST_CASE("Test fk", "DiffDrive::fk")
 TEST_CASE("Test ik", "DiffDrive::ik")
 {
   DiffDrive dd{2.0, 1.0};
-  Twist2D body_tw{0.0, 1, 0.0};
 
-  auto speeds{dd.ik(body_tw)};  // Pure translation +
-  REQUIRE(speeds.left == 1);
+  auto speeds{DiffDrive{2.0, 1.0}.ik({0.0, 1, 0.0})}; // Pure translation +
+  REQUIRE(dd.ik({0.0, 1, 0.0}).left == 1);
   REQUIRE(speeds.right == 1);
 
-  speeds = dd.ik(-1 * body_tw);  // Pure translation -
+  speeds = DiffDrive{2.0, 1.0}.ik({0.0, -1.0, 0.0}); // Pure translation -
   REQUIRE(speeds.left == -1);
   REQUIRE(speeds.right == -1);
 
-  Twist2D body_tw2{1.0, 0.0, 0.0};  // Pure rotation  +
-  speeds = dd.ik(body_tw2);
+  speeds = DiffDrive{2.0, 1.0}.ik({1.0, 0.0, 0.0});
   REQUIRE(speeds.left == -1);
   REQUIRE(speeds.right == 1);
 
-  speeds = dd.ik(-1 * body_tw2);  // Pure rotation -
+  speeds = DiffDrive{2.0, 1.0}.ik({-1.0, 0.0, 0.0}); // Pure rotation -
   REQUIRE(speeds.left == 1);
   REQUIRE(speeds.right == -1);
 
-  Twist2D body_tw3{pi / 2, pi / 2, 0.0};
-  speeds = dd.ik(body_tw3);
+  speeds = DiffDrive{2.0, 1.0}.ik({pi / 2, pi / 2, 0.0});
   REQUIRE(speeds.left == 0);
   REQUIRE(speeds.right == pi);
 
-  Twist2D body_tw4{-pi / 2, -pi / 2, 0.0};
-  speeds = dd.ik(body_tw4);
+  // Twist2D body_tw4{-pi / 2, -pi / 2, 0.0};
+  speeds = DiffDrive{2.0, 1.0}.ik({-pi / 2, -pi / 2, 0.0});
   REQUIRE(speeds.left == 0);
   REQUIRE(speeds.right == -pi);
 
-  Twist2D body_tw5{1, 1, 1};
-  speeds = dd.ik(body_tw5);
-  REQUIRE_THROWS_AS(dd.ik(body_tw5), std::logic_error);
+  REQUIRE_THROWS_AS(dd.ik({1, 1, 1}), std::logic_error);
 }

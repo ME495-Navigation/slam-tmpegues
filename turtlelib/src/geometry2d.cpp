@@ -72,7 +72,10 @@ double dot(const Vector2D & vect1, const Vector2D & vect2)
   return {vect1.x * vect2.x + vect1.y * vect2.y};
 }
 
-double magnitude(Vector2D & vect) {return std::sqrt((std::pow(vect.x, 2) + std::pow(vect.y, 2)));}
+double magnitude(Vector2D & vect)
+{
+  return std::sqrt((std::pow(vect.x, 2) + std::pow(vect.y, 2)));
+}
 
 double angle(Vector2D & vect1, Vector2D & vect2)
 {
