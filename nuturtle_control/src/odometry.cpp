@@ -90,7 +90,8 @@ private:
     [[maybe_unused]] const std::shared_ptr<nuturtle_control_interfaces::srv::InitialPose::Response>
     response)
   { // Reset the internal odom state to the newly received initial position
-    RCLCPP_INFO_STREAM(get_logger(), "Initial pose service" << request->x0 << request->y0 << request->theta0);
+    RCLCPP_INFO_STREAM(get_logger(),
+      "Initial pose service" << request->x0 << request->y0 << request->theta0);
     double x = request->x0;
     double y = request->y0;
     double theta = request->theta0;

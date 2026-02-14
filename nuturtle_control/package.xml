@@ -11,9 +11,8 @@
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
-  <test_depend>catch_ros2</test_depend>
 
-
+  <depend>catch_ros2</depend>
   <depend>ros2launch</depend>
   <depend>nuturtle_description</depend>
   <depend>nuturtlebot_msgs</depend>
@@ -21,7 +20,7 @@
   <depend>sensor_msgs</depend>
   <depend>nav_msgs</depend>
   <depend>nuturtle_control_interfaces</depend>
-ros2
+
 
   <depend>turtlelib</depend>
   <depend>tf2</depend>
