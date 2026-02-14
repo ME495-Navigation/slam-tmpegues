@@ -58,9 +58,6 @@ if(BUILD_TESTING)
     # register the test with CTest, telling it what executable to run
     add_test(NAME check_turtlelib COMMAND test_turtlelib)
 
-
-
-
 endif()
 
 target_compile_options(turtlelib PUBLIC -Wall -Wextra -pedantic)

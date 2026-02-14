@@ -21,12 +21,15 @@ find_package(nuturtlebot_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(catch_ros2 REQUIRED)
+find_package(Catch2 REQUIRED)
+
 
 
 add_executable(turtle_control src/turtle_control.cpp)
 add_executable(odometry src/odometry.cpp)
 add_executable(circle src/circle.cpp)
-
+add_executable(turtle_control_test test/turtle_control_test.cpp)
 
 
 target_link_libraries(turtle_control
@@ -58,11 +61,23 @@ target_link_libraries(circle
                       ${sensor_msgs_TARGETS}
                       ${nuturtle_control_interfaces_TARGETS})
 
+target_link_libraries(turtle_control_test
+                      PUBLIC
+                      Catch2::Catch2
+                      rclcpp::rclcpp
+                      catch_ros2::catch_ros2_with_node_main
+                      ${geometry_msgs_TARGETS}
+                      ${nuturtlebot_msgs_TARGETS})
+
+catch_ros2_add_integration_test(turtle_control_test
+  LAUNCH_FILE turtle_control_test.launch.xml)
+
 
 install(TARGETS
   circle
   turtle_control
   odometry
+  turtle_control_test
   DESTINATION lib/${PROJECT_NAME})
 
 if(NOT CMAKE_BUILD_TYPE)        # If no build type is set, set one

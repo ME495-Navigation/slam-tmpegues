@@ -1,0 +1,14 @@
+<launch>
+    <catch2_launch_file description='Testing turtle_control node'/>
+
+    <node
+        pkg='nuturtle_control'
+        exec='turtle_control'
+    />
+
+    <catch2_integration_test_node
+        pkg='nuturtle_control'
+        exec='turtle_control_test'
+    />
+
+</launch>
