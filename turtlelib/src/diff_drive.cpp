@@ -72,8 +72,8 @@ wheelspeed DiffDrive::ik(Twist2D body_tw)
   if (std::abs(body_tw.y) >= 0.00001) {
     throw std::logic_error("DiffDrive::ik: Requested body twist cannot have non-zero y component.");
   } else {  // u = H*V_b
-    auto left = 1 / radius * (body_tw.x - body_tw.omega * track / 2);
-    auto right = 1 / radius * (body_tw.x + body_tw.omega * track / 2);
+    auto left = (body_tw.x - body_tw.omega * track / 2) / radius;
+    auto right = (body_tw.x + body_tw.omega * track / 2) / radius;
 
     return {left, right};
   }
