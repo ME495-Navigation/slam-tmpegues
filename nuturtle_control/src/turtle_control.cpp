@@ -98,13 +98,13 @@ private:
 
   void sensor_data_cb_(const std::shared_ptr<nuturtlebot_msgs::msg::SensorData> msg)
   {
-    RCLCPP_INFO_STREAM(get_logger(), "SensorData received: " << msg);
+    RCLCPP_DEBUG_STREAM(get_logger(), "SensorData received: " << msg);
 
     auto time_diff{
       msg->stamp.sec + msg->stamp.nanosec / 10e9 - last_time.sec - last_time.nanosec / 10e9};
 
     dd_calc.fk(
-      msg->left_encoder * encoder_ticks_per_rad, msg->right_encoder * encoder_ticks_per_rad,
+      msg->left_encoder / encoder_ticks_per_rad, msg->right_encoder / encoder_ticks_per_rad,
       time_diff);
 
     auto joint_state_msg = sensor_msgs::msg::JointState();

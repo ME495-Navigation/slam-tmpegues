@@ -2,6 +2,9 @@
 #include "rclcpp/rclcpp.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "nuturtlebot_msgs/msg/wheel_commands.hpp"
+#include "nuturtlebot_msgs/msg/sensor_data.hpp"
+#include "sensor_msgs/msg/joint_state.hpp"
+
 #include <catch2/catch_approx.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/matchers/catch_matchers_floating_point.hpp>
@@ -11,9 +14,12 @@
 using namespace std::chrono_literals;
 using namespace Catch::Matchers;
 
+const auto TEST_DURATION = 20;
+rclcpp::Time last_time = rclcpp::Clock().now();
+
 std::shared_ptr<nuturtlebot_msgs::msg::WheelCommands> received_msg;
 auto is_msg_received{false};
-const auto TEST_DURATION = 20;
+
 
 void wheel_cmd_cb_(std::shared_ptr<nuturtlebot_msgs::msg::WheelCommands> msg)
 {
@@ -31,7 +37,6 @@ TEST_CASE("Test zero twist to wheel cmd", "[integration]")
     node->create_subscription<nuturtlebot_msgs::msg::WheelCommands>("wheel_cmd", 10, wheel_cmd_cb_);
 
   rclcpp::Time start_time = rclcpp::Clock().now();
-  rclcpp::Time last_time = rclcpp::Clock().now();
   while (
     rclcpp::ok() &&
     ((rclcpp::Clock().now() - start_time) < rclcpp::Duration::from_seconds(TEST_DURATION)) &&
@@ -66,11 +71,9 @@ TEST_CASE("Test positive translation", "[integration]")
   is_msg_received = false;
 
   node->declare_parameter("wheel_radius", 0.033);
-  node->declare_parameter("motor_cmd_max", 256);
   node->declare_parameter("motor_cmd_per_rad_sec", 0.024);
 
   auto wheel_radius = node->get_parameter("wheel_radius").as_double();
-  auto motor_cmd_max = node->get_parameter("motor_cmd_max").as_int();
   auto motor_cmd_per_rad_sec = node->get_parameter("motor_cmd_per_rad_sec").as_double();
 
   auto cmd_vel_pub_ = node->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 10);
@@ -83,7 +86,6 @@ TEST_CASE("Test positive translation", "[integration]")
   twist_msg.linear.x = wheel_radius; // 1 radian rotation to make other calculations easier
 
   rclcpp::Time start_time = rclcpp::Clock().now();
-  rclcpp::Time last_time = rclcpp::Clock().now();
   while (
     rclcpp::ok() &&
     ((rclcpp::Clock().now() - start_time) < rclcpp::Duration::from_seconds(TEST_DURATION)) &&
@@ -118,11 +120,9 @@ TEST_CASE("Test negative translation", "[integration]")
   is_msg_received = false;
 
   node->declare_parameter("wheel_radius", 0.033);
-  node->declare_parameter("motor_cmd_max", 256);
   node->declare_parameter("motor_cmd_per_rad_sec", 0.024);
 
   auto wheel_radius = node->get_parameter("wheel_radius").as_double();
-  auto motor_cmd_max = node->get_parameter("motor_cmd_max").as_int();
   auto motor_cmd_per_rad_sec = node->get_parameter("motor_cmd_per_rad_sec").as_double();
 
   auto cmd_vel_pub_ = node->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 10);
@@ -134,7 +134,6 @@ TEST_CASE("Test negative translation", "[integration]")
   twist_msg.linear.x = -1.0 * wheel_radius; // 1 radian rotation to make other calculations easier
 
   rclcpp::Time start_time = rclcpp::Clock().now();
-  rclcpp::Time last_time = rclcpp::Clock().now();
   while (
     rclcpp::ok() &&
     ((rclcpp::Clock().now() - start_time) < rclcpp::Duration::from_seconds(TEST_DURATION)) &&
@@ -171,12 +170,10 @@ TEST_CASE("Test positive rotation", "[integration]")
   is_msg_received = false;
 
   node->declare_parameter("wheel_radius", 0.033);
-  node->declare_parameter("motor_cmd_max", 256);
   node->declare_parameter("motor_cmd_per_rad_sec", 0.024);
   node->declare_parameter("track_width", 0.16);
 
   auto wheel_radius = node->get_parameter("wheel_radius").as_double();
-  auto motor_cmd_max = node->get_parameter("motor_cmd_max").as_int();
   auto motor_cmd_per_rad_sec = node->get_parameter("motor_cmd_per_rad_sec").as_double();
   auto track_width = node->get_parameter("track_width").as_double();
 
@@ -189,7 +186,6 @@ TEST_CASE("Test positive rotation", "[integration]")
   twist_msg.angular.z = 1; // 1 radian rotation to make other calculations easier
 
   rclcpp::Time start_time = rclcpp::Clock().now();
-  rclcpp::Time last_time = rclcpp::Clock().now();
   while (
     rclcpp::ok() &&
     ((rclcpp::Clock().now() - start_time) < rclcpp::Duration::from_seconds(TEST_DURATION)) &&
@@ -210,4 +206,48 @@ TEST_CASE("Test positive rotation", "[integration]")
     0.000001));
   REQUIRE_THAT(received_msg4->right_velocity,
     WithinAbs(static_cast<int>(track_width / 2 / wheel_radius / motor_cmd_per_rad_sec), 0.000001));
+}
+
+std::shared_ptr<sensor_msgs::msg::JointState> received_msg5;
+
+void joint_states_cb_(std::shared_ptr<sensor_msgs::msg::JointState> msg)
+{
+  received_msg5 = msg;
+  is_msg_received = true;
+}
+
+TEST_CASE("Test 0 encoder to 0 joint_state", "[integration]")
+{
+  auto node = rclcpp::Node::make_shared("integration_test_node");
+
+  node->declare_parameter("encoder_ticks_per_rad", 651.89864);
+
+  auto encoder_ticks_per_rad = node->get_parameter("encoder_ticks_per_rad").as_double();
+
+  is_msg_received = false;
+  auto sensor_data_pub = node->create_publisher<nuturtlebot_msgs::msg::SensorData>("sensor_data",
+    10);
+  auto joint_state_sub_ =
+    node->create_subscription<sensor_msgs::msg::JointState>("joint_states", 10,
+                                                              joint_states_cb_);
+
+  auto sensor_msg{nuturtlebot_msgs::msg::SensorData()};
+  sensor_msg.left_encoder = encoder_ticks_per_rad * 2 * std::numbers::pi;
+  sensor_msg.right_encoder = encoder_ticks_per_rad * (2 * std::numbers::pi / 4);
+
+  rclcpp::Time start_time = rclcpp::Clock().now();
+  while (
+    rclcpp::ok() &&
+    ((rclcpp::Clock().now() - start_time) < rclcpp::Duration::from_seconds(TEST_DURATION)) &&
+    !is_msg_received)
+  {
+    if ((rclcpp::Clock().now() - last_time) > rclcpp::Duration::from_seconds(1)) { // Only send a message every three seconds
+      last_time = rclcpp::Clock().now();
+      sensor_data_pub->publish(sensor_msg);
+    }
+    rclcpp::spin_some(node);
+  }
+
+  REQUIRE_THAT(received_msg5->position.at(0), WithinAbs(0.0, 0.01));  // TODO: Ask Matt if this reduced accuracy is a mistake
+  REQUIRE_THAT(received_msg5->position.at(1), WithinAbs(std::numbers::pi / 2, 0.01));
 }

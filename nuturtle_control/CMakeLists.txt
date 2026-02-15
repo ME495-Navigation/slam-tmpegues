@@ -71,7 +71,8 @@ target_link_libraries(turtle_control_test
                       rclcpp::rclcpp
                       catch_ros2::catch_ros2_with_node_main
                       ${geometry_msgs_TARGETS}
-                      ${nuturtlebot_msgs_TARGETS})
+                      ${nuturtlebot_msgs_TARGETS}
+                      ${sensor_msgs_TARGETS})
 
 catch_ros2_add_integration_test(turtle_control_test
   LAUNCH_FILE turtle_control_test.launch.xml)
