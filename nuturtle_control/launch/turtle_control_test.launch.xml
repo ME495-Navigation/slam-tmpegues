@@ -1,14 +1,23 @@
 <launch>
     <catch2_launch_file description='Testing turtle_control node'/>
+        <arg name="diff_drive_params"
+             default="diff_params.yaml"
+             description="Which yaml file (in pkg nuturltebot_description) should be used for the diff drive robot parameters?"/>
+
 
     <node
         pkg='nuturtle_control'
         exec='turtle_control'
-    />
+    >
+        <param from="$(find-pkg-share nuturtle_description)/config/$(var diff_drive_params)"/>
+    </node>
 
     <catch2_integration_test_node
         pkg='nuturtle_control'
         exec='turtle_control_test'
-    />
+    >
+        <param from="$(find-pkg-share nuturtle_description)/config/$(var diff_drive_params)"/>
+
+    </catch2_integration_test_node>
 
 </launch>

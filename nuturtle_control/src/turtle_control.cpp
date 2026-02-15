@@ -41,7 +41,9 @@ public:
     dd_calc = turtlelib::DiffDrive(
       track_width,
       wheel_radius);
-// DiffDrive initial wheel positions will need to be set once the first encoder readings are received
+    RCLCPP_INFO_STREAM(get_logger(), "Turtle Control node initialized");
+
+    // DiffDrive initial wheel positions will need to be set once the first encoder readings are received
   }
 
 private:
