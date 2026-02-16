@@ -91,22 +91,27 @@ private:
     response)
   { // Reset the internal odom state to the newly received initial position
     RCLCPP_INFO_STREAM(get_logger(),
-      "Initial pose service" << request->x0 << request->y0 << request->theta0);
-    double x = request->x0;
-    double y = request->y0;
-    double theta = request->theta0;
+      "Initial pose service: " << request->x0 << " " << request->y0 << " " << request->theta0);
+
     dd_calc = turtlelib::DiffDrive(track_width, wheel_radius,
-      turtlelib::Transform2D(turtlelib::Vector2D(x, y), theta));
+      turtlelib::Transform2D(turtlelib::Vector2D(request->x0, request->y0), request->theta0));
 
-    // odom_state.pose.pose.position.x = request->x0;
-    // odom_state.pose.pose.position.y = request->y0;
+    RCLCPP_INFO_STREAM(get_logger(), "New dd: " << dd_calc.get_transform().translation() );
 
-    // tf2::Quaternion q;
-    // q.setRPY(0, 0, request->theta0);
-    // odom_state.pose.pose.orientation.x = q.x();
-    // odom_state.pose.pose.orientation.y = q.y();
-    // odom_state.pose.pose.orientation.z = q.z();
-    // odom_state.pose.pose.orientation.w = q.w();
+    odom_state.pose.pose.position.x = request->x0;
+    odom_state.pose.pose.position.y = request->y0;
+
+    RCLCPP_INFO_STREAM(get_logger(),
+      "Odom state: " << odom_state.pose.pose.position.x << " " << odom_state.pose.pose.position.y);
+
+    tf2::Quaternion q;
+    q.setRPY(0, 0, request->theta0);
+    odom_state.pose.pose.orientation.x = q.x();
+    odom_state.pose.pose.orientation.y = q.y();
+    odom_state.pose.pose.orientation.z = q.z();
+    odom_state.pose.pose.orientation.w = q.w();
+
+
   }
 
   void joint_state_cb_(const std::shared_ptr<sensor_msgs::msg::JointState> msg)
@@ -120,18 +125,19 @@ private:
       10e9};
 
     dd_calc.fk(msg->position[0], msg->position[1], time_diff);
+  }
+
+
+  void timer_cb_()
+  {
+    tf_broadcaster_->sendTransform((turtlelib_transform2d_to_msg(dd_calc.get_transform())));
 
     // Convert turtlelib format to ROS messages
     odom_state.pose.pose = turtlelib_transform_to_pose(dd_calc.get_transform());
     odom_state.twist.twist = turtlelib_twist2d_to_msg(dd_calc.get_twist());
-    odom_state.header.stamp.sec = msg->header.stamp.sec;
-    odom_state.header.stamp.nanosec = msg->header.stamp.nanosec;
+    odom_state.header.stamp = this->get_clock()->now();
 
     odom_pub_->publish(odom_state);
-  }
-  void timer_cb_()
-  {
-    tf_broadcaster_->sendTransform((turtlelib_transform2d_to_msg(dd_calc.get_transform())));
   }
   geometry_msgs::msg::Pose turtlelib_transform_to_pose(
     const turtlelib::Transform2D tf)

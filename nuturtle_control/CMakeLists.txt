@@ -34,6 +34,8 @@ add_executable(turtle_control src/turtle_control.cpp)
 add_executable(odometry src/odometry.cpp)
 add_executable(circle src/circle.cpp)
 add_executable(turtle_control_test test/turtle_control_test.cpp)
+add_executable(turtle_odom_test_node test/turtle_odom_test_node.cpp)
+
 
 
 target_link_libraries(turtle_control
@@ -74,6 +76,19 @@ target_link_libraries(turtle_control_test
                       ${nuturtlebot_msgs_TARGETS}
                       ${sensor_msgs_TARGETS})
 
+target_link_libraries(turtle_odom_test_node
+                      PUBLIC
+                      tf2::tf2
+                      tf2_ros::tf2_ros
+                      Catch2::Catch2
+                      rclcpp::rclcpp
+                      catch_ros2::catch_ros2_with_node_main
+                      ${geometry_msgs_TARGETS}
+                      ${nuturtlebot_msgs_TARGETS}
+                      ${sensor_msgs_TARGETS}
+                      ${nav_msgs_TARGETS}
+                      ${nuturtle_control_interfaces_TARGETS})
+
 catch_ros2_add_integration_test(turtle_control_test
   LAUNCH_FILE turtle_control_test.launch.xml)
 
@@ -83,6 +98,7 @@ install(TARGETS
   turtle_control
   odometry
   turtle_control_test
+  turtle_odom_test_node
   DESTINATION lib/${PROJECT_NAME})
 
 if(NOT CMAKE_BUILD_TYPE)        # If no build type is set, set one

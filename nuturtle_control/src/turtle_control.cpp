@@ -67,7 +67,7 @@ private:
 
   void cmd_vel_cb_(const std::shared_ptr<geometry_msgs::msg::Twist> msg)
   {
-    RCLCPP_INFO_STREAM(get_logger(), "Twist received: " << msg);
+    RCLCPP_DEBUG_STREAM(get_logger(), "Twist received: " << msg);
     if (msg->angular.x or msg->angular.y or msg->linear.z) {
       RCLCPP_ERROR_STREAM(get_logger(), "Please provide a twist in the x-y plane.");
       return;

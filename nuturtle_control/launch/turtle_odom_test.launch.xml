@@ -1,5 +1,5 @@
 <launch>
-    <catch2_launch_file description='Testing turtle_control node'/>
+    <catch2_launch_file description='Testing odometry node'/>
         <arg name="diff_drive_params"
              default="diff_params.yaml"
              description="Which yaml file (in pkg nuturltebot_description) should be used for the diff drive robot parameters?"/>
@@ -7,14 +7,17 @@
 
     <node
         pkg='nuturtle_control'
-        exec='turtle_control'
+        exec='odometry'
         >
+        <param name="wheel_left" value="blue/wheel_left_joint"/>
+        <param name="wheel_right" value="blue/wheel_right_joint"/>
+        <param name="body_id" value="'blue/base_footprint'"/>
         <param from="$(find-pkg-share nuturtle_description)/config/$(var diff_drive_params)"/>
     </node>
 
     <catch2_integration_test_node
         pkg='nuturtle_control'
-        exec='turtle_control_test'
+        exec='turtle_odom_test_node'
         >
         <param from="$(find-pkg-share nuturtle_description)/config/$(var diff_drive_params)"/>
 
