@@ -1,0 +1,19 @@
+<launch>
+    <catch2_launch_file description='Testing circle node'/>
+
+    <node
+        pkg='nuturtle_control'
+        exec='circle'
+        >
+        <param name="frequency" value="100"/>
+    </node>
+
+    <catch2_integration_test_node
+        pkg='nuturtle_control'
+        exec='turtle_circle_test'
+        >
+        <param name="frequency" value="100"/>
+
+    </catch2_integration_test_node>
+
+</launch>

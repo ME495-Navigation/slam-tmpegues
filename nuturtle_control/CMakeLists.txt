@@ -35,6 +35,8 @@ add_executable(odometry src/odometry.cpp)
 add_executable(circle src/circle.cpp)
 add_executable(turtle_control_test test/turtle_control_test.cpp)
 add_executable(turtle_odom_test_node test/turtle_odom_test_node.cpp)
+add_executable(turtle_circle_test test/turtle_circle_test.cpp)
+
 
 
 
@@ -89,6 +91,13 @@ target_link_libraries(turtle_odom_test_node
                       ${nav_msgs_TARGETS}
                       ${nuturtle_control_interfaces_TARGETS})
 
+target_link_libraries(turtle_circle_test
+                      PUBLIC
+                      Catch2::Catch2
+                      rclcpp::rclcpp
+                      catch_ros2::catch_ros2_with_node_main
+                      ${geometry_msgs_TARGETS})
+
 catch_ros2_add_integration_test(turtle_control_test
   LAUNCH_FILE turtle_control_test.launch.xml)
 
@@ -99,6 +108,7 @@ install(TARGETS
   odometry
   turtle_control_test
   turtle_odom_test_node
+  turtle_circle_test
   DESTINATION lib/${PROJECT_NAME})
 
 if(NOT CMAKE_BUILD_TYPE)        # If no build type is set, set one

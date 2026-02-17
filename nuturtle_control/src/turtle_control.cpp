@@ -100,7 +100,7 @@ private:
   {
     RCLCPP_DEBUG_STREAM(get_logger(), "SensorData received: " << msg);
 
-    auto time_diff{
+    float time_diff{
       msg->stamp.sec + msg->stamp.nanosec / 10e9 - last_time.sec - last_time.nanosec / 10e9};
 
     dd_calc.fk(
