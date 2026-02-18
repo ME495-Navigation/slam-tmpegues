@@ -29,10 +29,13 @@ public:
     declare_parameter("x0", 0.0);
     declare_parameter("y0", 0.0);
     declare_parameter("theta0", 0.0);
-    declare_parameter("motor_cmd_per_rad_sec", 0.024);
 
+    declare_parameter("motor_cmd_per_rad_sec", 0.024);
     declare_parameter("wheel_radius", 0.033);
     declare_parameter("track_width", 0.16);
+    declare_parameter("encoder_ticks_per_rad", 651.89864);
+
+
 
     declare_parameter("external_jsp", false);
 
@@ -95,6 +98,7 @@ public:
     wheel_radius = get_parameter("wheel_radius").as_double();
     track_width = get_parameter("track_width").as_double();
     motor_cmd_per_rad_sec = get_parameter("motor_cmd_per_rad_sec").as_double();
+    encoder_ticks_per_rad = get_parameter("encoder_ticks_per_rad").as_double();
 
     RCLCPP_INFO_STREAM(get_logger(), "Attempt Service");
 
@@ -115,8 +119,6 @@ public:
 
     auto timer_callback = [this]()
       -> void {  // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
-        auto t = tf2d_to_pose(red_dd_->get_transform());
-        tf_broadcaster_->sendTransform(t);
         if (!external_jsp)
         {
           auto joint_state_msg = sensor_msgs::msg::JointState();
@@ -133,6 +135,14 @@ public:
           joint_state_pub_->publish(joint_state_msg);
           RCLCPP_INFO_STREAM(get_logger(), "publishing JointState" << joint_state_msg.position[0]);
         }
+        auto sensor_msg = nuturtlebot_msgs::msg::SensorData();
+        sensor_msg.stamp = get_clock()->now();
+        sensor_msg.left_encoder = red_dd_->get_wheels().left * encoder_ticks_per_rad;
+        sensor_msg.left_encoder = red_dd_->get_wheels().right * encoder_ticks_per_rad;
+        sensor_pub_->publish(sensor_msg);
+
+        auto t = tf2d_to_pose(red_dd_->get_transform());
+        tf_broadcaster_->sendTransform(t);
         timestep_pub_->publish(timestep);
         timestep.data++;
       };
@@ -175,6 +185,7 @@ private:
   double track_width{0.0};
   std::unique_ptr<turtlelib::DiffDrive> red_dd_;
   double motor_cmd_per_rad_sec{0.0};
+  double encoder_ticks_per_rad{0.0};
 
   // Timer rate
   int rate{};

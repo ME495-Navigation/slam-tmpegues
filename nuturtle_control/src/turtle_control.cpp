@@ -100,7 +100,7 @@ private:
   {
     RCLCPP_DEBUG_STREAM(get_logger(), "SensorData received: " << msg);
 
-    float time_diff{
+    auto time_diff{
       msg->stamp.sec + msg->stamp.nanosec / 10e9 - last_time.sec - last_time.nanosec / 10e9};
 
     dd_calc.fk(
@@ -110,8 +110,8 @@ private:
     auto joint_state_msg = sensor_msgs::msg::JointState();
     joint_state_msg.header.stamp = msg->stamp;
 
-    joint_state_msg.name.push_back("blue/wheel_left_joint");
-    joint_state_msg.name.push_back("blue/wheel_right_joint");
+    joint_state_msg.name.push_back("wheel_left_joint");
+    joint_state_msg.name.push_back("wheel_right_joint");
 
     joint_state_msg.position.push_back(dd_calc.get_wheels().left);
     joint_state_msg.position.push_back(dd_calc.get_wheels().right);
