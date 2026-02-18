@@ -11,7 +11,7 @@
 #include "nuturtlebot_msgs/msg/wheel_commands.hpp"
 #include "nuturtlebot_msgs/msg/sensor_data.hpp"
 #include "visualization_msgs/msg/marker_array.hpp"
-#include "nuturtle_control_interfaces/srv/initial_pose.hpp"
+#include "sensor_msgs/msg/joint_state.hpp"
 
 class nusim_node : public rclcpp::Node
 {
@@ -34,6 +34,8 @@ public:
     declare_parameter("wheel_radius", 0.033);
     declare_parameter("track_width", 0.16);
 
+    declare_parameter("external_jsp", false);
+
     // Create all publishers/broadcasters
     wheel_cmd_sub_ = create_subscription<nuturtlebot_msgs::msg::WheelCommands>("red/wheel_cmd",
       10, std::bind(&nusim_node::wheel_cmd_cb_, this, std::placeholders::_1));
@@ -54,6 +56,15 @@ public:
     timestep_pub_ = create_publisher<std_msgs::msg::UInt64>("~/timestep", 10);
 
     sensor_pub_ = create_publisher<nuturtlebot_msgs::msg::SensorData>("red/sensor_data", 10);
+
+    external_jsp = get_parameter("external_jsp").as_bool();
+
+    if (!external_jsp)
+    {
+      joint_state_pub_ = create_publisher<sensor_msgs::msg::JointState>("red/joint_states", 10);
+
+
+    }
 
     // initial_pose_srv_cli_ = create_client<nuturtle_control_interfaces::srv::InitialPose>("initial_pose");
     // while (!initial_pose_srv_cli_->wait_for_service(std::chrono::seconds(5)))
@@ -106,6 +117,22 @@ public:
       -> void {  // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
         auto t = tf2d_to_pose(red_dd_->get_transform());
         tf_broadcaster_->sendTransform(t);
+        if (!external_jsp)
+        {
+          auto joint_state_msg = sensor_msgs::msg::JointState();
+          joint_state_msg.header.stamp = get_clock()->now();
+
+          joint_state_msg.name.push_back("wheel_left_joint");
+          joint_state_msg.name.push_back("wheel_right_joint");
+
+          joint_state_msg.position.push_back(red_dd_->get_wheels().left);
+          joint_state_msg.position.push_back(red_dd_->get_wheels().right);
+
+          // joint_state_msg.velocity.push_back(red_dd_->get_wheelspeed().left);
+          // joint_state_msg.velocity.push_back(red_dd_->get_wheelspeed().right);
+          joint_state_pub_->publish(joint_state_msg);
+          RCLCPP_INFO_STREAM(get_logger(), "publishing JointState" << joint_state_msg.position[0]);
+        }
         timestep_pub_->publish(timestep);
         timestep.data++;
       };
@@ -129,6 +156,10 @@ private:
   rclcpp::Publisher<nuturtlebot_msgs::msg::SensorData>::SharedPtr sensor_pub_;
   rclcpp::Service<std_srvs::srv::Empty>::SharedPtr reset_service_;
   std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
+
+  rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr joint_state_pub_;
+
+  bool external_jsp {false};
 
   // Wall dimensions
   double arena_x_length{3};
@@ -254,9 +285,10 @@ private:
     }
   }
 
-  geometry_msgs::msg::TransformStamped tf2d_to_pose(
-    turtlelib::Transform2D tf)
+  geometry_msgs::msg::TransformStamped tf2d_to_pose(turtlelib::Transform2D tf)
   {
+    RCLCPP_INFO_STREAM(get_logger(), "red pose: " << tf.translation() << " " << tf.rotation());
+
     geometry_msgs::msg::TransformStamped t{};
     t.header.stamp = get_clock()->now();
     t.header.frame_id = "nusim/world";
@@ -286,11 +318,11 @@ private:
     auto x = get_parameter("x0").as_double();
     auto y = get_parameter("y0").as_double();
     auto theta = get_parameter("theta0").as_double();
-    auto initial_pose_rq =
-      std::make_shared<nuturtle_control_interfaces::srv::InitialPose::Request>();
-    initial_pose_rq->x0 = x;
-    initial_pose_rq->y0 = y;
-    initial_pose_rq->theta0 = theta;
+    // auto initial_pose_rq =
+    //   std::make_shared<nuturtle_control_interfaces::srv::InitialPose::Request>();
+    // initial_pose_rq->x0 = x;
+    // initial_pose_rq->y0 = y;
+    // initial_pose_rq->theta0 = theta;
     // auto result_future = initial_pose_srv_cli_->async_send_request(initial_pose_rq, std::bind(&nusim_node::initial_pose_response_cb_,
     //                                                                                           this, std::placeholders::_1));
     // rclcpp::spin_until_future_complete(get_node_base_interface(), result_future);

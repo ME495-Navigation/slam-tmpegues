@@ -35,7 +35,8 @@ find_package(ament_cmake REQUIRED)
                         ${std_srvs_TARGETS}
                         ${std_msgs_TARGETS}
                         ${visualization_msgs_TARGETS}
-                        ${geometry_msgs_TARGETS})
+                        ${geometry_msgs_TARGETS}
+                        ${sensor_msgs_TARGETS})
 
 install(TARGETS
   nusim
