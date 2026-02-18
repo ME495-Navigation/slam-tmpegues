@@ -34,7 +34,7 @@ private:
   int frequency {100};
   double velocity {1.0};
   double radius {1.0};
-  bool stopped = true;
+  bool stopped = false;
   geometry_msgs::msg::Twist circle_twist{geometry_msgs::msg::Twist()};
 
   void control_cb_(
@@ -42,6 +42,7 @@ private:
     [[maybe_unused]] const std::shared_ptr<nuturtle_control_interfaces::srv::Control::Response>
     response)
   {
+    stopped = false;
     circle_twist.angular.z = request->velocity / request->radius;
     circle_twist.linear.x = request->velocity;
   }
@@ -50,6 +51,7 @@ private:
     [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Empty::Request> request,
     [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Empty::Response> response)
   {
+    stopped = false;
     circle_twist.angular.z *= -1;
     circle_twist.linear.x *= -1;
     RCLCPP_INFO_STREAM(get_logger(), "Reversed");
@@ -59,9 +61,7 @@ private:
     [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Empty::Request> request,
     [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Empty::Response> response)
   {
-    stopped = !stopped;
-    RCLCPP_INFO_STREAM(get_logger(),
-      "Stop service, circle node stopped is now (0 stopped, 1 moving): " << !stopped);
+    stopped = true;
   }
 
   void timer_cb_()
