@@ -110,7 +110,7 @@ public:
     //                                                                                           this, std::placeholders::_1));
     // rclcpp::spin_until_future_complete(get_node_base_interface(), result_future);
 
-    red_dd_ = std::make_unique<turtlelib::DiffDrive>(track_width, wheel_radius,
+    red_dd = turtlelib::DiffDrive(track_width, wheel_radius,
       turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta));
 
     last_time = get_clock()->now();
@@ -127,21 +127,21 @@ public:
           joint_state_msg.name.push_back("wheel_left_joint");
           joint_state_msg.name.push_back("wheel_right_joint");
 
-          joint_state_msg.position.push_back(red_dd_->get_wheels().left);
-          joint_state_msg.position.push_back(red_dd_->get_wheels().right);
+          joint_state_msg.position.push_back(red_dd.get_wheels().left);
+          joint_state_msg.position.push_back(red_dd.get_wheels().right);
 
-          // joint_state_msg.velocity.push_back(red_dd_->get_wheelspeed().left);
-          // joint_state_msg.velocity.push_back(red_dd_->get_wheelspeed().right);
+          // joint_state_msg.velocity.push_back(red_dd.get_wheelspeed().left);
+          // joint_state_msg.velocity.push_back(red_dd.get_wheelspeed().right);
           joint_state_pub_->publish(joint_state_msg);
           RCLCPP_INFO_STREAM(get_logger(), "publishing JointState" << joint_state_msg.position[0]);
         }
         auto sensor_msg = nuturtlebot_msgs::msg::SensorData();
         sensor_msg.stamp = get_clock()->now();
-        sensor_msg.left_encoder = red_dd_->get_wheels().left * encoder_ticks_per_rad;
-        sensor_msg.left_encoder = red_dd_->get_wheels().right * encoder_ticks_per_rad;
+        sensor_msg.left_encoder = red_dd.get_wheels().left * encoder_ticks_per_rad;
+        sensor_msg.left_encoder = red_dd.get_wheels().right * encoder_ticks_per_rad;
         sensor_pub_->publish(sensor_msg);
 
-        auto t = tf2d_to_pose(red_dd_->get_transform());
+        auto t = tf2d_to_pose(red_dd.get_transform());
         tf_broadcaster_->sendTransform(t);
         timestep_pub_->publish(timestep);
         timestep.data++;
@@ -183,7 +183,10 @@ private:
   // Red robot info
   double wheel_radius{0.0};
   double track_width{0.0};
-  std::unique_ptr<turtlelib::DiffDrive> red_dd_;
+  turtlelib::DiffDrive red_dd{
+      track_width,
+      wheel_radius};
+  ;
   double motor_cmd_per_rad_sec{0.0};
   double encoder_ticks_per_rad{0.0};
 
@@ -196,12 +199,18 @@ private:
   void wheel_cmd_cb_(const std::shared_ptr<nuturtlebot_msgs::msg::WheelCommands> msg)
   {
     // Receive commands, convert to radians, then fk
+    RCLCPP_INFO_STREAM(get_logger(), "Received wheel_cmd " << msg->left_velocity << " " << msg->right_velocity);
+
     auto now = get_clock()->now();
     auto time_diff{
       (now.nanoseconds() - last_time.nanoseconds()) / 10e9};
+    RCLCPP_INFO_STREAM(get_logger(), "time diff " << time_diff);
+    RCLCPP_INFO_STREAM(get_logger(), "pre fk " << red_dd.get_transform().translation());
 
-    red_dd_->fk(msg->left_velocity * motor_cmd_per_rad_sec,
+    red_dd.fk(msg->left_velocity * motor_cmd_per_rad_sec,
       msg->right_velocity * motor_cmd_per_rad_sec, time_diff);
+    RCLCPP_INFO_STREAM(get_logger(), "post fk" << red_dd.get_transform().translation());
+
     last_time = now;
     // Publish frame
   }
@@ -338,7 +347,7 @@ private:
     //                                                                                           this, std::placeholders::_1));
     // rclcpp::spin_until_future_complete(get_node_base_interface(), result_future);
 
-    red_dd_ = std::make_unique<turtlelib::DiffDrive>(track_width, wheel_radius,
+    red_dd = turtlelib::DiffDrive(track_width, wheel_radius,
       turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta));
   }
 
