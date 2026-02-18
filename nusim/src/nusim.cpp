@@ -202,13 +202,13 @@ private:
     RCLCPP_INFO_STREAM(get_logger(), "Received wheel_cmd " << msg->left_velocity << " " << msg->right_velocity);
 
     auto now = get_clock()->now();
-    auto time_diff{
-      (now.nanoseconds() - last_time.nanoseconds()) / 10e9};
+    auto time_diff{ now.seconds() + (now.nanoseconds()/10e9) - last_time.seconds() - (last_time.nanoseconds() / 10e9)};
     RCLCPP_INFO_STREAM(get_logger(), "time diff " << time_diff);
     RCLCPP_INFO_STREAM(get_logger(), "pre fk " << red_dd.get_transform().translation());
-
-    red_dd.fk(msg->left_velocity * motor_cmd_per_rad_sec,
-      msg->right_velocity * motor_cmd_per_rad_sec, time_diff);
+    RCLCPP_INFO_STREAM(get_logger(), "fk args " << msg->left_velocity * motor_cmd_per_rad_sec << " " << msg->right_velocity * motor_cmd_per_rad_sec << " " << time_diff);
+    auto new_wheels = turtlelib::wheels(msg->left_velocity * motor_cmd_per_rad_sec + red_dd.get_wheels().left,
+                                        msg->right_velocity * motor_cmd_per_rad_sec + red_dd.get_wheels().right);
+    red_dd.fk(new_wheels.left, new_wheels.right, time_diff);
     RCLCPP_INFO_STREAM(get_logger(), "post fk" << red_dd.get_transform().translation());
 
     last_time = now;
