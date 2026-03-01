@@ -6,7 +6,7 @@
 #include "geometry_msgs/msg/pose.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "nuturtle_control_interfaces/srv/initial_pose.hpp"
-
+#include "turtlelib/wheels.hpp"
 #include "turtlelib/diff_drive.hpp"
 
 
@@ -124,7 +124,7 @@ private:
       msg->header.stamp.sec + msg->header.stamp.nanosec / 10e9 - last_time.sec - last_time.nanosec /
       10e9};
 
-    dd_calc.fk(msg->position[0], msg->position[1], time_diff);
+    dd_calc.fk(turtlelib::Wheels(msg->position[0], msg->position[1]));
   }
 
 

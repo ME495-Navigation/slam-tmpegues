@@ -3,6 +3,7 @@
 #include "nuturtlebot_msgs/msg/wheel_commands.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/joint_state.hpp"
+#include "turtlelib/wheels.hpp"
 #include "turtlelib/diff_drive.hpp"
 #include "turtlelib/se2d.hpp"
 
@@ -74,7 +75,7 @@ private:
     }
 
     turtlelib::Twist2D twist_cmd{msg->angular.z, msg->linear.x, msg->linear.y};
-    turtlelib::wheelspeed wheelrad_cmd;
+    turtlelib::WheelDiff wheelrad_cmd;
 
     try {
       wheelrad_cmd = dd_calc.ik(twist_cmd);  // These are in radians per second
@@ -83,8 +84,8 @@ private:
       return;
     }
 
-    int lefttick_cmd{static_cast<int>(wheelrad_cmd.left / motor_cmd_per_rad_sec)};
-    int righttick_cmd{static_cast<int>(wheelrad_cmd.right / motor_cmd_per_rad_sec)};
+    int lefttick_cmd{static_cast<int>(wheelrad_cmd.l() / motor_cmd_per_rad_sec)};
+    int righttick_cmd{static_cast<int>(wheelrad_cmd.r() / motor_cmd_per_rad_sec)};
 
     lefttick_cmd = ((lefttick_cmd > motor_cmd_max) ? motor_cmd_max : lefttick_cmd);
     righttick_cmd = ((righttick_cmd > motor_cmd_max) ? motor_cmd_max : righttick_cmd);
@@ -100,12 +101,10 @@ private:
   {
     RCLCPP_DEBUG_STREAM(get_logger(), "SensorData received: " << msg);
 
-    auto time_diff{
-      msg->stamp.sec + msg->stamp.nanosec / 10e9 - last_time.sec - last_time.nanosec / 10e9};
+    // auto time_diff{
+    //   msg->stamp.sec + msg->stamp.nanosec / 10e9 - last_time.sec - last_time.nanosec / 10e9};
 
-    dd_calc.fk(
-      msg->left_encoder / encoder_ticks_per_rad, msg->right_encoder / encoder_ticks_per_rad,
-      time_diff);
+    dd_calc.fk(turtlelib::Wheels(msg->left_encoder / encoder_ticks_per_rad, msg->right_encoder / encoder_ticks_per_rad));
 
     auto joint_state_msg = sensor_msgs::msg::JointState();
     joint_state_msg.header.stamp = msg->stamp;
@@ -113,11 +112,11 @@ private:
     joint_state_msg.name.push_back("wheel_left_joint");
     joint_state_msg.name.push_back("wheel_right_joint");
 
-    joint_state_msg.position.push_back(dd_calc.get_wheels().left);
-    joint_state_msg.position.push_back(dd_calc.get_wheels().right);
+    joint_state_msg.position.push_back(dd_calc.phi().l());
+    joint_state_msg.position.push_back(dd_calc.phi().r());
 
-    joint_state_msg.velocity.push_back(dd_calc.get_wheelspeed().left);
-    joint_state_msg.velocity.push_back(dd_calc.get_wheelspeed().right);
+    joint_state_msg.velocity.push_back(dd_calc.phidot().l());
+    joint_state_msg.velocity.push_back(dd_calc.phidot().r());
 
     RCLCPP_INFO_STREAM(get_logger(), "publishing JointState" << joint_state_msg.position[0]);
     joint_state_pub_->publish(joint_state_msg);
