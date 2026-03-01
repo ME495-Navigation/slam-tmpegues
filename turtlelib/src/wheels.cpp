@@ -6,8 +6,8 @@
 
 namespace turtlelib
 {
-    // Creating Wheel and WheelDiff
-    // Default values of left and right are already 0.0 and 0.0
+// Creating Wheel and WheelDiff
+// Default values of left and right are already 0.0 and 0.0
 Wheels::Wheels() {}
 
 Wheels::Wheels(double left_pos, double right_pos)
@@ -16,7 +16,7 @@ Wheels::Wheels(double left_pos, double right_pos)
   right = normalize_angle(right_pos);
 }
 
-    // Default values of left and right are already 0.0 and 0.0
+// Default values of left and right are already 0.0 and 0.0
 WheelDiff::WheelDiff() {}
 
 WheelDiff::WheelDiff(double left_rot, double right_rot)
@@ -26,7 +26,7 @@ WheelDiff::WheelDiff(double left_rot, double right_rot)
 }
 
 
-    // Basic and frequently used operations
+// Basic and frequently used operations
 double Wheels::l() {return left;}
 double Wheels::r() {return right;}
 
@@ -49,8 +49,17 @@ WheelDiff & WheelDiff::normalize()
   return *this;
 }
 
+
+// Operations to be used in kinematics
 WheelDiff operator-(Wheels & final, Wheels & initial)
 {                        // Why can't I const these?
   return WheelDiff(final.l() - initial.l(), final.r() - initial.r());
 }
+
+Wheels operator+(Wheels & position, WheelDiff & rotation)
+{
+  return Wheels(position.l() + rotation.l(), position.r() + rotation.r());
+}
+
+
 }

@@ -6,6 +6,8 @@
 #include <iostream>
 
 #include "turtlelib/wheels.hpp"
+#include "turtlelib/angle.hpp"
+#include "turtlelib/geometry2d.hpp"
 
 using namespace turtlelib;
 using namespace Catch::Matchers;
@@ -24,4 +26,21 @@ TEST_CASE("Shortest difference between two Wheels positions", "WheelDiff operato
     diff = post - pre;
     REQUIRE_THAT(diff.l(), WithinAbs(-3.0 / 4.0 * pi, 0.00001));
     REQUIRE_THAT(diff.r(), WithinAbs(1.0 / 2.0 * pi, 0.00001));
+}
+
+TEST_CASE("Add rotations to wheel positions", "Wheels operator+(Wheels, WheelDiff)")
+{
+    // Zero rotation should not change the wheel positions
+    Wheels pre{1.0, 3.78};
+    WheelDiff rot{};
+
+    auto new_wheels = pre + rot;
+    REQUIRE(new_wheels.l() == pre.l());
+    REQUIRE(new_wheels.r() == pre.r());
+
+    rot = WheelDiff{2.0, pi};
+
+    new_wheels = pre + rot;
+    REQUIRE(new_wheels.l() == 3.0);
+    REQUIRE_THAT(new_wheels.r(), WithinAbs(normalize_angle(3.78 + pi), 0.00001));
 }
