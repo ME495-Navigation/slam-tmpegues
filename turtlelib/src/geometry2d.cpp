@@ -39,6 +39,12 @@ std::istream & operator>>(std::istream & is, Vector2D & v)
   return is;
 }
 
+Vector2D &Vector2D::operator-=(const Vector2D &rhs)
+{
+  x -= rhs.x;
+  y -= rhs.y;
+  return *this;
+}
 Vector2D operator-(const Point2D & head, const Point2D & tail)
 {
   // vector is head - tail
@@ -54,12 +60,7 @@ Vector2D & Vector2D::operator+=(const Vector2D & rhs)
 
 Vector2D operator+(Vector2D lhs, Vector2D & rhs) {return lhs += rhs;}
 
-Vector2D & Vector2D::operator-=(const Vector2D & rhs)
-{
-  x -= rhs.x;
-  y -= rhs.y;
-  return *this;
-}
+
 Vector2D operator-(Vector2D lhs, Vector2D & rhs) {return lhs -= rhs;}
 
 Point2D operator+(const Point2D & tail, const Vector2D & disp)

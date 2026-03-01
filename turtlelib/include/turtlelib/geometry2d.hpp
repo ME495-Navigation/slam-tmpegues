@@ -49,6 +49,7 @@ struct Point2D
 /// on the wrong track.
 std::istream & operator>>(std::istream & is, Point2D & p);
 
+
 /// \brief A 2-Dimensional Vector
 struct Vector2D
 {
@@ -70,7 +71,8 @@ struct Vector2D
     return *this;
   }
   /// \brief Add a vector to another
-  /// \param rhs The vector to add to the other vector
+  /// \param rhs The vector to add to the other
+
   /// \return A reference to the summed vector
   Vector2D & operator+=(const Vector2D & rhs);
 
