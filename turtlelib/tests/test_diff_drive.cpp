@@ -16,7 +16,7 @@ TEST_CASE("Test fk", "DiffDrive::fk")
   DiffDrive dd{2.0, 1.0};  // Wheels have circumference 2*pi
 
   // 0 rotation on both wheels should result in no change
-  dd.fk(0, 0, 1);
+  dd.fk(Wheels(0, 0));
   REQUIRE(dd.get_transform().translation().x == 0);
   REQUIRE(dd.get_transform().translation().y == 0);
   REQUIRE(dd.get_transform().rotation() == 0);
@@ -24,8 +24,8 @@ TEST_CASE("Test fk", "DiffDrive::fk")
   REQUIRE(dd.get_wheels().right == 0);
 
   // small equal rotation on both wheels should result in x translation of that rotation amount
-  double rot = pi / 4;
-  dd.fk(rot, rot, 1);
+  auto rot {pi / 4.0};
+  dd.fk(Wheels(rot, rot));
   REQUIRE(dd.get_transform().translation().x == rot);
   REQUIRE(dd.get_transform().translation().y == 0);
   REQUIRE(dd.get_transform().rotation() == 0);
@@ -33,7 +33,7 @@ TEST_CASE("Test fk", "DiffDrive::fk")
   REQUIRE(dd.get_wheels().right == rot);
 
   // Returning to the previous position should return state to original
-  dd.fk(0, 0, 1);
+  dd.fk(Wheels(0, 0));
   REQUIRE(dd.get_transform().translation().x == 0.0);
   REQUIRE(dd.get_transform().translation().y == 0.0);
   REQUIRE(dd.get_transform().rotation() == 0.0);
@@ -41,7 +41,7 @@ TEST_CASE("Test fk", "DiffDrive::fk")
   REQUIRE(dd.get_wheels().right == 0.0);
 
   // Wheels rotation equal distances in opposite direction should spin with no translation
-  dd.fk(-rot, rot, 1);
+  dd.fk(Wheels(-rot, rot));
   REQUIRE(dd.get_transform().translation().x == 0.0);
   REQUIRE(dd.get_transform().translation().y == 0.0);
   REQUIRE(dd.get_transform().rotation() == rot);
@@ -50,7 +50,7 @@ TEST_CASE("Test fk", "DiffDrive::fk")
 
   // Back it up
   rot = 0.0;
-  dd.fk(-rot, rot, 1);
+  dd.fk(Wheels(-rot, rot));
   REQUIRE(dd.get_transform().translation().x == 0.0);
   REQUIRE(dd.get_transform().translation().y == 0.0);
   REQUIRE(dd.get_transform().rotation() == 0.0);
@@ -59,18 +59,15 @@ TEST_CASE("Test fk", "DiffDrive::fk")
 
   // Rotate only one wheel should result in an x, y, and theta change (multiple iterations so I get to a location with easy numbers)
   DiffDrive dd2{2.0, 1.0};  // Wheels have circumference 2*pi
-  // dd2.fk(0, dd2.get_wheels().right + pi / 2, 1);
-  // dd2.fk(0, dd2.get_wheels().right + pi / 2, 1);
-  // dd2.fk(0, dd2.get_wheels().right + pi / 2, 1);
-  // dd2.fk(0, dd2.get_wheels().right + pi / 2, 1);
-  dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
-  dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
-  dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
-  dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
-  dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
-  dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
-  dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
-  dd2.fk(0, dd2.get_wheels().right + pi / 4, 1.0);
+
+  dd2.fk(Wheels(0, dd2.get_wheels().right + pi / 4));
+  dd2.fk(Wheels(0, dd2.get_wheels().right + pi / 4));
+  dd2.fk(Wheels(0, dd2.get_wheels().right + pi / 4));
+  dd2.fk(Wheels(0, dd2.get_wheels().right + pi / 4));
+  dd2.fk(Wheels(0, dd2.get_wheels().right + pi / 4));
+  dd2.fk(Wheels(0, dd2.get_wheels().right + pi / 4));
+  dd2.fk(Wheels(0, dd2.get_wheels().right + pi / 4));
+  dd2.fk(Wheels(0, dd2.get_wheels().right + pi / 4));
 
 
   REQUIRE(dd2.get_wheels().left == 0);
