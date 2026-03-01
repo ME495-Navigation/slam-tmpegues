@@ -44,3 +44,18 @@ TEST_CASE("Add rotations to wheel positions", "Wheels operator+(Wheels, WheelDif
     REQUIRE(new_wheels.l() == 3.0);
     REQUIRE_THAT(new_wheels.r(), WithinAbs(normalize_angle(3.78 + pi), 0.00001));
 }
+
+
+TEST_CASE("Update wheel positions to new potision and calculate the required rotations",
+  "WheelDiff Wheels::update(Wheels)")
+{
+    Wheels initial {};
+    Wheels end {pi / 2, 3.0 / 2.0 * pi};
+
+    auto diff {initial.update(end)};
+    REQUIRE_THAT(diff.l(), WithinAbs(pi / 2.0, 0.00001));
+    REQUIRE_THAT(diff.r(), WithinAbs(-pi / 2.0, 0.00001));
+
+    REQUIRE_THAT(initial.l(), WithinAbs(pi / 2.0, 0.00001));
+    REQUIRE_THAT(initial.r(), WithinAbs(-pi / 2.0, 0.00001));
+}

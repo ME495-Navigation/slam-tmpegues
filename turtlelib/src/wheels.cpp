@@ -49,10 +49,8 @@ WheelDiff & WheelDiff::normalize()
   return *this;
 }
 
-
-// Operations to be used in kinematics
 WheelDiff operator-(Wheels & final, Wheels & initial)
-{                        // Why can't I const these?
+{ // Why can't I const these?
   return WheelDiff(final.l() - initial.l(), final.r() - initial.r());
 }
 
@@ -61,5 +59,14 @@ Wheels operator+(Wheels & position, WheelDiff & rotation)
   return Wheels(position.l() + rotation.l(), position.r() + rotation.r());
 }
 
+// Operations to be used in kinematics
 
+WheelDiff Wheels::update(Wheels new_wheels)
+{
+  auto diff = new_wheels - *this;
+
+  *this = new_wheels;
+
+  return diff;
+}
 }
