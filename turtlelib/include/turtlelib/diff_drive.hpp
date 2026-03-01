@@ -13,14 +13,11 @@ class DiffDrive
 {
 private:
   Transform2D q;
-  Wheels phi;
-  WheelDiff phidot;
+  Wheels wheels;
+  WheelDiff wheelspeeds;
   Twist2D body_vel;
   double track = 0;
   double radius = 0;
-
-  // Update both the phi and phidot by calculating the smallest path betweenthe current wheel angles and the newly provided ones
-  void update_wheels(Wheels new_wheels, double time);
 
 public:
   /// \brief Create a base DiffDrive
@@ -38,10 +35,8 @@ public:
   explicit DiffDrive(double input_track, double input_radius, Transform2D tf);
 
   /// \brief Update the state of the robot based on new wheel positions
-  /// \param phir2 The new right wheel angle
-  /// \param phil2 The new left wheel angle
-  /// \param time Time elapsed since the wheel angles were last collected
-  void fk(double phil2, double phir2, double time);
+  /// \param wheels2 The new wheel positions
+  void fk(Wheels wheels2);
 
   // TODO: 0228 Update wheel handling
   /// \brief Calculate wheel velocities needed to achive the provided twist
@@ -54,13 +49,13 @@ public:
   Transform2D get_transform();
 
   /// \brief Get wheel positions (phi)
-  /// \return phi, where phi.left and phi.right the left and right wheel angles in radians
-  Wheels get_wheels();
+  /// \return The current wheel positions
+  Wheels phi();
 
   // TODO: 0228 Update wheel handling
-  /// \brief Get wheel speeds (phidot)
-  /// \return phidot, where phidot.left and phidot.right the left and right wheel speeds in rad/sec
-  WheelDiff get_wheelspeed();
+  /// \brief Get wheel speeds
+  /// \return a WheelDiff representing the wheelspeeds in rad/sec
+  WheelDiff phidot();
 
   /// \brief Get track width
   /// \return Track width
