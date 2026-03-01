@@ -25,7 +25,7 @@ endif()
 # name is the name of the library without the extension or lib prefix
 # name creates a cmake "target" (in this case the target is called "libname"
 
-add_library(turtlelib src/geometry2d.cpp src/se2d.cpp src/wheels.cpp src/diff_drive.cpp)
+add_library(turtlelib src/geometry2d.cpp src/se2d.cpp src/wheels.cpp )
 
 # Use target_include_directories so that #include"mylibrary/header.hpp" works
 # The use of the <BUILD_INTERFACE> and <INSTALL_INTERFACE> is because when
@@ -49,7 +49,7 @@ if(BUILD_TESTING)
     # A test is just an executable that is linked against the unit testing library
     add_executable(test_turtlelib
                    tests/test_angle.cpp
-                   tests/test_diff_drive.cpp
+                   tests/test_wheels.cpp
                    tests/test_geometry2d.cpp
                    tests/test_se2d.cpp)
 
