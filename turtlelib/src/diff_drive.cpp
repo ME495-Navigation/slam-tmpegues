@@ -46,10 +46,10 @@ void DiffDrive::fk(Wheels wheels2)
 
   auto diff {wheels.update(wheels2)};
 
-  std::cout << "Pre FK update: " << q.translation() << "\n";
+  std::cout << "Pre FK update: " << q.translation() << ", " << q.rotation() << "\n";
 
   // Calculate these with *differences*
-  auto omega = radius / 2.0 * (diff.l() - diff.r());
+  auto omega = radius / 2.0 * (diff.r() - diff.l());
   auto x = radius / 2.0 * (diff.l() + diff.r());
   auto y = 0.0;
 
@@ -58,7 +58,7 @@ void DiffDrive::fk(Wheels wheels2)
   auto world_twist = q(body_vel);
   auto tf_current_to_new = integrate_twist(world_twist);
   q *= tf_current_to_new;
-  std::cout << "Post FK update: " << q.translation() << "\n";
+  std::cout << "Post FK update: " << q.translation() << ", " << q.rotation() << "\n\n";
 }
 
 // TODO: 0228 Update wheel handling

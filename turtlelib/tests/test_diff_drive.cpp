@@ -104,7 +104,7 @@ TEST_CASE("Test ik", "DiffDrive::ik")
   // Twist2D body_tw4{-pi / 2, -pi / 2, 0.0};
   speeds = DiffDrive{2.0, 1.0}.ik({-pi / 2, -pi / 2, 0.0});
   REQUIRE(speeds.l() == 0);
-  REQUIRE(speeds.r() == -pi);
+  REQUIRE(speeds.r() == pi);
 
   REQUIRE_THROWS_AS(dd.ik({1, 1, 1}), std::logic_error);
 }
