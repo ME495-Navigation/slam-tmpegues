@@ -99,8 +99,8 @@ public:
 /// \param scalar The scalar (time) to scale the diff (speed) by
 /// \param diff The difference to be scaled
 /// \return the scaled difference
-template <typename T>
-WheelDiff operator*(const T &scalar, WheelDiff diff)
+template<typename T>
+WheelDiff operator*(const T & scalar, WheelDiff diff)
 {
   return diff *= scalar;
 }
@@ -109,8 +109,8 @@ WheelDiff operator*(const T &scalar, WheelDiff diff)
 /// \param scalar The scalar (time) to scale the diff (speed) by
 /// \param diff The difference to be scaled
 /// \return the scaled difference
-template <typename T>
-WheelDiff operator*(WheelDiff diff, const T &scalar)
+template<typename T>
+WheelDiff operator*(WheelDiff diff, const T & scalar)
 {
   return diff *= scalar;
 }

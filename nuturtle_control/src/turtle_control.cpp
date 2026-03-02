@@ -104,7 +104,8 @@ private:
     // auto time_diff{
     //   msg->stamp.sec + msg->stamp.nanosec / 10e9 - last_time.sec - last_time.nanosec / 10e9};
 
-    dd_calc.fk(turtlelib::Wheels(msg->left_encoder / encoder_ticks_per_rad, msg->right_encoder / encoder_ticks_per_rad));
+    dd_calc.fk(turtlelib::Wheels(msg->left_encoder / encoder_ticks_per_rad,
+      msg->right_encoder / encoder_ticks_per_rad));
 
     auto joint_state_msg = sensor_msgs::msg::JointState();
     joint_state_msg.header.stamp = msg->stamp;

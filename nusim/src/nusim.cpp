@@ -37,7 +37,6 @@ public:
     declare_parameter("encoder_ticks_per_rad", 651.89864);
 
 
-
     declare_parameter("external_jsp", false);
 
     // Create all publishers/broadcasters
@@ -63,8 +62,7 @@ public:
 
     external_jsp = get_parameter("external_jsp").as_bool();
 
-    if (!external_jsp)
-    {
+    if (!external_jsp) {
       joint_state_pub_ = create_publisher<sensor_msgs::msg::JointState>("red/joint_states", 10);
 
 
@@ -122,8 +120,7 @@ public:
       -> void {  // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
 
         // Publish JointStates if needed
-        if (!external_jsp)
-        {
+        if (!external_jsp) {
           auto joint_state_msg = sensor_msgs::msg::JointState();
           joint_state_msg.header.stamp = get_clock()->now();
 
@@ -195,9 +192,8 @@ private:
   double wheel_radius{0.0};
   double track_width{0.0};
   turtlelib::DiffDrive red_dd{
-      track_width,
-      wheel_radius};
-  ;
+    track_width,
+    wheel_radius};
   double motor_cmd_per_rad_sec{0.0};
   double encoder_ticks_per_rad{0.0};
 
@@ -210,7 +206,8 @@ private:
   void wheel_cmd_cb_(const std::shared_ptr<nuturtlebot_msgs::msg::WheelCommands> msg)
   {
     // 0301 When a wheel command is received, it gets saved as the speed in the DiffDrive
-    red_dd.set_speeds(WheelDiff(msg->left_velocity * motor_cmd_per_rad_sec, msg->right_velocity * motor_cmd_per_rad_sec));
+    red_dd.set_speeds(WheelDiff(msg->left_velocity * motor_cmd_per_rad_sec,
+      msg->right_velocity * motor_cmd_per_rad_sec));
   }
 
   // void initial_pose_response_cb_(rclcpp::Client<nuturtle_control_interfaces::srv::InitialPose>::SharedFuture future)
