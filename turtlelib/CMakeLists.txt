@@ -7,6 +7,10 @@ find_package(Doxygen)
 # To build documentation pass -DBUILD_DOCS=ON when generating the build system
 option(BUILD_DOCS "Build the documentation" OFF)
 
+if(NOT CMAKE_BUILD_TYPE)        # If no build type is set, set one
+  set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Type of build." FORCE)
+endif()
+
 # build the documentation
 if(${DOXYGEN_FOUND} AND ${BUILD_DOCS})
     # Turn the README.md into the homepage of the doxygen docs
