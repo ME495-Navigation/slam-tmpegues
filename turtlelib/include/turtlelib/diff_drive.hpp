@@ -34,9 +34,21 @@ public:
   /// \param tf The initial configuration of the turtlebot
   explicit DiffDrive(double input_track, double input_radius, Transform2D tf);
 
+  /// \brief Set the wheel speeds (when a new motor command is received)
+  /// \param speed The new wheel speeds
+  void set_speeds(WheelDiff speed);
+
   /// \brief Update the state of the robot based on new wheel positions
   /// \param wheels2 The new wheel positions
   void fk(Wheels wheels2);
+
+  /// \brief Update the state of the robot based on how far the weels are to rotate
+  /// \param wheeldiffs The new wheel positions
+  void fk(WheelDiff wheeldiffs);
+
+  /// \brief Update the state of the robot based on how long it has been traveling with the current wheelspeeds
+  /// \param duration The duration of travel
+  void fk(double time);
 
   // TODO: 0228 Update wheel handling
   /// \brief Calculate wheel velocities needed to achive the provided twist

@@ -39,8 +39,6 @@ public:
     /// \brief Get the right wheel rotation
     /// \return The right wheel rotation
   double r();
-    // add two differences
-
 
     /// \brief Scale a wheel difference (speed) by a scalar (time)
     /// \param rhs The scalar (time) to scale the diff (speed) by
@@ -53,6 +51,8 @@ public:
 
     return *this;
   }
+
+
 };
 
 /// \brief Represent DiffDrive wheel positions/angles (analogous to a Point2D)
@@ -94,6 +94,26 @@ public:
     // get
 };
 
+
+/// \brief Scale a wheel difference (speed) by a scalar (time)
+/// \param scalar The scalar (time) to scale the diff (speed) by
+/// \param diff The difference to be scaled
+/// \return the scaled difference
+template <typename T>
+WheelDiff operator*(const T &scalar, WheelDiff diff)
+{
+  return diff *= scalar;
+}
+
+/// \brief Scale a wheel difference (speed) by a scalar (time)
+/// \param scalar The scalar (time) to scale the diff (speed) by
+/// \param diff The difference to be scaled
+/// \return the scaled difference
+template <typename T>
+WheelDiff operator*(WheelDiff diff, const T &scalar)
+{
+  return diff *= scalar;
+}
 
 /// \brief Get the minimum rotations between two sets of wheel positions
 /// \param final The final wheel positions

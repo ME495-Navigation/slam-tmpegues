@@ -37,14 +37,26 @@ DiffDrive::DiffDrive(double input_track, double input_radius, Transform2D tf)
 void DiffDrive::fk(Wheels wheels2)
 {
   // The arguments received here are actual wheel positions, we don't need to scale by time
+  // 0st, update wheel positions and get how far the wheels rotated
+  fk(wheels.update(wheels2));
+}
 
-  // 0st, update wheel positions
-  // 1st, calculate the resultant twist
+void DiffDrive::set_speeds(WheelDiff speed)
+{
+  wheelspeeds = speed;
+}
+
+void DiffDrive::fk(double time)
+{
+  fk(wheelspeeds * time);
+}
+
+void DiffDrive::fk(WheelDiff diff)
+{
+  // 1st, calculate the resultant twist from how far the wheels rotate
   // 2nd, transform the twist into the world frame
   // 3rd, integrate the twist in the world frame
   // 4th, chain the initial position transform and the integrated twist transform
-
-  auto diff {wheels.update(wheels2)};
 
   std::cout << "Pre FK update: " << q.translation() << ", " << q.rotation() << "\n";
 
