@@ -120,6 +120,8 @@ public:
 
     auto timer_callback = [this]()
       -> void {  // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
+
+        // Publish JointStates if needed
         if (!external_jsp)
         {
           auto joint_state_msg = sensor_msgs::msg::JointState();
@@ -136,12 +138,20 @@ public:
           joint_state_pub_->publish(joint_state_msg);
           RCLCPP_INFO_STREAM(get_logger(), "publishing JointState" << joint_state_msg.position[0]);
         }
+
+        // Move the robot by having it keep going at its saved wheelspeeds for a specific amount of time
+        red_dd.fk(timer_period)
+
+
+        // Publish SensorData
         auto sensor_msg = nuturtlebot_msgs::msg::SensorData();
         sensor_msg.stamp = get_clock()->now();
         sensor_msg.left_encoder = red_dd.phi().l() * encoder_ticks_per_rad;
         sensor_msg.left_encoder = red_dd.phi().r() * encoder_ticks_per_rad;
         sensor_pub_->publish(sensor_msg);
 
+
+        // Publish robot's TF
         auto t = tf2d_to_pose(red_dd.get_transform());
         tf_broadcaster_->sendTransform(t);
         timestep_pub_->publish(timestep);
@@ -199,21 +209,8 @@ private:
 
   void wheel_cmd_cb_(const std::shared_ptr<nuturtlebot_msgs::msg::WheelCommands> msg)
   {
-    // Receive commands, convert to radians, then fk
-    RCLCPP_INFO_STREAM(get_logger(), "Received wheel_cmd " << msg->left_velocity << " " << msg->right_velocity);
-
-    auto now = get_clock()->now();
-    auto time_diff{ now.seconds() + (now.nanoseconds()/10e9) - last_time.seconds() - (last_time.nanoseconds() / 10e9)};
-    RCLCPP_INFO_STREAM(get_logger(), "time diff " << time_diff);
-    RCLCPP_INFO_STREAM(get_logger(), "pre fk " << red_dd.get_transform().translation());
-    RCLCPP_INFO_STREAM(get_logger(), "fk args " << msg->left_velocity * motor_cmd_per_rad_sec << " " << msg->right_velocity * motor_cmd_per_rad_sec << " " << time_diff);
-    auto new_wheels = turtlelib::Wheels(msg->left_velocity * motor_cmd_per_rad_sec + red_dd.phi().l(),
-                                        msg->right_velocity * motor_cmd_per_rad_sec + red_dd.phi().r());
-    red_dd.fk(new_wheels);
-    RCLCPP_INFO_STREAM(get_logger(), "post fk" << red_dd.get_transform().translation());
-
-    last_time = now;
-    // Publish frame
+    // 0301 When a wheel command is received, it gets saved as the speed in the DiffDrive
+    red_dd.set_speeds(WheelDiff(msg->left_velocity * motor_cmd_per_rad_sec, msg->right_velocity * motor_cmd_per_rad_sec));
   }
 
   // void initial_pose_response_cb_(rclcpp::Client<nuturtle_control_interfaces::srv::InitialPose>::SharedFuture future)
