@@ -58,7 +58,7 @@ void DiffDrive::fk(WheelDiff diff)
   // 3rd, integrate the twist in the world frame
   // 4th, chain the initial position transform and the integrated twist transform
 
-  std::cout << "Pre FK update: " << q.translation() << ", " << q.rotation() << "\n";
+  // std::cout << "Pre FK update: " << q.translation() << ", " << q.rotation() << "\n";
 
   // Calculate these with *differences*
   auto omega = radius / 2.0 * (diff.r() - diff.l());
@@ -70,7 +70,7 @@ void DiffDrive::fk(WheelDiff diff)
   auto world_twist = q(body_vel);
   auto tf_current_to_new = integrate_twist(world_twist);
   q *= tf_current_to_new;
-  std::cout << "Post FK update: " << q.translation() << ", " << q.rotation() << "\n\n";
+  // std::cout << "Post FK update: " << q.translation() << ", " << q.rotation() << "\n\n";
 }
 
 // TODO: 0228 Update wheel handling
