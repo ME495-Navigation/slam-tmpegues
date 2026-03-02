@@ -81,7 +81,7 @@ public:
       // Define all variables
     timestep.data = 0;
     rate = get_parameter("rate").as_int();
-    timer_period = std::chrono::milliseconds(1000 / rate);
+    timer_period = 1000 / rate;
 
     arena_x_length = get_parameter("arena_x_length").as_double();
     arena_y_length = get_parameter("arena_y_length").as_double();
@@ -137,7 +137,7 @@ public:
         }
 
         // Move the robot by having it keep going at its saved wheelspeeds for a specific amount of time
-        red_dd.fk(timer_period)
+        red_dd.fk(timer_period);
 
 
         // Publish SensorData
@@ -155,7 +155,7 @@ public:
         timestep.data++;
       };
 
-    timer_ = create_wall_timer(timer_period, timer_callback);
+    timer_ = create_wall_timer(std::chrono::milliseconds(timer_period), timer_callback);
 
     // Use setup functions
     create_walls();
@@ -199,14 +199,14 @@ private:
 
   // Timer rate
   int rate{};
-  std::chrono::milliseconds timer_period{};
+  int timer_period{};
 
   std_msgs::msg::UInt64 timestep;
 
   void wheel_cmd_cb_(const std::shared_ptr<nuturtlebot_msgs::msg::WheelCommands> msg)
   {
     // 0301 When a wheel command is received, it gets saved as the speed in the DiffDrive
-    red_dd.set_speeds(WheelDiff(msg->left_velocity * motor_cmd_per_rad_sec,
+    red_dd.set_speeds(turtlelib::WheelDiff(msg->left_velocity * motor_cmd_per_rad_sec,
       msg->right_velocity * motor_cmd_per_rad_sec));
   }
 
