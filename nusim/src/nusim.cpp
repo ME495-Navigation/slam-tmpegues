@@ -206,6 +206,8 @@ private:
   void wheel_cmd_cb_(const std::shared_ptr<nuturtlebot_msgs::msg::WheelCommands> msg)
   {
     // 0301 When a wheel command is received, it gets saved as the speed in the DiffDrive
+    RCLCPP_INFO_STREAM(get_logger(), "wheel_cmd received" << msg->left_velocity << " " << msg->right_velocity);
+
     red_dd.set_speeds(turtlelib::WheelDiff(msg->left_velocity * motor_cmd_per_rad_sec,
       msg->right_velocity * motor_cmd_per_rad_sec));
   }

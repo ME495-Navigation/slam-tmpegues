@@ -119,7 +119,6 @@ private:
     joint_state_msg.velocity.push_back(dd_calc.phidot().l());
     joint_state_msg.velocity.push_back(dd_calc.phidot().r());
 
-    RCLCPP_INFO_STREAM(get_logger(), "publishing JointState" << joint_state_msg.position[0]);
     joint_state_pub_->publish(joint_state_msg);
   }
 };
