@@ -117,7 +117,9 @@ public:
     auto timer_callback = [this]()
       -> void {   // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
                 // Move the robot by having it keep going at its saved wheelspeeds for a specific amount of time
-                red_dd.fk(timer_period);
+                RCLCPP_INFO_STREAM(get_logger(), "FK time: " << timer_period);
+
+                red_dd.fk(1000.0/float(timer_period)); // timer_period is in milliseconds, but I need it in seconds
 
 
                 // Publish JointStates if needed
@@ -135,7 +137,6 @@ public:
                 // joint_state_msg.velocity.push_back(red_dd.get_wheelspeed().left);
                 // joint_state_msg.velocity.push_back(red_dd.get_wheelspeed().right);
                   joint_state_pub_->publish(joint_state_msg);
-                  RCLCPP_INFO_STREAM(get_logger(), "publishing JointState" << joint_state_msg.position[0]);
                 }
 
 
@@ -155,6 +156,7 @@ public:
               };
 
     timer_ = create_wall_timer(std::chrono::milliseconds(timer_period), timer_callback);
+    RCLCPP_INFO_STREAM(get_logger(), "timer: " << std::chrono::milliseconds(timer_period));
 
     // Use setup functions
     create_walls();
