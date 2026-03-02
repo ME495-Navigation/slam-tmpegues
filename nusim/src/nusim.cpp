@@ -116,41 +116,43 @@ public:
 
     auto timer_callback = [this]()
       -> void {   // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
+                // Move the robot by having it keep going at its saved wheelspeeds for a specific amount of time
+                red_dd.fk(timer_period);
 
-      // Publish JointStates if needed
-        if (!external_jsp) {
 
-          auto joint_state_msg = sensor_msgs::msg::JointState();
-          joint_state_msg.header.stamp = get_clock()->now();
+                // Publish JointStates if needed
+                if (!external_jsp) {
 
-          joint_state_msg.name.push_back("wheel_left_joint");
-          joint_state_msg.name.push_back("wheel_right_joint");
+                  auto joint_state_msg = sensor_msgs::msg::JointState();
+                  joint_state_msg.header.stamp = get_clock()->now();
 
-          joint_state_msg.position.push_back(red_dd.phi().l());
-          joint_state_msg.position.push_back(red_dd.phi().r());
+                  joint_state_msg.name.push_back("wheel_left_joint");
+                  joint_state_msg.name.push_back("wheel_right_joint");
 
-        // joint_state_msg.velocity.push_back(red_dd.get_wheelspeed().left);
-        // joint_state_msg.velocity.push_back(red_dd.get_wheelspeed().right);
-          joint_state_pub_->publish(joint_state_msg);
-          RCLCPP_INFO_STREAM(get_logger(), "publishing JointState" << joint_state_msg.position[0]);
-        }
+                  joint_state_msg.position.push_back(red_dd.phi().l());
+                  joint_state_msg.position.push_back(red_dd.phi().r());
 
-      // Move the robot by having it keep going at its saved wheelspeeds for a specific amount of time
-        red_dd.fk(timer_period);
+                // joint_state_msg.velocity.push_back(red_dd.get_wheelspeed().left);
+                // joint_state_msg.velocity.push_back(red_dd.get_wheelspeed().right);
+                  joint_state_pub_->publish(joint_state_msg);
+                  RCLCPP_INFO_STREAM(get_logger(), "publishing JointState" << joint_state_msg.position[0]);
+                }
 
-      // Publish SensorData
-        auto sensor_msg = nuturtlebot_msgs::msg::SensorData();
-        sensor_msg.stamp = get_clock()->now();
-        sensor_msg.left_encoder = red_dd.phi().l() * encoder_ticks_per_rad;
-        sensor_msg.left_encoder = red_dd.phi().r() * encoder_ticks_per_rad;
-        sensor_pub_->publish(sensor_msg);
 
-      // Publish robot's TF
-        auto t = tf2d_to_pose(red_dd.get_transform());
-        tf_broadcaster_->sendTransform(t);
-        timestep_pub_->publish(timestep);
-        timestep.data++;
-      };
+
+                // Publish SensorData
+                auto sensor_msg = nuturtlebot_msgs::msg::SensorData();
+                sensor_msg.stamp = get_clock()->now();
+                sensor_msg.left_encoder = red_dd.phi().l() * encoder_ticks_per_rad;
+                sensor_msg.left_encoder = red_dd.phi().r() * encoder_ticks_per_rad;
+                sensor_pub_->publish(sensor_msg);
+
+                // Publish robot's TF
+                auto t = tf2d_to_pose(red_dd.get_transform());
+                tf_broadcaster_->sendTransform(t);
+                timestep_pub_->publish(timestep);
+                timestep.data++;
+              };
 
     timer_ = create_wall_timer(std::chrono::milliseconds(timer_period), timer_callback);
 
