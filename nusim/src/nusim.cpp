@@ -99,8 +99,6 @@ public:
     motor_cmd_per_rad_sec = get_parameter("motor_cmd_per_rad_sec").as_double();
     encoder_ticks_per_rad = get_parameter("encoder_ticks_per_rad").as_double();
 
-    RCLCPP_INFO_STREAM(get_logger(), "Attempt Service");
-
     // auto initial_pose_rq = std::make_shared<nuturtle_control_interfaces::srv::InitialPose::Request>();
     // initial_pose_rq->x0 = x;
     // initial_pose_rq->y0 = y;
@@ -117,10 +115,11 @@ public:
     // Define functions
 
     auto timer_callback = [this]()
-      -> void {  // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
+      -> void {   // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
 
-        // Publish JointStates if needed
+      // Publish JointStates if needed
         if (!external_jsp) {
+
           auto joint_state_msg = sensor_msgs::msg::JointState();
           joint_state_msg.header.stamp = get_clock()->now();
 
@@ -130,25 +129,23 @@ public:
           joint_state_msg.position.push_back(red_dd.phi().l());
           joint_state_msg.position.push_back(red_dd.phi().r());
 
-          // joint_state_msg.velocity.push_back(red_dd.get_wheelspeed().left);
-          // joint_state_msg.velocity.push_back(red_dd.get_wheelspeed().right);
+        // joint_state_msg.velocity.push_back(red_dd.get_wheelspeed().left);
+        // joint_state_msg.velocity.push_back(red_dd.get_wheelspeed().right);
           joint_state_pub_->publish(joint_state_msg);
           RCLCPP_INFO_STREAM(get_logger(), "publishing JointState" << joint_state_msg.position[0]);
         }
 
-        // Move the robot by having it keep going at its saved wheelspeeds for a specific amount of time
+      // Move the robot by having it keep going at its saved wheelspeeds for a specific amount of time
         red_dd.fk(timer_period);
 
-
-        // Publish SensorData
+      // Publish SensorData
         auto sensor_msg = nuturtlebot_msgs::msg::SensorData();
         sensor_msg.stamp = get_clock()->now();
         sensor_msg.left_encoder = red_dd.phi().l() * encoder_ticks_per_rad;
         sensor_msg.left_encoder = red_dd.phi().r() * encoder_ticks_per_rad;
         sensor_pub_->publish(sensor_msg);
 
-
-        // Publish robot's TF
+      // Publish robot's TF
         auto t = tf2d_to_pose(red_dd.get_transform());
         tf_broadcaster_->sendTransform(t);
         timestep_pub_->publish(timestep);
@@ -159,6 +156,7 @@ public:
 
     // Use setup functions
     create_walls();
+
     publish_obstacles();
   }
 
@@ -206,7 +204,8 @@ private:
   void wheel_cmd_cb_(const std::shared_ptr<nuturtlebot_msgs::msg::WheelCommands> msg)
   {
     // 0301 When a wheel command is received, it gets saved as the speed in the DiffDrive
-    RCLCPP_INFO_STREAM(get_logger(), "wheel_cmd received" << msg->left_velocity << " " << msg->right_velocity);
+    RCLCPP_INFO_STREAM(get_logger(),
+      "wheel_cmd received: " << msg->left_velocity << " " << msg->right_velocity);
 
     red_dd.set_speeds(turtlelib::WheelDiff(msg->left_velocity * motor_cmd_per_rad_sec,
       msg->right_velocity * motor_cmd_per_rad_sec));
@@ -271,6 +270,8 @@ private:
 
   void publish_obstacles()
   {
+    RCLCPP_INFO_STREAM(get_logger(), "Publishing obstacles");
+
     if (obs_x.size() != obs_y.size()) {
       RCLCPP_ERROR_STREAM(
         get_logger(), "Obstacle coordinate list lengths do not match:"
