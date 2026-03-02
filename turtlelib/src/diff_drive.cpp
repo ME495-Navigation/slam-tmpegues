@@ -1,3 +1,4 @@
+
 #include <cmath>
 #include <stdexcept>
 #include <iostream>
@@ -19,6 +20,8 @@ double DiffDrive::get_track() {return track;}
 double DiffDrive::get_radius() {return radius;}
 
 Twist2D DiffDrive::get_twist() {return body_vel;}
+
+DiffDrive::DiffDrive() {;}
 
 DiffDrive::DiffDrive(double input_track, double input_radius)
 {

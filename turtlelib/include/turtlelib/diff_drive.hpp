@@ -20,7 +20,7 @@ private:
   double radius = 0;
 
 public:
-  /// \brief Create a base DiffDrive
+  /// \brief Create a base DiffDrive with 0 dimensions. This will be effectively useless
   DiffDrive();
 
   /// \brief  Create a DiffDrive representation with given wheel track and wheel radius
