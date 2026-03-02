@@ -29,16 +29,17 @@ int main()
   // lefttick_cmd = ((lefttick_cmd < -motor_cmd_max) ? -motor_cmd_max : lefttick_cmd);
   // righttick_cmd = ((righttick_cmd < -motor_cmd_max) ? -motor_cmd_max : righttick_cmd);
 
-  auto time_diff {0.1};
+  auto time_diff {0.01};
 
 
   // lefttick_cmd = 100;
   // righttick_cmd = 150;
 
   // Try spinning left and right at +- pi/2 radians /sec
-  dd.set_speeds(turtlelib::WheelDiff(pi, -pi));
+  dd.set_speeds(turtlelib::WheelDiff(0, pi/2));
 
   std::cout << "Before any FK:\n";
+  std::cout << "Time :" << time_diff << "\n";
   std::cout << "x, y, theta: " << dd.get_transform().translation() << ", " << dd.get_transform().rotation() << "\n";
   std::cout << "Wheels, phi: " << dd.phi().l() << ", " << dd.phi().r() << "\n";
   ;
@@ -47,7 +48,7 @@ int main()
   std::cout << dd.get_transform().translation() << "\n";
 
   int i = 0;
-  while (i <= 1000)
+  while (i <= 100) // 1 second
   {
     dd.fk(time_diff);
     std::cout << dd.get_transform().translation() << "\n";
