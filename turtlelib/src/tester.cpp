@@ -4,66 +4,54 @@
 
 #include "turtlelib/geometry2d.hpp"
 #include "turtlelib/se2d.hpp"
+#include "turtlelib/diff_drive.hpp"
 using std::numbers::pi;
 
 int main()
 {
-  bool end = true;
-  turtlelib::Twist2D tw{};
-  tw.x = 1;
-  tw.y = 0;
-  double w = 0;
-  while (w <= 2 * pi) {
-    std::cout << "\n";
-    tw.x = w;
-    tw.omega = w;
-    // std::cout << tw << "\n";
-    auto tf = turtlelib::integrate_twist(tw);
-    std::cout << tf.rotation() << "\n";
-    std::cout << tf.translation() << "\n";
-    w += pi / 8;
+  auto wheel_radius = 0.033;
+  auto track_width = 0.16;
+  auto dd = turtlelib::DiffDrive(track_width, wheel_radius);
+
+
+ // Twist to wheel command code is from turtle_control.cpp
+  // auto motor_cmd_per_rad_sec = 0.024;
+  // auto motor_cmd_max = 256;
+
+  // auto body_twist = .5*turtlelib::Twist2D(0.1, 0.2, 0.0);
+
+  // auto wheelrad_cmd = dd.ik(body_twist);
+  // int lefttick_cmd{static_cast<int>(wheelrad_cmd.l() / motor_cmd_per_rad_sec)};
+  // int righttick_cmd{static_cast<int>(wheelrad_cmd.r() / motor_cmd_per_rad_sec)};
+  // lefttick_cmd = ((lefttick_cmd > motor_cmd_max) ? motor_cmd_max : lefttick_cmd);
+  // righttick_cmd = ((righttick_cmd > motor_cmd_max) ? motor_cmd_max : righttick_cmd);
+
+  // lefttick_cmd = ((lefttick_cmd < -motor_cmd_max) ? -motor_cmd_max : lefttick_cmd);
+  // righttick_cmd = ((righttick_cmd < -motor_cmd_max) ? -motor_cmd_max : righttick_cmd);
+
+  auto time_diff {0.1};
+
+
+  // lefttick_cmd = 100;
+  // righttick_cmd = 150;
+
+  // Try spinning left and right at +- pi/2 radians /sec
+  dd.set_speeds(turtlelib::WheelDiff(pi, -pi));
+
+  std::cout << "Before any FK:\n";
+  std::cout << "x, y, theta: " << dd.get_transform().translation() << ", " << dd.get_transform().rotation() << "\n";
+  std::cout << "Wheels, phi: " << dd.phi().l() << ", " << dd.phi().r() << "\n";
+  ;
+  std::cout << "Wheelspeeds, phidot: " << dd.phidot().l() << ", " << dd.phidot().r() << "\n";
+  std::cout << "All x, y will be given after FK, except the next line\n";
+  std::cout << dd.get_transform().translation() << "\n";
+
+  int i = 0;
+  while (i <= 1000)
+  {
+    dd.fk(time_diff);
+    std::cout << dd.get_transform().translation() << "\n";
+    i++;
   }
 
-  while (not end) {
-    std::print("t(r)ansform, (t)wist, (v)ector, (p)oint?, or (e)nd: ");
-    char choice{'e'};
-    std::cin >> choice;
-    std::cin.get();
-    switch (choice) {
-      case 'p': {
-          turtlelib::Point2D pt;
-          std::cout << "Initial point: " << pt << "\nInput:";
-          std::cin >> pt;
-          std::cout << "New point: " << pt << "\n";
-          break;
-        }
-      case 'v': {
-          turtlelib::Vector2D vc;
-          std::cout << "Initial vector: " << vc << "\nInput:";
-          std::cin >> vc;
-          std::cout << "New vector: " << vc << "\n";
-          break;
-        }
-      case 't': {
-          turtlelib::Twist2D tw;
-          std::print("Initial twist: <{}, {}, {}>\nInput:", tw.omega, tw.x, tw.y);
-          std::cin >> tw;
-          std::cout << "New twist: " << tw << "\n";
-          break;
-        }
-      // case 'r':
-      // {
-      //     turtlelib::Transform2D tr;
-      //     std::print("Initial transform twist: ");
-      //     std::cout << tr.tw << "\nInput: ";
-      //     std::cin >> tr;
-      //     std::cout << "New transform twist: " << tr.tw << "\n";
-      //     break;
-      // }
-      default: {
-          end = true;
-        }
-    }
-  }
-  return 0;
 }
