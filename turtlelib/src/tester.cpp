@@ -15,8 +15,8 @@ int main()
 
 
  // Twist to wheel command code is from turtle_control.cpp
-  // auto motor_cmd_per_rad_sec = 0.024;
-  // auto motor_cmd_max = 256;
+ // auto motor_cmd_per_rad_sec = 0.024;
+ // auto motor_cmd_max = 256;
 
   // auto body_twist = .5*turtlelib::Twist2D(0.1, 0.2, 0.0);
 
@@ -36,7 +36,7 @@ int main()
   // righttick_cmd = 150;
 
   // Try spinning left and right at +- pi/2 radians /sec
-  dd.set_speeds(turtlelib::WheelDiff(0, pi/2));
+  dd.set_speeds(turtlelib::WheelDiff(0, pi / 2));
 
   // std::cout << "Before any FK:\n";
   // std::cout << "Time :" << time_diff << "\n";
@@ -48,8 +48,7 @@ int main()
   std::cout << dd.get_transform().translation() << "\n";
 
   int i = 0;
-  while (i <= 1000) // 1 second
-  {
+  while (i <= 1000) { // 1 second
     dd.fk(time_diff);
     std::cout << dd.get_transform().translation() << "\n";
     i++;
