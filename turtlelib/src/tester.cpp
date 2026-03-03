@@ -38,17 +38,17 @@ int main()
   // Try spinning left and right at +- pi/2 radians /sec
   dd.set_speeds(turtlelib::WheelDiff(0, pi/2));
 
-  std::cout << "Before any FK:\n";
-  std::cout << "Time :" << time_diff << "\n";
-  std::cout << "x, y, theta: " << dd.get_transform().translation() << ", " << dd.get_transform().rotation() << "\n";
-  std::cout << "Wheels, phi: " << dd.phi().l() << ", " << dd.phi().r() << "\n";
-  ;
-  std::cout << "Wheelspeeds, phidot: " << dd.phidot().l() << ", " << dd.phidot().r() << "\n";
-  std::cout << "All x, y will be given after FK, except the next line\n";
+  // std::cout << "Before any FK:\n";
+  // std::cout << "Time :" << time_diff << "\n";
+  // std::cout << "x, y, theta: " << dd.get_transform().translation() << ", " << dd.get_transform().rotation() << "\n";
+  // std::cout << "Wheels, phi: " << dd.phi().l() << ", " << dd.phi().r() << "\n";
+  // ;
+  // std::cout << "Wheelspeeds, phidot: " << dd.phidot().l() << ", " << dd.phidot().r() << "\n";
+  // std::cout << "All x, y will be given after FK, except the next line\n";
   std::cout << dd.get_transform().translation() << "\n";
 
   int i = 0;
-  while (i <= 100) // 1 second
+  while (i <= 1000) // 1 second
   {
     dd.fk(time_diff);
     std::cout << dd.get_transform().translation() << "\n";

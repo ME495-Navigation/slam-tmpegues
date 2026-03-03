@@ -64,8 +64,8 @@ void DiffDrive::fk(WheelDiff diff)
   // std::cout << "Pre FK update: " << q.translation() << ", " << q.rotation() << "\n";
 
   // Calculate these with *differences*
-  auto omega = radius / 2.0 * (diff.r() - diff.l());
-  auto x = radius / 2.0 * (diff.l() + diff.r());
+  auto omega = radius / track * (diff.r() * -diff.l());
+  auto x = radius / 2.0 * (diff.r() + diff.l());
   auto y = 0.0;
 
   body_vel = Twist2D{omega, x, y};
