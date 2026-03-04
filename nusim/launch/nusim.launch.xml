@@ -6,10 +6,10 @@
     <arg name="use_jsp" default="true" description="(bool): Do you want to launch the joint_state_publisher?"/>
 
 
-    <!-- <node pkg="nusim" exec="nusim">
+    <node pkg="nusim" exec="nusim">
         <param from="$(find-pkg-share nusim)/config/$(var config_file)"/>
         <param name="external_jsp" value="$(var use_jsp)"/>
-    </node> -->
+    </node>
 
     <node pkg="rviz2" exec="rviz2" if="$(var use_rviz)" on_exit="shutdown" args="-d $(find-pkg-share nusim)/config/nusim.rviz" />
 
