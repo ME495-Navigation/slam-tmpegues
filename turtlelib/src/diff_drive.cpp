@@ -7,12 +7,13 @@
 namespace turtlelib
 {
 
-DiffDrive::DiffDrive(double input_track, double input_radius)
+    DiffDrive::DiffDrive(double input_track, double input_radius) // use the initializer list to initialize objects
 {
   track = input_track;
   radius = input_radius;
 }
 
+    // one constructor can call another in the iniitializer list
 DiffDrive::DiffDrive(double input_track, double input_radius, Transform2D tf)
 {
   track = input_track;

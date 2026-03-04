@@ -1,0 +1,10 @@
+build/nuturtle_control/Testing/20260227-1449/Test.xml: 4 tests, 0 errors, 1 failure, 0 skipped
+build/nuturtle_control/test_results/nuturtle_control/xmllint.xunit.xml: 2 tests, 0 errors, 1 failure, 0 skipped
+build/nuturtle_control_interfaces/Testing/20260227-1449/Test.xml: 2 tests, 0 errors, 1 failure, 0 skipped
+build/nuturtle_control_interfaces/test_results/nuturtle_control_interfaces/xmllint.xunit.xml: 1 test, 0 errors, 1 failure, 0 skipped
+
+Summary: 33 tests, 0 errors, 4 failures, 4 skipped
+
+
+missing video of odometry. nuturtle_control lacks a README.md
+

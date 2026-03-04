@@ -14,7 +14,7 @@ struct wheels
   /// \brief the right wheel position
   double right = {0.0};
 
-  void update(wheels new_wheels)
+    void update(wheels new_wheels) // this method is unneccessary, you have the default assignment operator  for this
   {
     left = new_wheels.left;
     right = new_wheels.right;
@@ -30,6 +30,7 @@ struct wheelspeed
   double right = {0.0};
 };
 
+    // methods that do not modify the object should be const
 class DiffDrive
 {
 private:
@@ -51,6 +52,7 @@ public:
   /// \brief  Create a DiffDrive representation with given wheel track and wheel radius
   /// \param input_track The distance between the wheel contact points
   /// \param input_radius The radius of the wheels
+    // explicit is for constructors that can take one argument
   explicit DiffDrive(double input_track, double input_radius);
 
   /// \brief  Create a DiffDrive representation with given wheel track and wheel radius, and a non-identity Transform2D

@@ -16,7 +16,7 @@ public:
   odometry()
   : Node("odometry")
   {
-
+      // superfluous this
     this->declare_parameter("body_id", "base_footprint");
     this->declare_parameter("odom_id", "odom");
     this->declare_parameter<std::string>("wheel_left");
@@ -31,6 +31,14 @@ public:
     body_id = this->get_parameter("body_id").as_string();
     odom_id = this->get_parameter("odom_id").as_string();
     // wheel_left and wheel_right MUST be provided, there is no default value
+    // Not defining the parameter can be detected with different versions of the get_parameter
+    // function, which can be seen in the ROS index API docs, that could give you a simple if condition to check
+    // This is not a good way to catch exceptions (one try-catch per expected exception).
+    // if it's truly an exceptional situation that you can't recover from, you can just let it throw
+    // (all you are doing is logging and throwing it anyway).  but really what you are doing here
+    // is catching it, and ignoring it, yet letting the program continue.
+    /// you'd be better off just setting a default value and not worrying if there was an error than
+    // doing this which is basically letting you move forward with an unitiialized value
     try {
       wheel_left = this->get_parameter("wheel_left").as_string();
     } catch (rclcpp::exceptions::UninitializedStaticallyTypedParameterException & error_msg) {
@@ -184,6 +192,7 @@ private:
 
 };
 
+// why is this a shared_ptr? it could be a value
 std::shared_ptr<odometry> my_node = nullptr;
 
 int main(int argc, char * argv[])
