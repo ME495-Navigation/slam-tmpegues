@@ -41,7 +41,6 @@ void DiffDrive::fk(Wheels wheels2)
   // The arguments received here are actual wheel positions, we don't need to scale by time
   // 0st, update wheel positions and get how far the wheels rotated
   auto update = wheels.update(wheels2);
-  std::cout << update.l() << ", " << update.r()<< "\n";
   fk(update);
 }
 

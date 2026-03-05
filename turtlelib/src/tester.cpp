@@ -11,11 +11,11 @@ int main()
 {
   auto wheel_radius = 0.033;
   auto track_width = 0.16;
-  auto dd = turtlelib::DiffDrive(track_width, wheel_radius,
-    turtlelib::Transform2D(turtlelib::Vector2D(-0.6, 0.3), 1.26));
+  // auto dd = turtlelib::DiffDrive(track_width, wheel_radius,
+  //   turtlelib::Transform2D(turtlelib::Vector2D(-0.6, 0.3), 1.26));
+  auto dd = turtlelib::DiffDrive(track_width, wheel_radius);
 
-
- // Twist to wheel command code is from turtle_control.cpp
+  // Twist to wheel command code is from turtle_control.cpp
   auto motor_cmd_per_rad_sec = 0.024;
  // auto motor_cmd_max = 256;
 
@@ -51,7 +51,7 @@ int main()
   std::cout << dd.get_transform().translation() << "\n";
 
   int i = 0;
-  while (i <= 1000) {
+  while (i <= 7000) {
     dd.fk(time_diff);
     // std::cout << dd.get_transform().translation() << ", " << dd.get_transform().rotation() << "\n";
     std::cout << dd.get_transform().translation() << "\n";
