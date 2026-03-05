@@ -21,8 +21,8 @@ WheelDiff::WheelDiff() {}
 
 WheelDiff::WheelDiff(double left_rot, double right_rot)
 {
-  left = normalize_angle(left_rot);
-  right = normalize_angle(right_rot);
+  left = left_rot;
+  right = right_rot;
 }
 
 
