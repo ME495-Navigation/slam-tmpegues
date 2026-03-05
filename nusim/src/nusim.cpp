@@ -118,13 +118,13 @@ public:
       -> void {   // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
                   // Move the robot by having it keep going at its saved wheelspeeds for a specific amount of time
         // RCLCPP_INFO_STREAM(get_logger(), "FK time: " << 1.0 / (1000.0 / float(timer_period)));
-        RCLCPP_INFO_STREAM(get_logger(), "pre FK update: " << red_dd.get_transform().translation());
+        RCLCPP_INFO_STREAM(get_logger(), "pre FK update: " << red_dd.get_transform().translation() << ", " << red_dd.get_transform().rotation());
 
         red_dd.fk(1.0 / (1000.0 / float(timer_period)));         // timer_period is in milliseconds, but I need it in seconds
 
-        RCLCPP_INFO_STREAM(get_logger(), "pre FK update: " << red_dd.get_transform().translation());
+        RCLCPP_INFO_STREAM(get_logger(), "post FK update: " << red_dd.get_transform().translation() << ", " << red_dd.get_transform().rotation());
 
-                // Publish JointStates if needed
+        // Publish JointStates if needed
         if (!external_jsp) {
 
           auto joint_state_msg = sensor_msgs::msg::JointState();
