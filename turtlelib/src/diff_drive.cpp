@@ -40,7 +40,9 @@ void DiffDrive::fk(Wheels wheels2)
 {
   // The arguments received here are actual wheel positions, we don't need to scale by time
   // 0st, update wheel positions and get how far the wheels rotated
-  fk(wheels.update(wheels2));
+  auto update = wheels.update(wheels2);
+  std::cout << update.l() << ", " << update.r()<< "\n";
+  fk(update);
 }
 
 void DiffDrive::set_speeds(WheelDiff speed)
@@ -85,7 +87,7 @@ WheelDiff DiffDrive::ik(Twist2D body_tw)
     auto left = (body_tw.x - body_tw.omega * track / 2) / radius;
     auto right = (body_tw.x + body_tw.omega * track / 2) / radius;
 
-    return WheelDiff(left, right);
+    return WheelDiff(left, right).normalize();
   }
 }
 

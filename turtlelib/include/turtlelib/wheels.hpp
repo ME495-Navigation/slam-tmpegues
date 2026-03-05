@@ -17,17 +17,19 @@ private:
     /// \brief the right wheel difference
   double right{0.0};
 
-    /// \brief Wrap the angles to (-pi, pi]
-    /// \returns A WheelDiff struct with wrapped angles
-  WheelDiff & normalize();
+
 
 public:
     /// \brief Create WheelDiff with zero rotation/difference/speed on both wheels
   WheelDiff();
 
-    /// \brief Create WheelDiff with specific rotations on both wheels
-    /// \param left_rot The rotation of the left wheel
-    /// \param right_rot The rotation of the right wheel
+  /// \brief Wrap the angles to (-pi, pi]
+  /// \returns A WheelDiff struct with wrapped angles
+  WheelDiff &normalize();
+
+  /// \brief Create WheelDiff with specific rotations on both wheels
+  /// \param left_rot The rotation of the left wheel
+  /// \param right_rot The rotation of the right wheel
   explicit WheelDiff(double left_rot, double right_rot);
 
     // Scale by scalar/time
@@ -52,6 +54,7 @@ public:
     return *this;
   }
 
+  friend class Wheels;
 
 };
 

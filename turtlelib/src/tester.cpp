@@ -11,11 +11,12 @@ int main()
 {
   auto wheel_radius = 0.033;
   auto track_width = 0.16;
-  auto dd = turtlelib::DiffDrive(track_width, wheel_radius);
+  auto dd = turtlelib::DiffDrive(track_width, wheel_radius,
+    turtlelib::Transform2D(turtlelib::Vector2D(-0.6, 0.3), 1.26));
 
 
  // Twist to wheel command code is from turtle_control.cpp
- // auto motor_cmd_per_rad_sec = 0.024;
+  auto motor_cmd_per_rad_sec = 0.024;
  // auto motor_cmd_max = 256;
 
   // auto body_twist = .5*turtlelib::Twist2D(0.1, 0.2, 0.0);
@@ -36,21 +37,25 @@ int main()
   // righttick_cmd = 150;
 
   // Try spinning left and right at +- pi/2 radians /sec
-  dd.set_speeds(turtlelib::WheelDiff(0, pi / 2));
+  dd.set_speeds(motor_cmd_per_rad_sec * turtlelib::WheelDiff(0, 100));
 
-  // std::cout << "Before any FK:\n";
-  // std::cout << "Time :" << time_diff << "\n";
-  // std::cout << "x, y, theta: " << dd.get_transform().translation() << ", " << dd.get_transform().rotation() << "\n";
-  // std::cout << "Wheels, phi: " << dd.phi().l() << ", " << dd.phi().r() << "\n";
-  // ;
-  // std::cout << "Wheelspeeds, phidot: " << dd.phidot().l() << ", " << dd.phidot().r() << "\n";
-  // std::cout << "All x, y will be given after FK, except the next line\n";
+  std::cout << "Before any FK:\n";
+  std::cout << "Time :" << time_diff << "\n";
+  std::cout << "x, y, theta: " << dd.get_transform().translation() << ", " <<
+    dd.get_transform().rotation() << "\n";
+  std::cout << "Wheels, phi: " << dd.phi().l() << ", " << dd.phi().r() << "\n";
+
+  std::cout << "Wheelspeeds, phidot: " << dd.phidot().l() << ", " << dd.phidot().r() << "\n";
+  std::cout << "All x, y will be given after FK, except the next line\n";
+  // std::cout << dd.get_transform().translation() << ", " << dd.get_transform().rotation() << "\n";
   std::cout << dd.get_transform().translation() << "\n";
 
   int i = 0;
-  while (i <= 1000) { // 1 second
+  while (i <= 1000) {
     dd.fk(time_diff);
+    // std::cout << dd.get_transform().translation() << ", " << dd.get_transform().rotation() << "\n";
     std::cout << dd.get_transform().translation() << "\n";
+
     i++;
   }
 

@@ -51,7 +51,7 @@ WheelDiff & WheelDiff::normalize()
 
 WheelDiff operator-(Wheels & final, Wheels & initial)
 { // Why can't I const these?
-  return WheelDiff(final.l() - initial.l(), final.r() - initial.r());
+  return WheelDiff(final.l() - initial.l(), final.r() - initial.r()).normalize();
 }
 
 Wheels operator+(Wheels & position, WheelDiff & rotation)
