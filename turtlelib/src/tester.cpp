@@ -11,9 +11,9 @@ int main()
 {
   auto wheel_radius = 0.033;
   auto track_width = 0.16;
-  // auto dd = turtlelib::DiffDrive(track_width, wheel_radius,
-  //   turtlelib::Transform2D(turtlelib::Vector2D(-0.6, 0.3), 1.26));
-  auto dd = turtlelib::DiffDrive(track_width, wheel_radius);
+  auto dd = turtlelib::DiffDrive(track_width, wheel_radius,
+    turtlelib::Transform2D(turtlelib::Vector2D(0.0, 0.0), 0.0));
+  // auto dd = turtlelib::DiffDrive(track_width, wheel_radius);
 
   // Twist to wheel command code is from turtle_control.cpp
   auto motor_cmd_per_rad_sec = 0.024;
@@ -37,7 +37,7 @@ int main()
   // righttick_cmd = 150;
 
   // Try spinning left and right at +- pi/2 radians /sec
-  dd.set_speeds(motor_cmd_per_rad_sec * turtlelib::WheelDiff(0, 100));
+  dd.set_speeds(motor_cmd_per_rad_sec * turtlelib::WheelDiff(99, 100));
 
   std::cout << "Before any FK:\n";
   std::cout << "Time :" << time_diff << "\n";
@@ -48,14 +48,19 @@ int main()
   std::cout << "Wheelspeeds, phidot: " << dd.phidot().l() << ", " << dd.phidot().r() << "\n";
   std::cout << "All x, y will be given after FK, except the next line\n";
   // std::cout << dd.get_transform().translation() << ", " << dd.get_transform().rotation() << "\n";
-  std::cout << dd.get_transform().translation() << "\n";
+  std::cout << dd.get_transform().translation() << ", " << dd.get_transform().rotation() << "\n";
 
   int i = 0;
-  while (i <= 7000) {
+  auto tf1 = dd.get_transform().translation();
+  auto tf2 = dd.get_transform().translation();
+
+  while (i <= 1000000) {
+    tf1 = dd.get_transform().translation();
     dd.fk(time_diff);
     // std::cout << dd.get_transform().translation() << ", " << dd.get_transform().rotation() << "\n";
-    std::cout << dd.get_transform().translation() << "\n";
+    tf2 = dd.get_transform().translation();
 
+    std::cout << tf2 - tf2 << "\n";
     i++;
   }
 
