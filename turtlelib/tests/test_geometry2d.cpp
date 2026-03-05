@@ -52,16 +52,16 @@ TEST_CASE("Subtract points to make vectors", "Vector2D operator-")
   REQUIRE(vec_res_oo.x == 1.0);
   REQUIRE(vec_res_oo.y == 1.0);
   auto vec_res_minoo(origin - pt_oo);
-  REQUIRE(vec_res_minoo.x == -1);
-  REQUIRE(vec_res_minoo.y == -1);
+  REQUIRE(vec_res_minoo.x == -1.0);
+  REQUIRE(vec_res_minoo.y == -1.0);
 
   // 1 2 - 0 0 = 1 2
   auto vec_res_ot{pt_ot - origin};
   REQUIRE(vec_res_ot.x == 1.0);
-  REQUIRE(vec_res_ot.y == 2);
+  REQUIRE(vec_res_ot.y == 2.0);
   auto vec_res_minot{origin - pt_ot};
-  REQUIRE(vec_res_minot.x == -1);
-  REQUIRE(vec_res_minot.y == -2);
+  REQUIRE(vec_res_minot.x == -1.0);
+  REQUIRE(vec_res_minot.y == -2.0);
 
   // 1 2 - 1 1 = 0 -1
   auto vec_res_nno{pt_oo - pt_ot};
