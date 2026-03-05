@@ -120,9 +120,6 @@ private:
 
     // JointState includes left and right positions, velocities, and time
     // FK to get position and velocity based on received wheel positions
-    auto time_diff{
-      msg->header.stamp.sec + msg->header.stamp.nanosec / 10e9 - last_time.sec - last_time.nanosec /
-      10e9};
 
     dd_calc.fk(turtlelib::Wheels(msg->position[0], msg->position[1]));
   }

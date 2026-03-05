@@ -117,7 +117,7 @@ public:
     auto timer_callback = [this]()
       -> void {   // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
                   // Move the robot by having it keep going at its saved wheelspeeds for a specific amount of time
-        RCLCPP_INFO_STREAM(get_logger(), "FK time: " << 1.0 / (1000.0 / float(timer_period)));
+        // RCLCPP_INFO_STREAM(get_logger(), "FK time: " << 1.0 / (1000.0 / float(timer_period)));
         RCLCPP_INFO_STREAM(get_logger(), "pre FK update: " << red_dd.get_transform().translation());
 
         red_dd.fk(1.0 / (1000.0 / float(timer_period)));         // timer_period is in milliseconds, but I need it in seconds
@@ -310,7 +310,7 @@ private:
 
   geometry_msgs::msg::TransformStamped tf2d_to_pose(turtlelib::Transform2D tf)
   {
-    RCLCPP_INFO_STREAM(get_logger(), "red pose: " << tf.translation() << " " << tf.rotation());
+    // RCLCPP_INFO_STREAM(get_logger(), "red pose: " << tf.translation() << " " << tf.rotation());
 
     geometry_msgs::msg::TransformStamped t{};
     t.header.stamp = get_clock()->now();
