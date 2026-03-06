@@ -104,6 +104,16 @@ Twist2D Transform2D::operator()(Twist2D v) const
   };
 }
 
+// Twist2D Transform2D::operator()(Twist2D v) const  // Conor's
+// {
+//   // in 2d twists, rotation is the same for every frame
+//   double omega_new = v.omega;
+//   // translation
+//   double vx_new = pos.y * v.omega + cos(theta) * v.x - sin(theta) * v.y;
+//   double vy_new = -pos.x * v.omega + sin(theta) * v.x + cos(theta) * v.y;
+
+//   return {normalize_angle(omega_new), vx_new, vy_new};
+// }
 
 Transform2D Transform2D::inv() const
 {
