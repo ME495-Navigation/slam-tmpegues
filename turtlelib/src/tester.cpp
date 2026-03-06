@@ -31,7 +31,7 @@ int main()
   int i = 0;
 
 
-  while (i < 6000) {
+  while (i < 13.0 * 100) {
 
     dd.fk(time_diff);
 
