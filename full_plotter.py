@@ -38,32 +38,34 @@ for point in body_twist_lines:
     b_y.append(point[2])
 
 
-fig1, ((ax1, ax2, ax3), (ax4, ax5, ax6), (ax7, ax8, ax9), (ax10, ax11, ax12)) = plt.subplots(4, 3)
+fig1, ((ax1, ax2, ax3), (ax4, ax5, ax6), (ax13, ax14, ax15), (ax7, ax8, ax9), (ax10, ax11, ax12)) = plt.subplots(5, 3)
 ax1.scatter(x, y)
 ax1.set_aspect('equal', 'box')
 ax1.set_title('T_wb, dd coordinates in world frame')
 
+ax4.plot(theta)
+ax4.set_title("T_wb.theta")
 ax5.plot(x)
 ax5.set_title("T_wb.x")
 ax6.plot(y)
 ax6.set_title("T_wb.y")
-ax4.plot(theta)
-ax4.set_title("T_wb.theta")
 
+
+ax7.plot(b_om)
+ax7.set_title("Body Twist.omega")
 ax8.plot(b_x)
 ax8.set_title("Body Twist.x")
 ax9.plot(b_y)
 ax9.set_title("Body Twist.y")
-ax7.plot(b_om)
-ax7.set_title("Body Twist.omega")
 
+ax10.plot(w_om)
+ax10.set_title("World Twist.omega")
 ax11.plot(w_x)
 ax11.set_title("World Twist.x")
 ax12.plot(w_y)
 ax12.set_title("World Twist.y")
-ax10.plot(w_om)
-ax10.set_title("World Twist.omega")
-plt.draw()
+
+# plt.draw()
 
 # Calculate errors
 tester_values = []
@@ -137,6 +139,16 @@ tw_y_error = [cw[2]- actw[2] for cw, actw in zip(correct_twist, world_twist_line
 
 
 fig2, ((erax1, erax2, erax3), (erax4, erax5, erax6)) = plt.subplots(2, 3)
+
+ax13.plot([cw[0] for cw in correct_twist])
+ax14.plot([cx[1] for cx in correct_twist])
+ax15.plot([cy[2] for cy in correct_twist])
+
+ax13.set_title("Correct twist.omega")
+ax14.set_title("Correct twist.x")
+ax15.set_title("Correct twist.y")
+
+
 
 
 erax1.plot(theta_err)

@@ -126,11 +126,27 @@ Transform2D Transform2D::inv() const
 
 Transform2D & Transform2D::operator*=(const Transform2D & rhs)
 {
-  pos.x += costh * rhs.pos.x - sinth * rhs.pos.y;
-  pos.y += costh * rhs.pos.y + sinth * rhs.pos.x;
+  // pos.x += costh * rhs.pos.x - sinth * rhs.pos.y;
+  // pos.y += costh * rhs.pos.y + sinth * rhs.pos.x;
 
-  update_theta(theta + rhs.theta);
+  // update_theta(theta + rhs.rotation());
 
+  // return *this;
+
+  // Compose transforms: T1 *= T2 means T1 = T1 * T2
+  // New rotation is sum of rotations
+  double new_omega = normalize_angle(theta + rhs.rotation());
+
+  // New translation is: current translation + rotated rhs translation
+  const auto rhs_trans = rhs.translation(); // auto
+  const auto cos_theta = std::cos(theta);
+  const auto sin_theta = std::sin(theta);
+
+  const auto new_x = pos.x + (rhs_trans.x * cos_theta - rhs_trans.y * sin_theta);
+  const auto new_y = pos.y + (rhs_trans.x * sin_theta + rhs_trans.y * cos_theta);
+
+  pos = Vector2D{new_x, new_y};
+  update_theta(new_omega);
   return *this;
 }
 
