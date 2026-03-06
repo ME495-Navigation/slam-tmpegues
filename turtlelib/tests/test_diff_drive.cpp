@@ -108,3 +108,83 @@ TEST_CASE("Test ik", "DiffDrive::ik")
 
   REQUIRE_THROWS_AS(dd.ik({1, 1, 1}), std::logic_error);
 }
+
+
+// Tests below this point were given to me by Conor
+
+TEST_CASE("DiffDrive forward motion (forward/inverse)", "[Conor]")
+{
+  const auto wheel_radius = 0.1;
+  const auto wheel_track = 0.5;
+
+  auto dd = DiffDrive{wheel_radius, wheel_track};
+
+  // initialize wheel angle
+  dd.fk(Wheels(0.0, 0.0));
+  dd.fk(WheelDiff(2.0 * pi, 2.0 * pi));
+  auto tf = dd.get_transform();
+  REQUIRE_THAT(tf.rotation(), WithinAbs(0.0, 1e-6));
+  REQUIRE_THAT(tf.translation().x, WithinAbs(2.0 * pi * wheel_radius, 1e-6));
+  REQUIRE_THAT(tf.translation().y, WithinAbs(0.0, 1e-6));
+
+  auto wheels = dd.ik(Twist2D{0.0, 0.1, 0.0});
+  REQUIRE_THAT(wheels.l(), WithinAbs(1.0, 1e-6));
+  REQUIRE_THAT(wheels.r(), WithinAbs(1.0, 1e-6));
+}
+
+TEST_CASE("DiffDrive pure rotation (forward/inverse)", "[Conor]")
+{
+  const auto wheel_radius = 0.1;
+  const auto wheel_track = 0.5;
+
+  auto dd = DiffDrive{wheel_radius, wheel_track};
+
+  // spin around 180 degrees
+  // this means 0.5/2 * pi = 0.25pi arc length for both wheels
+  // so the wheels have to spin 0.25pi / 0.1 = 2.5pi radians in opposite directions
+  dd.fk(Wheels(0.0, 0.0));
+  dd.fk(WheelDiff(-pi * 2.5, pi * 2.5));
+  auto tf = dd.get_transform();
+
+  REQUIRE_THAT(tf.translation().x, WithinAbs(0.0, 1e-6));
+  REQUIRE_THAT(tf.translation().y, WithinAbs(0.0, 1e-6));
+  REQUIRE_THAT(tf.rotation(), WithinAbs(pi, 1e-6));
+
+  // 180 degree rotation in place should use the same math in reverse
+  auto wheels = dd.ik(Twist2D{pi, 0.0, 0.0});
+  REQUIRE_THAT(wheels.l(), WithinAbs(-2.5 * pi, 1e-6));
+  REQUIRE_THAT(wheels.r(), WithinAbs(2.5 * pi, 1e-6));
+}
+
+TEST_CASE("DiffDrive circular arc (forward/inverse)", "[Conor]")
+{
+  const auto wheel_radius = 0.1;
+  const auto wheel_track = 0.5;
+
+  auto dd = DiffDrive{wheel_radius, wheel_track};
+
+  dd.fk(Wheels(0.0, 0.0));
+  dd.fk(Wheels(1.0, 2.0));
+  auto tf = dd.get_transform();
+
+
+  const auto omega = (wheel_radius / wheel_track) * (2.0 - 1.0);
+  const auto v_x = (wheel_radius / 2.0) * (1.0 + 2.0);
+  const auto expected_x = (v_x / omega) * std::sin(omega);
+  const auto expected_y = (v_x / omega) * (1.0 - std::cos(omega));
+
+  REQUIRE_THAT(tf.rotation(), WithinAbs(omega, 1e-6));
+  REQUIRE_THAT(tf.translation().x, WithinAbs(expected_x, 1e-6));
+  REQUIRE_THAT(tf.translation().y, WithinAbs(expected_y, 1e-6));
+
+  auto wheels = dd.ik(Twist2D{omega, v_x, 0.0});
+  REQUIRE_THAT(wheels.l(), WithinAbs(1.0, 1e-6));
+  REQUIRE_THAT(wheels.r(), WithinAbs(2.0, 1e-6));
+}
+
+TEST_CASE("DiffDrive inverse kinematics rejects lateral motion", "[Conor]")
+{
+  auto dd = DiffDrive{0.1, 0.5};
+
+  REQUIRE_THROWS_AS(dd.ik(Twist2D{0.0, 0.1, 0.01}), std::logic_error);
+}
