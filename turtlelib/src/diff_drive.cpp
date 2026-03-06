@@ -1,6 +1,8 @@
 #include <cmath>
 #include <stdexcept>
+
 #include <iostream>
+#include <fstream>
 
 #include "turtlelib/angle.hpp"
 #include "turtlelib/diff_drive.hpp"
@@ -61,24 +63,21 @@ void DiffDrive::fk(WheelDiff diff)
   // 3rd, integrate the twist in the world frame
   // 4th, chain the initial position transform and the integrated twist transform
 
-  // std::cout << "Pre FK update: " << q.translation() << ", " << q.rotation() << "\n";
-
   // Calculate these with *differences*
   auto omega = radius / track * (diff.r() - diff.l());
   auto x = radius / 2.0 * (diff.r() + diff.l());
   auto y = 0.0;
 
   body_vel = Twist2D{omega, x, y};
-  // std::cout << "Next \n";
-  // std::cout << body_vel << "\n";
+  body_twist_file << body_vel << "\n";
 
   auto world_twist = q(body_vel);
-  // std::cout << world_twist << "\n";
+  world_twist_file << world_twist << "\n";
 
   auto tf_current_to_new = integrate_twist(world_twist);
   q *= tf_current_to_new;
 
-  // std::cout << "Post FK update: " << q.translation() << ", " << q.rotation() << "\n\n";
+  twb_file << q.translation() << ", " << q.rotation() << "\n";
 }
 
 // TODO: 0228 Update wheel handling

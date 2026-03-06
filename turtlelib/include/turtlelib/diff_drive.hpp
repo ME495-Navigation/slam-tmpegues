@@ -6,6 +6,9 @@
 #include "turtlelib/se2d.hpp"
 #include "turtlelib/wheels.hpp"
 
+#include <iostream>
+#include <fstream>
+
 namespace turtlelib
 {
 
@@ -18,6 +21,10 @@ private:
   Twist2D body_vel;
   double track = 0;
   double radius = 0;
+
+  std::ofstream body_twist_file{"body_twist.txt"};
+  std::ofstream world_twist_file{"world_twist.txt"};
+  std::ofstream twb_file{"twb.txt"};
 
 public:
   /// \brief Create a base DiffDrive with 0 dimensions. This will be effectively useless
