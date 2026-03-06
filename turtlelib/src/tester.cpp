@@ -37,7 +37,7 @@ int main()
   // righttick_cmd = 150;
 
   // Try spinning left and right at +- pi/2 radians /sec
-  dd.set_speeds(motor_cmd_per_rad_sec * turtlelib::WheelDiff(0, 100));
+  dd.set_speeds(motor_cmd_per_rad_sec * turtlelib::WheelDiff(-100, 100));
 
   std::cout << "Before any FK:\n";
   std::cout << "Time :" << time_diff << "\n";
@@ -48,19 +48,16 @@ int main()
   std::cout << "Wheelspeeds, phidot: " << dd.phidot().l() << ", " << dd.phidot().r() << "\n";
   std::cout << "All x, y will be given after FK, except the next line\n";
   // std::cout << dd.get_transform().translation() << ", " << dd.get_transform().rotation() << "\n";
-  std::cout << dd.get_transform().translation() << ", " << dd.get_transform().rotation() << "\n";
-
+  // std::cout << dd.get_transform().translation() << ", " << dd.get_transform().rotation() << "\n";
+  std::cout << dd.phi().l() << ", " << dd.phi().r() << "\n";
   int i = 0;
-  auto tf1 = dd.get_transform().translation();
-  auto tf2 = dd.get_transform().translation();
 
-  while (i <= 6000) {
-    tf1 = dd.get_transform().translation();
+
+  while (i <= 10000) {
     dd.fk(time_diff);
-    // std::cout << dd.get_transform().translation() << ", " << dd.get_transform().rotation() << "\n";
+    std::cout << dd.get_transform().translation() << ", " << dd.get_transform().rotation() << "\n";
     // tf2 = dd.get_transform().translation();
 
-    // std::cout << tf2 - tf2 << "\n";
     i++;
   }
 

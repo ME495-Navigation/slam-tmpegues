@@ -69,11 +69,11 @@ void DiffDrive::fk(WheelDiff diff)
   auto y = 0.0;
 
   body_vel = Twist2D{omega, x, y};
-
+  // std::cout << "Next \n";
   // std::cout << body_vel << "\n";
 
   auto world_twist = q(body_vel);
-  std::cout << world_twist << "\n";
+  // std::cout << world_twist << "\n";
 
   auto tf_current_to_new = integrate_twist(world_twist);
   q *= tf_current_to_new;
