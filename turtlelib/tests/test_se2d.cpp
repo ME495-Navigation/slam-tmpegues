@@ -361,7 +361,45 @@ TEST_CASE("Integrate twists into transforms", "integrate_twist()")
   twist.omega = pi / 2;
   auto tf3 = integrate_twist(twist);
 
-  REQUIRE_THAT(tf3.translation().x, WithinAbs(1.0, 0.0001));
-  REQUIRE_THAT(tf3.translation().y, WithinAbs(1.0, 0.0001));
-  REQUIRE_THAT(tf3.rotation(), WithinAbs(pi / 2, 0.0001));
+  REQUIRE_THAT(tf3.translation().x, WithinAbs(1.0, 0.00001));
+  REQUIRE_THAT(tf3.translation().y, WithinAbs(1.0, 0.00001));
+  REQUIRE_THAT(tf3.rotation(), WithinAbs(pi / 2, 0.00001));
+}
+
+TEST_CASE("Twist2D integration - translation", "[Conor]")
+{
+  auto tw = Twist2D{0, 3, 4};
+  auto tf = integrate_twist(tw);
+
+  REQUIRE_THAT(tf.rotation(), WithinAbs(0, 0.001));
+  REQUIRE_THAT(tf.translation().x, WithinAbs(3, 0.001));
+  REQUIRE_THAT(tf.translation().y, WithinAbs(4, 0.001));
+}
+
+TEST_CASE("Twist2D integration - rotation", "[Conor]")
+{
+  auto tw = Twist2D{std::numbers::pi, 0, 0};
+  auto tf = integrate_twist(tw);
+
+  REQUIRE_THAT(tf.rotation(), WithinAbs(std::numbers::pi, 0.001));
+  REQUIRE_THAT(tf.translation().x, WithinAbs(0, 0.001));
+  REQUIRE_THAT(tf.translation().y, WithinAbs(0, 0.001));
+}
+
+TEST_CASE("Twist2D integration - rotation & translation", "[Conor]")
+{
+  // let's go in a big circle and come all the way back to where we started
+  auto tw2 = Twist2D{2.0 * std::numbers::pi, 0, 2.0 * std::numbers::pi};
+  auto tf2 = integrate_twist(tw2);
+  REQUIRE_THAT(tf2.rotation(), WithinAbs(0.0, 0.001));
+  REQUIRE_THAT(tf2.translation().x, WithinAbs(0.0, 0.001));
+  REQUIRE_THAT(tf2.translation().y, WithinAbs(0.0, 0.001));
+
+  auto tw = Twist2D{std::numbers::pi, std::numbers::pi, 0};
+  // this should go all the way around a semicircle with radius 1.
+  // so it ends up at (0, 2) with a 180deg rotation
+  auto tf = integrate_twist(tw);
+  REQUIRE_THAT(tf.rotation(), WithinAbs(std::numbers::pi, 0.001));
+  REQUIRE_THAT(tf.translation().x, WithinAbs(0, 0.001));
+  REQUIRE_THAT(tf.translation().y, WithinAbs(2, 0.001));
 }
