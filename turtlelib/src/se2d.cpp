@@ -104,6 +104,7 @@ Twist2D Transform2D::operator()(Twist2D v) const
   };
 }
 
+
 Transform2D Transform2D::inv() const
 {
   Vector2D new_vc;

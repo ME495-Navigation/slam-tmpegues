@@ -219,6 +219,55 @@ TEST_CASE("Transform a twist", "Transform2D::operator(Twist2D)")
   REQUIRE_THAT(tw_res.y, WithinAbs((2 - std::numbers::pi) / 2, 0.00001));
 }
 
+  TEST_CASE("origin, no transformation")
+  {
+    turtlelib::Transform2D tf;
+    turtlelib::Vector2D vc;
+    // origin with no transformation
+    auto vc2 = tf(vc);
+    REQUIRE(vc2.x == 0);
+    REQUIRE(vc2.y == 0);
+  }
+
+  TEST_CASE("origin with pure rotation")
+  {
+    double rot = turtlelib::deg2rad(45);
+    turtlelib::Transform2D tf(rot);
+    turtlelib::Vector2D vc;
+    auto vc2 = tf(vc);
+    REQUIRE(vc2.x == vc.x);
+    REQUIRE(vc2.y == vc.y);
+  }
+
+  TEST_CASE("origin with pure translation")
+  {
+    // translation is ignored by vectors
+
+    turtlelib::Vector2D vc;
+    turtlelib::Vector2D oo;
+    oo.x = 1;
+    oo.y = -1;
+    turtlelib::Transform2D tf(oo);
+    auto vc2 = tf(vc);
+    REQUIRE(vc2.x == 0);
+    REQUIRE(vc2.y == 0);
+  }
+
+  TEST_CASE("translate and rotate")
+  {
+    // translation is ignored
+    double rot = turtlelib::deg2rad(45);
+    turtlelib::Vector2D oo;
+    oo.x = 1;
+    oo.y = -1;
+    turtlelib::Transform2D tf(oo, rot);
+    turtlelib::Vector2D vc{1, 1};
+    auto vc2 = tf(vc);
+
+    REQUIRE_THAT(vc2.x, WithinAbs(0.0, 0.00001));
+    REQUIRE_THAT(vc2.y, WithinAbs(std::sqrt(2), 0.00001));
+  }
+
 TEST_CASE("Transform2D operator*", "[Conor]")
 {
   // this is also implicitly testing operator*=

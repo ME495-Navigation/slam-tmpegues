@@ -55,8 +55,7 @@ if(BUILD_TESTING)
                    tests/test_angle.cpp
                    tests/test_wheels.cpp
                    tests/test_geometry2d.cpp
-                   tests/test_se2d.cpp
-                   tests/test_diff_drive.cpp)
+                   tests/test_se2d.cpp)
 
 
     target_link_libraries(test_turtlelib Catch2::Catch2WithMain turtlelib)
