@@ -98,8 +98,10 @@ Vector2D Transform2D::operator()(Vector2D v) const
 Twist2D Transform2D::operator()(Twist2D v) const
 {
   return {
-    v.omega, costh * v.x - sinth * v.y + pos.y * v.omega,
-    costh * v.y + sinth * v.x - pos.x * v.omega};
+    v.omega,
+    costh * v.x - sinth * v.y + pos.y * v.omega,
+    costh * v.y + sinth * v.x - pos.x * v.omega
+  };
 }
 
 Transform2D Transform2D::inv() const
