@@ -54,7 +54,7 @@ int main()
   auto tf1 = dd.get_transform().translation();
   auto tf2 = dd.get_transform().translation();
 
-  while (i <= 1000) {
+  while (i <= 6000) {
     tf1 = dd.get_transform().translation();
     dd.fk(time_diff);
     // std::cout << dd.get_transform().translation() << ", " << dd.get_transform().rotation() << "\n";
