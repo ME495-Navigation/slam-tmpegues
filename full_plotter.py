@@ -70,10 +70,10 @@ tester_values = []
 with open('./src/repo/turtlelib/tester.txt') as file:
     tester_lines =  [line.strip() for line in file]
 tester_lines = [eval(line) for line in tester_lines[4:]]
-phidotl, phidotr = tester_lines[0]
-x0, y0 = tester_lines[1]
-track, wheel_rad, cmdperradsec = tester_lines[2]
-time_diff = tester_lines[3]
+phidotl, phidotr = tester_lines.pop(0)
+x0, y0 = tester_lines.pop(0)
+track, wheel_rad, cmdperradsec = tester_lines.pop(0)
+time_diff = tester_lines.pop(0)
 
 vel = .5 * cmdperradsec * (phidotl-phidotr) * wheel_rad
 rad = (-phidotl*track -phidotr*track)/(2*(phidotl-phidotr))
