@@ -24,6 +24,8 @@ private:
 
   std::ofstream body_twist_file{"body_twist.txt"};
   std::ofstream world_twist_file{"world_twist.txt"};
+  std::ofstream diff_radian_file{"diff_radian.txt"};
+
   std::ofstream twb_file{"twb.txt"};
 
 public:
