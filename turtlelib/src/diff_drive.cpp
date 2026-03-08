@@ -73,10 +73,7 @@ void DiffDrive::fk(WheelDiff diff)
   body_vel = Twist2D{omega, x, y};
   body_twist_file << body_vel << "\n";
 
-  auto world_twist = q(body_vel);
-  world_twist_file << world_twist << "\n";
-
-  auto tf_current_to_new = integrate_twist(world_twist);
+  auto tf_current_to_new = integrate_twist(body_vel);
   q *= tf_current_to_new;
 
   twb_file << q.translation() << ", " << q.rotation() << "\n";
