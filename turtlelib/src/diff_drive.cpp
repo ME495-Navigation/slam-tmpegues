@@ -66,6 +66,8 @@ void DiffDrive::fk(WheelDiff diff)
   // Calculate these with *differences*
   diff_radian_file << diff.l() << ", " << diff.r() << "\n";
 
+  wheels += diff;
+
   auto omega = radius / track * (diff.r() - diff.l());
   auto x = radius / 2.0 * (diff.r() + diff.l());
   auto y = 0.0;

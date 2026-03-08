@@ -92,7 +92,10 @@ public:
   WheelDiff update(Wheels new_wheels);
 
     // += diff
-    // get
+    /// \brief Update the wheels by adding a rotation
+    /// \brief rot The amount to rotate the wheels by
+    /// \return The new wheel position
+  Wheels &operator+=(const WheelDiff &rotation);
 };
 
 
@@ -123,10 +126,10 @@ WheelDiff operator*(WheelDiff diff, const T & scalar)
 WheelDiff operator-(Wheels & final, Wheels & initial);
 
 /// \brief Add rotations to a wheel positions to get the new positions
-/// \param pos The initial wheel positions
-/// \param rot How far the wheels rotate
+/// \param position The initial wheel positions
+/// \param rotation How far the wheels rotate
 /// \return The new positions
-Wheels operator+(Wheels & position, WheelDiff & rotation);
+Wheels operator+(Wheels  position, WheelDiff & rotation);
 }
 
 #endif

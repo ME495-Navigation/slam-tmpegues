@@ -43,6 +43,10 @@ TEST_CASE("Add rotations to wheel positions", "Wheels operator+(Wheels, WheelDif
     new_wheels = pre + rot;
     REQUIRE(new_wheels.l() == 3.0);
     REQUIRE_THAT(new_wheels.r(), WithinAbs(normalize_angle(3.78 + pi), 0.00001));
+
+    pre += rot;
+    REQUIRE(pre.l() == 3.0);
+    REQUIRE_THAT(pre.r(), WithinAbs(normalize_angle(3.78 + pi), 0.00001));
 }
 
 
