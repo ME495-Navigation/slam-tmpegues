@@ -20,7 +20,7 @@ int main()
   auto motor_cmd_per_rad_sec = 0.024;
 
   auto time_diff {0.01};
-  auto wheel_cmd = turtlelib::WheelDiff(0,100);
+  auto wheel_cmd = turtlelib::WheelDiff(0, 100);
   dd.set_speeds(motor_cmd_per_rad_sec * wheel_cmd);
   tester_file << "Wheel cmd\nx0, y0\ndd properties\ntime step\n";
   tester_file << wheel_cmd.l() << ", " << wheel_cmd.r() << "\n";

@@ -17,15 +17,13 @@ private:
     /// \brief the right wheel difference
   double right{0.0};
 
-
-
 public:
     /// \brief Create WheelDiff with zero rotation/difference/speed on both wheels
   WheelDiff();
 
   /// \brief Wrap the angles to (-pi, pi]
   /// \returns A WheelDiff struct with wrapped angles
-  WheelDiff &normalize();
+  WheelDiff & normalize();
 
   /// \brief Create WheelDiff with specific rotations on both wheels
   /// \param left_rot The rotation of the left wheel
