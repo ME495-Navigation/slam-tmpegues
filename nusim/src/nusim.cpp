@@ -116,25 +116,8 @@ public:
 
     auto timer_callback = [this]()
       -> void {   // TODO: Check removing the -> void, moving the whole lambda  // TODO: read about Lambda variable capture
-                  // Move the robot by having it keep going at its saved wheelspeeds for a specific amount of time
-        RCLCPP_INFO_STREAM(get_logger(), " ");
-
-        RCLCPP_INFO_STREAM(get_logger(), "FK time: " << 1.0 / (1000.0 / float(timer_period)));
-        RCLCPP_INFO_STREAM(get_logger(), "Wheel rad: " << red_dd.get_radius());
-        RCLCPP_INFO_STREAM(get_logger(), "Track: " << red_dd.get_track());
-        RCLCPP_INFO_STREAM(get_logger(), "phi: " << red_dd.phi().l() << ", " << red_dd.phi().r());
-        RCLCPP_INFO_STREAM(get_logger(),
-        "phidot: " << red_dd.phidot().l() << ", " << red_dd.phidot().r());
-
-        RCLCPP_INFO_STREAM(get_logger(),
-        "pre FK update: " << red_dd.get_transform().translation() << ", " <<
-          red_dd.get_transform().rotation());
 
         red_dd.fk(1.0 / (1000.0 / float(timer_period))); // timer_period is in milliseconds, but I need it in seconds
-
-        RCLCPP_INFO_STREAM(get_logger(),
-        "post FK update: " << red_dd.get_transform().translation() << ", " <<
-          red_dd.get_transform().rotation());
 
       // Publish JointStates if needed
         if (!external_jsp) {
@@ -220,9 +203,6 @@ private:
   void wheel_cmd_cb_(const std::shared_ptr<nuturtlebot_msgs::msg::WheelCommands> msg)
   {
     // 0301 When a wheel command is received, it gets saved as the speed in the DiffDrive
-    RCLCPP_INFO_STREAM(get_logger(),
-      "wheel_cmd received: " << msg->left_velocity << " " << msg->right_velocity);
-
     red_dd.set_speeds(turtlelib::WheelDiff(msg->left_velocity * motor_cmd_per_rad_sec,
       msg->right_velocity * motor_cmd_per_rad_sec));
   }
