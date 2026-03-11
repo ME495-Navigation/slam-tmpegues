@@ -9,6 +9,7 @@
 #include "turtlelib/wheels.hpp"
 #include "turtlelib/diff_drive.hpp"
 
+#include <fstream>
 
 class odometry : public rclcpp::Node
 {
@@ -85,6 +86,9 @@ private:
 
   nav_msgs::msg::Odometry odom_state = nav_msgs::msg::Odometry();
 
+  std::ofstream odom_tf_file{"odom_tf.txt"};
+  std::ofstream odom_wheel_file{"odom_phi.txt"};
+
   void initial_pose_cb_(
     const std::shared_ptr<nuturtle_control_interfaces::srv::InitialPose::Request> request,
     [[maybe_unused]] const std::shared_ptr<nuturtle_control_interfaces::srv::InitialPose::Response>
@@ -122,6 +126,8 @@ private:
     // FK to get position and velocity based on received wheel positions
 
     dd_calc.fk(turtlelib::Wheels(msg->position.at(0), msg->position.at(1)));
+    odom_tf_file << dd_calc.get_transform().translation() << ", " << dd_calc.get_transform().rotation() << "\n";
+    odom_wheel_file << dd_calc.phi().l() << ", " << dd_calc.phi().r() << "\n";
   }
 
 
@@ -136,6 +142,7 @@ private:
 
     odom_pub_->publish(odom_state);
   }
+
   geometry_msgs::msg::Pose turtlelib_transform_to_pose(
     const turtlelib::Transform2D tf)
   {
@@ -156,8 +163,6 @@ private:
 
   geometry_msgs::msg::TransformStamped turtlelib_transform2d_to_msg(const turtlelib::Transform2D tf)
   {
-    RCLCPP_INFO_STREAM(this->get_logger(), "turtlelib to pose 1: " << tf.translation() << ", " << tf.rotation());
-
     geometry_msgs::msg::TransformStamped t{};
     t.header.stamp = get_clock()->now();
     t.header.frame_id = odom_id;
@@ -172,7 +177,6 @@ private:
     t.transform.rotation.y = q.y();
     t.transform.rotation.z = q.z();
     t.transform.rotation.w = q.w();
-    RCLCPP_INFO_STREAM(this->get_logger(), "turtlelib to pose: "<< t.transform.translation.x <<", "<< t.transform.translation.y);
 
     return t;
   }

@@ -93,11 +93,6 @@ private:
     lefttick_cmd = ((lefttick_cmd < -motor_cmd_max) ? -motor_cmd_max : lefttick_cmd);
     righttick_cmd = ((righttick_cmd < -motor_cmd_max) ? -motor_cmd_max : righttick_cmd);
 
-    RCLCPP_INFO_STREAM(get_logger(), "cmd_max " << motor_cmd_max);
-    RCLCPP_INFO_STREAM(get_logger(), "cmd_max >?" << (lefttick_cmd > motor_cmd_max));
-
-    RCLCPP_INFO_STREAM(get_logger(), "red wheel cmds: " << lefttick_cmd << ", " << righttick_cmd);
-
     auto wheeltick_cmd = nuturtlebot_msgs::msg::WheelCommands();
     wheeltick_cmd.left_velocity = lefttick_cmd;
     wheeltick_cmd.right_velocity = righttick_cmd;
