@@ -12,7 +12,6 @@
 #include "nuturtlebot_msgs/msg/wheel_commands.hpp"
 #include "nuturtlebot_msgs/msg/sensor_data.hpp"
 #include "visualization_msgs/msg/marker_array.hpp"
-#include "sensor_msgs/msg/joint_state.hpp"
 
 class nusim_node : public rclcpp::Node
 {
@@ -36,9 +35,6 @@ public:
     declare_parameter("track_width", 0.16);
     declare_parameter("encoder_ticks_per_rad", 651.89864);
 
-
-    declare_parameter("external_jsp", false);
-
     // Create all publishers/broadcasters
     wheel_cmd_sub_ = create_subscription<nuturtlebot_msgs::msg::WheelCommands>("red/wheel_cmd",
       10, std::bind(&nusim_node::wheel_cmd_cb_, this, std::placeholders::_1));
@@ -60,15 +56,7 @@ public:
 
     sensor_pub_ = create_publisher<nuturtlebot_msgs::msg::SensorData>("red/sensor_data", 10);
 
-    external_jsp = get_parameter("external_jsp").as_bool();
-
-    if (!external_jsp) {
-      // joint_state_pub_ = create_publisher<sensor_msgs::msg::JointState>("red/joint_states", 10);
-    }
-
-
-
-      // Define all variables
+    // Define all variables
     timestep.data = 0;
     rate = get_parameter("rate").as_int();
     timer_period = 1000 / rate;
@@ -144,10 +132,6 @@ private:
   rclcpp::Publisher<nuturtlebot_msgs::msg::SensorData>::SharedPtr sensor_pub_;
   rclcpp::Service<std_srvs::srv::Empty>::SharedPtr reset_service_;
   std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
-
-  rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr joint_state_pub_;
-
-  bool external_jsp {false};
 
   // Wall dimensions
   double arena_x_length{3};
