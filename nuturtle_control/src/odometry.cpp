@@ -56,7 +56,7 @@ public:
         "initial_pose",
         std::bind(&odometry::initial_pose_cb_, this, std::placeholders::_1, std::placeholders::_2));
 
-    joint_state_sub_ = create_subscription<sensor_msgs::msg::JointState>("joint_state", 10,
+    joint_state_sub_ = create_subscription<sensor_msgs::msg::JointState>("joint_states", 10,
     std::bind(&odometry::joint_state_cb_, this, std::placeholders::_1));
 
     odom_pub_ = create_publisher<nav_msgs::msg::Odometry>("odom", 10);

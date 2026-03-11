@@ -48,6 +48,8 @@
                 <param name="wheel_left" value="blue/wheel_left_joint"/>
                 <param name="wheel_right" value="blue/wheel_right_joint"/>
                 <param name="body_id" value="'blue/base_footprint'"/>
+                <remap from="joint_states" to="red/joint_states"/>
+
             </node>
 
             <node pkg="nuturtle_control" exec="turtle_control">
