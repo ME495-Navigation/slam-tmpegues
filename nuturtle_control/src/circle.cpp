@@ -44,15 +44,12 @@ private:
   {
     // RCLCPP_DEBUG_STREAM(get_logger(), "Circle control vel, rad: " << request.velocity << ", " << request.radius);
 
-    if (request->radius == 0.0)
-    {
+    if (request->radius == 0.0) {
       circle_twist.angular.z = request->velocity;
       circle_twist.linear.x = 0;
-    }
-    else
-    {
-      circle_twist.angular.z = request->velocity/ (2 *std::numbers::pi *request->radius);
-          circle_twist.linear.x = request->velocity;
+    } else {
+      circle_twist.angular.z = request->velocity / (2 * std::numbers::pi * request->radius);
+      circle_twist.linear.x = request->velocity;
     }
     stopped = false;
   }

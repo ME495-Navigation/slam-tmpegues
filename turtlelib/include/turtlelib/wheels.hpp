@@ -95,7 +95,7 @@ public:
     /// \brief Update the wheels by adding a rotation
     /// \brief rot The amount to rotate the wheels by
     /// \return The new wheel position
-  Wheels &operator+=(const WheelDiff &rotation);
+  Wheels & operator+=(const WheelDiff & rotation);
 };
 
 

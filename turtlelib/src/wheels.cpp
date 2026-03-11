@@ -54,7 +54,7 @@ WheelDiff operator-(Wheels & final, Wheels & initial)
   return WheelDiff(final.l() - initial.l(), final.r() - initial.r()).normalize();
 }
 
-Wheels &Wheels::operator+=(const WheelDiff & rotation)
+Wheels & Wheels::operator+=(const WheelDiff & rotation)
 {
   left = normalize_angle(left + rotation.left);
   right = normalize_angle(right + rotation.right);
@@ -78,4 +78,3 @@ WheelDiff Wheels::update(Wheels new_wheels)
   return diff;
 }
 }
-
