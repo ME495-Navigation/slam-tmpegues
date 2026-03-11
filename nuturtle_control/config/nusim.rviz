@@ -5,7 +5,7 @@ Panels:
     Property Tree Widget:
       Expanded: ~
       Splitter Ratio: 0.5
-    Tree Height: 616
+    Tree Height: 371
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
@@ -249,11 +249,11 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 76.01689147949219
+      Scale: 233.38661193847656
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz_default_plugins)
-      X: 0.031330958008766174
-      Y: 0.16797786951065063
+      X: 0
+      Y: 0
     Saved: ~
 Window Geometry:
   Displays:
@@ -271,5 +271,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1321
-  X: 2923
-  Y: 551
+  X: 2300
+  Y: 469
