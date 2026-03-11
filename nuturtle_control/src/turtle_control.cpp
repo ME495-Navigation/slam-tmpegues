@@ -84,12 +84,19 @@ private:
       return;
     }
 
-    dd_calc.set_speeds(wheelrad_cmd);
     int lefttick_cmd{static_cast<int>(wheelrad_cmd.l() / motor_cmd_per_rad_sec)};
     int righttick_cmd{static_cast<int>(wheelrad_cmd.r() / motor_cmd_per_rad_sec)};
 
     lefttick_cmd = ((lefttick_cmd > motor_cmd_max) ? motor_cmd_max : lefttick_cmd);
     righttick_cmd = ((righttick_cmd > motor_cmd_max) ? motor_cmd_max : righttick_cmd);
+
+    lefttick_cmd = ((lefttick_cmd < -motor_cmd_max) ? -motor_cmd_max : lefttick_cmd);
+    righttick_cmd = ((righttick_cmd < -motor_cmd_max) ? -motor_cmd_max : righttick_cmd);
+
+    RCLCPP_INFO_STREAM(get_logger(), "cmd_max " << motor_cmd_max);
+    RCLCPP_INFO_STREAM(get_logger(), "cmd_max >?" << (lefttick_cmd > motor_cmd_max));
+
+    RCLCPP_INFO_STREAM(get_logger(), "red wheel cmds: " << lefttick_cmd << ", " << righttick_cmd);
 
     auto wheeltick_cmd = nuturtlebot_msgs::msg::WheelCommands();
     wheeltick_cmd.left_velocity = lefttick_cmd;

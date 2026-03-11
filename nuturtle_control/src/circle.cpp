@@ -43,13 +43,12 @@ private:
     response)
   {
     // RCLCPP_DEBUG_STREAM(get_logger(), "Circle control vel, rad: " << request.velocity << ", " << request.radius);
+    circle_twist.angular.z = request->velocity;
 
     if (request->radius == 0.0) {
-      circle_twist.angular.z = request->velocity;
       circle_twist.linear.x = 0;
     } else {
-      circle_twist.angular.z = request->velocity * request->radius;
-      circle_twist.linear.x = request->velocity;
+      circle_twist.linear.x = request->velocity*request->radius;
     }
     stopped = false;
   }

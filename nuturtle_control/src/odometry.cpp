@@ -116,12 +116,12 @@ private:
 
   void joint_state_cb_(const std::shared_ptr<sensor_msgs::msg::JointState> msg)
   {
-    // RCLCPP_INFO_STREAM(this->get_logger(), "JointState cb");
+    RCLCPP_INFO_STREAM(this->get_logger(), "JointState cb:" << msg->position.at(0) << ", " << msg->position.at(1));
 
     // JointState includes left and right positions, velocities, and time
     // FK to get position and velocity based on received wheel positions
 
-    dd_calc.fk(turtlelib::Wheels(msg->position[0], msg->position[1]));
+    dd_calc.fk(turtlelib::Wheels(msg->position.at(0), msg->position.at(1)));
   }
 
 
@@ -154,9 +154,10 @@ private:
     return p;
   }
 
-  geometry_msgs::msg::TransformStamped turtlelib_transform2d_to_msg(
-    const turtlelib::Transform2D tf)
+  geometry_msgs::msg::TransformStamped turtlelib_transform2d_to_msg(const turtlelib::Transform2D tf)
   {
+    RCLCPP_INFO_STREAM(this->get_logger(), "turtlelib to pose 1: " << tf.translation() << ", " << tf.rotation());
+
     geometry_msgs::msg::TransformStamped t{};
     t.header.stamp = get_clock()->now();
     t.header.frame_id = odom_id;
@@ -171,6 +172,7 @@ private:
     t.transform.rotation.y = q.y();
     t.transform.rotation.z = q.z();
     t.transform.rotation.w = q.w();
+    RCLCPP_INFO_STREAM(this->get_logger(), "turtlelib to pose: "<< t.transform.translation.x <<", "<< t.transform.translation.y);
 
     return t;
   }
