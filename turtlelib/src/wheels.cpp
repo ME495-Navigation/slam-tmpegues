@@ -69,11 +69,9 @@ Wheels operator+(Wheels position, WheelDiff & rotation)
 
 // Operations to be used in kinematics
 
-WheelDiff Wheels::update(Wheels new_wheels)
+WheelDiff Wheels::get_diff(Wheels new_wheels)
 {
   auto diff = new_wheels - *this;
-
-  *this = new_wheels;
 
   return diff;
 }

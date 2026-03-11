@@ -56,10 +56,10 @@ TEST_CASE("Update wheel positions to new potision and calculate the required rot
     Wheels initial {};
     Wheels end {pi / 2, 3.0 / 2.0 * pi};
 
-    auto diff {initial.update(end)};
+    auto diff {initial.get_diff(end)};
     REQUIRE_THAT(diff.l(), WithinAbs(pi / 2.0, 0.00001));
     REQUIRE_THAT(diff.r(), WithinAbs(-pi / 2.0, 0.00001));
 
-    REQUIRE_THAT(initial.l(), WithinAbs(pi / 2.0, 0.00001));
-    REQUIRE_THAT(initial.r(), WithinAbs(-pi / 2.0, 0.00001));
+    REQUIRE_THAT(initial.l(), WithinAbs(0.0, 0.00001));
+    REQUIRE_THAT(initial.r(), WithinAbs(0.0, 0.00001));
 }

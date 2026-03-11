@@ -25,6 +25,7 @@ private:
   std::ofstream body_twist_file{"body_twist.txt"};
   std::ofstream world_twist_file{"world_twist.txt"};
   std::ofstream diff_radian_file{"diff_radian.txt"};
+  std::ofstream wheel_fk_file{"wheel_fk.txt"};
 
   std::ofstream twb_file{"twb.txt"};
 
@@ -63,32 +64,32 @@ public:
   /// \brief Calculate wheel velocities needed to achive the provided twist
   /// \param tw The desired twist
   /// \return phirdot, phildot: the right and left wheel velocities
-  WheelDiff ik(Twist2D tw);
+  WheelDiff ik(Twist2D tw) const;
 
   /// \brief Get the world to body transform
   /// \return q, the world to body transform
-  Transform2D get_transform();
+  Transform2D get_transform() const;
 
   /// \brief Get wheel positions (phi)
   /// \return The current wheel positions
-  Wheels phi();
+  Wheels phi() const;
 
   // TODO: 0228 Update wheel handling
   /// \brief Get wheel speeds
   /// \return a WheelDiff representing the wheelspeeds in rad/sec
-  WheelDiff phidot();
+  WheelDiff phidot() const ;
 
   /// \brief Get track width
   /// \return Track width
-  double get_track();
+  double get_track() const;
 
   /// \brief Get wheel radius
   /// \return Wheel Radius
-  double get_radius();
+  double get_radius() const;
 
   /// \brief Get current body twist
   /// \return Current body twist
-  Twist2D get_twist();
+  Twist2D get_twist() const;
 };
 }  // namespace turtlelib
 

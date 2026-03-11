@@ -86,10 +86,10 @@ public:
     /// \return The right wheel position
   double r();
 
-    /// \brief Update the wheels to a new position, returning the shortest rotation between initial and final positions
+    /// \brief Get the loweset rotation between the current wheel rotation and the new_wheels
     /// \param new_wheels The new positions
     /// \return The rotations required to get to the new positions
-  WheelDiff update(Wheels new_wheels);
+  WheelDiff get_diff(Wheels new_wheels);
 
     // += diff
     /// \brief Update the wheels by adding a rotation

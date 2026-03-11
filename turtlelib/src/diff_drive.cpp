@@ -10,17 +10,17 @@
 namespace turtlelib
 {
 
-Transform2D DiffDrive::get_transform() {return q;}
+Transform2D DiffDrive::get_transform() const {return q;}
 
-Wheels DiffDrive::phi() {return wheels;}
+Wheels DiffDrive::phi() const { return wheels; }
 
-WheelDiff DiffDrive::phidot() {return wheelspeeds;}
+WheelDiff DiffDrive::phidot() const { return wheelspeeds; }
 
-double DiffDrive::get_track() {return track;}
+double DiffDrive::get_track() const { return track; }
 
-double DiffDrive::get_radius() {return radius;}
+double DiffDrive::get_radius() const { return radius; }
 
-Twist2D DiffDrive::get_twist() {return body_vel;}
+Twist2D DiffDrive::get_twist() const { return body_vel; }
 
 DiffDrive::DiffDrive() {}
 
@@ -37,18 +37,21 @@ DiffDrive::DiffDrive(double input_track, double input_radius, Transform2D tf)
   q = tf;
 }
 
+void DiffDrive::set_speeds(WheelDiff speed)
+{
+  wheelspeeds = speed;
+}
 
 void DiffDrive::fk(Wheels wheels2)
 {
   // The arguments received here are actual wheel positions, we don't need to scale by time
   // 0st, update wheel positions and get how far the wheels rotated
-  auto update = wheels.update(wheels2);
-  fk(update);
-}
+  wheel_fk_file << "1: " << wheels.r() << ", " << wheels.l() << "\n";
+  auto update = wheels.get_diff(wheels2);
+  wheel_fk_file << "2: " << wheels.r() << ", " << wheels.l() << "\n";
+  wheel_fk_file << "D: " << update.r() << ", " << update.l() << "\n";
 
-void DiffDrive::set_speeds(WheelDiff speed)
-{
-  wheelspeeds = speed;
+  fk(update);
 }
 
 void DiffDrive::fk(double time)
@@ -82,7 +85,7 @@ void DiffDrive::fk(WheelDiff diff)
 }
 
 // TODO: 0228 Update wheel handling
-WheelDiff DiffDrive::ik(Twist2D body_tw)
+WheelDiff DiffDrive::ik(Twist2D body_tw) const
 {
   // Do not allow twists with a y component
   if (std::abs(body_tw.y) >= 0.00001) {
