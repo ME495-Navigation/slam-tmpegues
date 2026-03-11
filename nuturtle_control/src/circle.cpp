@@ -51,8 +51,8 @@ private:
     }
     else
     {
-      circle_twist.angular.z = request->velocity / request->radius;
-      circle_twist.linear.x = request->velocity;
+      circle_twist.angular.z = request->velocity/ (2 *std::numbers::pi *request->radius);
+          circle_twist.linear.x = request->velocity;
     }
     stopped = false;
   }
