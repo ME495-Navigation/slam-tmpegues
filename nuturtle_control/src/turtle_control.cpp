@@ -25,7 +25,7 @@ public:
     cmd_vel_sub_ = create_subscription<geometry_msgs::msg::Twist>(
       "cmd_vel", 10, std::bind(&turtle_control::cmd_vel_cb_, this, std::placeholders::_1));
     sensor_data_sub_ = create_subscription<nuturtlebot_msgs::msg::SensorData>(
-      "red/sensor_data", 10, std::bind(&turtle_control::sensor_data_cb_, this, std::placeholders::_1));
+      "sensor_data", 10, std::bind(&turtle_control::sensor_data_cb_, this, std::placeholders::_1));
 
     joint_state_pub_ = create_publisher<sensor_msgs::msg::JointState>("joint_states", 10);
     wheel_cmd_pub_ = create_publisher<nuturtlebot_msgs::msg::WheelCommands>("wheel_cmd", 10);
@@ -99,7 +99,7 @@ private:
 
   void sensor_data_cb_(const std::shared_ptr<nuturtlebot_msgs::msg::SensorData> msg)
   {
-    RCLCPP_DEBUG_STREAM(get_logger(), "SensorData received: " << msg);
+    RCLCPP_INFO_STREAM(get_logger(), "SensorData received: " << msg);
 
     // auto time_diff{
     //   msg->stamp.sec + msg->stamp.nanosec / 10e9 - last_time.sec - last_time.nanosec / 10e9};
