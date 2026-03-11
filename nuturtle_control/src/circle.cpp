@@ -42,9 +42,19 @@ private:
     [[maybe_unused]] const std::shared_ptr<nuturtle_control_interfaces::srv::Control::Response>
     response)
   {
+    // RCLCPP_DEBUG_STREAM(get_logger(), "Circle control vel, rad: " << request.velocity << ", " << request.radius);
+
+    if (request->radius == 0.0)
+    {
+      circle_twist.angular.z = request->velocity;
+      circle_twist.linear.x = 0;
+    }
+    else
+    {
+      circle_twist.angular.z = request->velocity / request->radius;
+      circle_twist.linear.x = request->velocity;
+    }
     stopped = false;
-    circle_twist.angular.z = request->velocity / request->radius;
-    circle_twist.linear.x = request->velocity;
   }
 
   void reverse_cb_(
