@@ -63,20 +63,10 @@ public:
     external_jsp = get_parameter("external_jsp").as_bool();
 
     if (!external_jsp) {
-      joint_state_pub_ = create_publisher<sensor_msgs::msg::JointState>("red/joint_states", 10);
-
-
+      // joint_state_pub_ = create_publisher<sensor_msgs::msg::JointState>("red/joint_states", 10);
     }
 
-    // initial_pose_srv_cli_ = create_client<nuturtle_control_interfaces::srv::InitialPose>("initial_pose");
-    // while (!initial_pose_srv_cli_->wait_for_service(std::chrono::seconds(5)))
-    // {
-    //   if (!rclcpp::ok())
-    //   {
-    //     RCLCPP_ERROR(get_logger(), "initial_pose client interrupted while waiting for service to appear.");
-    //   }
-    //   RCLCPP_INFO(get_logger(), "Waiting for initial_pose service");
-    // }
+
 
       // Define all variables
     timestep.data = 0;
@@ -119,28 +109,11 @@ public:
 
         red_dd.fk(1.0 / (1000.0 / float(timer_period))); // timer_period is in milliseconds, but I need it in seconds
 
-      // Publish JointStates if needed
-        if (!external_jsp) {
-
-          auto joint_state_msg = sensor_msgs::msg::JointState();
-          joint_state_msg.header.stamp = get_clock()->now();
-
-          joint_state_msg.name.push_back("wheel_left_joint");
-          joint_state_msg.name.push_back("wheel_right_joint");
-
-          joint_state_msg.position.push_back(red_dd.phi().l());
-          joint_state_msg.position.push_back(red_dd.phi().r());
-
-        // joint_state_msg.velocity.push_back(red_dd.get_wheelspeed().left);
-        // joint_state_msg.velocity.push_back(red_dd.get_wheelspeed().right);
-          joint_state_pub_->publish(joint_state_msg);
-        }
-
       // Publish SensorData
         auto sensor_msg = nuturtlebot_msgs::msg::SensorData();
         sensor_msg.stamp = get_clock()->now();
         sensor_msg.left_encoder = red_dd.phi().l() * encoder_ticks_per_rad;
-        sensor_msg.left_encoder = red_dd.phi().r() * encoder_ticks_per_rad;
+        sensor_msg.right_encoder = red_dd.phi().r() * encoder_ticks_per_rad;
         sensor_pub_->publish(sensor_msg);
 
       // Publish robot's TF

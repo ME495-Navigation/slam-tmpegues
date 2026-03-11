@@ -25,7 +25,7 @@ public:
     cmd_vel_sub_ = create_subscription<geometry_msgs::msg::Twist>(
       "cmd_vel", 10, std::bind(&turtle_control::cmd_vel_cb_, this, std::placeholders::_1));
     sensor_data_sub_ = create_subscription<nuturtlebot_msgs::msg::SensorData>(
-      "sensor_data", 10, std::bind(&turtle_control::sensor_data_cb_, this, std::placeholders::_1));
+      "red/sensor_data", 10, std::bind(&turtle_control::sensor_data_cb_, this, std::placeholders::_1));
 
     joint_state_pub_ = create_publisher<sensor_msgs::msg::JointState>("joint_states", 10);
     wheel_cmd_pub_ = create_publisher<nuturtlebot_msgs::msg::WheelCommands>("wheel_cmd", 10);
