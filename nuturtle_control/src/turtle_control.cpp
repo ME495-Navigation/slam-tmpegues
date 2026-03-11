@@ -84,6 +84,7 @@ private:
       return;
     }
 
+    dd_calc.set_speeds(wheelrad_cmd);
     int lefttick_cmd{static_cast<int>(wheelrad_cmd.l() / motor_cmd_per_rad_sec)};
     int righttick_cmd{static_cast<int>(wheelrad_cmd.r() / motor_cmd_per_rad_sec)};
 
@@ -99,10 +100,7 @@ private:
 
   void sensor_data_cb_(const std::shared_ptr<nuturtlebot_msgs::msg::SensorData> msg)
   {
-    RCLCPP_INFO_STREAM(get_logger(), "SensorData received: " << msg);
-
-    // auto time_diff{
-    //   msg->stamp.sec + msg->stamp.nanosec / 10e9 - last_time.sec - last_time.nanosec / 10e9};
+    RCLCPP_DEBUG_STREAM(get_logger(), "SensorData received: " << msg->left_encoder << ", " << msg->right_encoder);
 
     dd_calc.fk(turtlelib::Wheels(msg->left_encoder / encoder_ticks_per_rad,
       msg->right_encoder / encoder_ticks_per_rad));
