@@ -50,6 +50,8 @@ private:
     } else {
       circle_twist.linear.x = request->velocity*request->radius;
     }
+
+    response->result_twist = circle_twist;
     stopped = false;
   }
 

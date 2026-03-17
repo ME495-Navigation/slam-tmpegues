@@ -6,6 +6,7 @@
 #include "turtlelib/wheels.hpp"
 #include "turtlelib/diff_drive.hpp"
 #include "turtlelib/se2d.hpp"
+#include <cmath>
 
 class turtle_control : public rclcpp::Node
 {
@@ -37,6 +38,7 @@ public:
     track_width = get_parameter("track_width").as_double();
     motor_cmd_max = get_parameter("motor_cmd_max").as_int();
     motor_cmd_per_rad_sec = get_parameter("motor_cmd_per_rad_sec").as_double();
+    motor_rad_max = motor_cmd_max*motor_cmd_per_rad_sec;
     encoder_ticks_per_rad = get_parameter("encoder_ticks_per_rad").as_double();
     collision_radius = get_parameter("collision_radius").as_double();
     dd_calc = turtlelib::DiffDrive(
@@ -55,6 +57,7 @@ private:
   double motor_cmd_per_rad_sec{0.0};
   double encoder_ticks_per_rad{0};
   double collision_radius{0.0};
+  double motor_rad_max{0.0};
 
   turtlelib::DiffDrive dd_calc{
     track_width,
@@ -84,18 +87,23 @@ private:
       return;
     }
 
-    int lefttick_cmd{static_cast<int>(wheelrad_cmd.l() / motor_cmd_per_rad_sec)};
-    int righttick_cmd{static_cast<int>(wheelrad_cmd.r() / motor_cmd_per_rad_sec)};
+    float left_scale = ((std::fabs(wheelrad_cmd.l()) > motor_rad_max) ? wheelrad_cmd.l() / motor_cmd_max : 1.0);
+    float right_scale = ((std::fabs(wheelrad_cmd.r()) > motor_rad_max) ? wheelrad_cmd.r() / motor_cmd_max : 1.0);
+    auto scale = (std::fabs(left_scale) > std::fabs(right_scale) ? left_scale : right_scale);
+    RCLCPP_INFO_STREAM(get_logger(), "Scales: " << left_scale << ", " << right_scale);
+    RCLCPP_INFO_STREAM(get_logger(), "Scale: " << scale);
+    RCLCPP_INFO_STREAM(get_logger(), "Initial wheel rads: " << wheelrad_cmd.l() << ", " << wheelrad_cmd.r());
+    wheelrad_cmd = wheelrad_cmd * scale;
+    RCLCPP_INFO_STREAM(get_logger(), "Adjusted wheel rads: " << wheelrad_cmd.l() << ", " << wheelrad_cmd.r());
 
-    lefttick_cmd = ((lefttick_cmd > motor_cmd_max) ? motor_cmd_max : lefttick_cmd);
-    righttick_cmd = ((righttick_cmd > motor_cmd_max) ? motor_cmd_max : righttick_cmd);
-
-    lefttick_cmd = ((lefttick_cmd < -motor_cmd_max) ? -motor_cmd_max : lefttick_cmd);
-    righttick_cmd = ((righttick_cmd < -motor_cmd_max) ? -motor_cmd_max : righttick_cmd);
+    // int lefttick_cmd{static_cast<int>(wheelrad_cmd.l() / motor_cmd_per_rad_sec)};
+    // int righttick_cmd{static_cast<int>(wheelrad_cmd.r() / motor_cmd_per_rad_sec)};
 
     auto wheeltick_cmd = nuturtlebot_msgs::msg::WheelCommands();
-    wheeltick_cmd.left_velocity = lefttick_cmd;
-    wheeltick_cmd.right_velocity = righttick_cmd;
+    wheeltick_cmd.left_velocity = static_cast<int>(wheelrad_cmd.l() / motor_cmd_per_rad_sec);
+    wheeltick_cmd.right_velocity = static_cast<int>(wheelrad_cmd.r() / motor_cmd_per_rad_sec);
+
+
 
     wheel_cmd_pub_->publish(wheeltick_cmd);
   }
