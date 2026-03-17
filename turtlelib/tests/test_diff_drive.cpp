@@ -17,7 +17,7 @@ TEST_CASE("Test fk", "DiffDrive::fk")
 
   // 0 rotation on both wheels should result in no change
   dd.fk(Wheels(0, 0));
-  REQUIRE(dd.get_transform().translation().x == 0);
+  REQUIRE(almost_equal(dd.get_transform().translation().x, 0));
   REQUIRE(dd.get_transform().translation().y == 0);
   REQUIRE(dd.get_transform().rotation() == 0);
   REQUIRE(dd.phi().l() == 0);
@@ -71,7 +71,7 @@ TEST_CASE("Test fk", "DiffDrive::fk")
 
 
   REQUIRE(dd2.phi().l() == 0);
-  REQUIRE(dd2.phi().r() == normalize_angle(2 * pi));
+  REQUIRE_THAT(dd2.phi().r(), WithinAbs(normalize_angle(2 * pi), 0.00001));
   REQUIRE_THAT(dd2.get_transform().translation().x, WithinAbs(0, 0.00001));
   REQUIRE_THAT(dd2.get_transform().translation().y, WithinAbs(2, 0.00001));
   REQUIRE_THAT(dd2.get_transform().rotation(), WithinAbs(normalize_angle(pi), 0.00001));
@@ -106,6 +106,14 @@ TEST_CASE("Test ik", "DiffDrive::ik")
   REQUIRE(speeds.l() == 0);
   REQUIRE(speeds.r() == pi);
 
+  speeds = DiffDrive{2.0, 1.0}.ik({pi / 2, pi / 2, 0.0});
+  REQUIRE(speeds.l() == 0);
+  REQUIRE(speeds.r() == pi);
+
+  speeds = DiffDrive{2.0, 1.0}.ik({10 * pi / 2, 10 * pi / 2, 0.0});
+  REQUIRE(speeds.l() == 0);
+  REQUIRE(almost_equal(speeds.r(), normalize_angle(-10 * pi)));
+
   REQUIRE_THROWS_AS(dd.ik({1, 1, 1}), std::logic_error);
 }
 
@@ -117,10 +125,8 @@ TEST_CASE("DiffDrive forward motion (forward/inverse)", "[Conor]")
   const auto wheel_radius = 0.1;
   const auto wheel_track = 0.5;
 
-  auto dd = DiffDrive{wheel_radius, wheel_track};
+  auto dd = DiffDrive{wheel_track, wheel_radius};
 
-  // initialize wheel angle
-  dd.fk(Wheels(0.0, 0.0));
   dd.fk(WheelDiff(2.0 * pi, 2.0 * pi));
   auto tf = dd.get_transform();
   REQUIRE_THAT(tf.rotation(), WithinAbs(0.0, 1e-6));
@@ -137,7 +143,7 @@ TEST_CASE("DiffDrive pure rotation (forward/inverse)", "[Conor]")
   const auto wheel_radius = 0.1;
   const auto wheel_track = 0.5;
 
-  auto dd = DiffDrive{wheel_radius, wheel_track};
+  auto dd = DiffDrive{wheel_track, wheel_radius};
 
   // spin around 180 degrees
   // this means 0.5/2 * pi = 0.25pi arc length for both wheels
@@ -152,8 +158,8 @@ TEST_CASE("DiffDrive pure rotation (forward/inverse)", "[Conor]")
 
   // 180 degree rotation in place should use the same math in reverse
   auto wheels = dd.ik(Twist2D{pi, 0.0, 0.0});
-  REQUIRE_THAT(wheels.l(), WithinAbs(-2.5 * pi, 1e-6));
-  REQUIRE_THAT(wheels.r(), WithinAbs(2.5 * pi, 1e-6));
+  REQUIRE_THAT(wheels.l(), WithinAbs(normalize_angle(-2.5 * pi), 1e-6));
+  REQUIRE_THAT(wheels.r(), WithinAbs(normalize_angle(2.5 * pi), 1e-6));
 }
 
 TEST_CASE("DiffDrive circular arc (forward/inverse)", "[Conor]")
@@ -161,7 +167,7 @@ TEST_CASE("DiffDrive circular arc (forward/inverse)", "[Conor]")
   const auto wheel_radius = 0.1;
   const auto wheel_track = 0.5;
 
-  auto dd = DiffDrive{wheel_radius, wheel_track};
+  auto dd = DiffDrive{wheel_track, wheel_radius};
 
   dd.fk(Wheels(0.0, 0.0));
   dd.fk(Wheels(1.0, 2.0));

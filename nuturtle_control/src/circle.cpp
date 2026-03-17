@@ -39,7 +39,7 @@ private:
 
   void control_cb_(
     const std::shared_ptr<nuturtle_control_interfaces::srv::Control::Request> request,
-    [[maybe_unused]] const std::shared_ptr<nuturtle_control_interfaces::srv::Control::Response>
+    const std::shared_ptr<nuturtle_control_interfaces::srv::Control::Response>
     response)
   {
     // RCLCPP_DEBUG_STREAM(get_logger(), "Circle control vel, rad: " << request.velocity << ", " << request.radius);
@@ -56,11 +56,12 @@ private:
   }
 
   void reverse_cb_(
-    [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Empty::Request> request,
-    [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Empty::Response> response)
+     const std::shared_ptr<std_srvs::srv::Empty::Request>,
+     const std::shared_ptr<std_srvs::srv::Empty::Response>)
   {
     stopped = false;
     circle_twist.linear.x *= -1;
+    circle_twist.angular.z  *= -1;
     RCLCPP_INFO_STREAM(get_logger(), "Reversed");
   }
 
@@ -73,6 +74,8 @@ private:
 
   void timer_cb_()
   {
+    RCLCPP_INFO_STREAM(get_logger(), "Circle twist: " << circle_twist.angular.z << ", " << circle_twist.linear.x);
+
     if (stopped) {
       cmd_vel_pub_->publish(geometry_msgs::msg::Twist());
     } else {

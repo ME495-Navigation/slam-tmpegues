@@ -94,7 +94,7 @@ WheelDiff DiffDrive::ik(Twist2D body_tw) const
     auto left = (body_tw.x - body_tw.omega * track / 2) / radius;
     auto right = (body_tw.x + body_tw.omega * track / 2) / radius;
 
-    return WheelDiff(left, right);
+    return WheelDiff(left, right).normalize();
   }
 }
 

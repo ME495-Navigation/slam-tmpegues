@@ -94,7 +94,7 @@ private:
     RCLCPP_INFO_STREAM(get_logger(), "Scale: " << scale);
     RCLCPP_INFO_STREAM(get_logger(), "Initial wheel rads: " << wheelrad_cmd.l() << ", " << wheelrad_cmd.r());
 
-    wheelrad_cmd *= scale;
+    // wheelrad_cmd *= scale;
     RCLCPP_INFO_STREAM(get_logger(), "Adjusted wheel rads: " << wheelrad_cmd.l() << ", " << wheelrad_cmd.r());
 
     auto wheeltick_cmd = nuturtlebot_msgs::msg::WheelCommands();
