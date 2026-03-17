@@ -87,21 +87,21 @@ private:
       return;
     }
 
-    float left_scale = ((std::fabs(wheelrad_cmd.l()) > motor_rad_max) ? motor_rad_max / wheelrad_cmd.l() : 1.0);
-    float right_scale = ((std::fabs(wheelrad_cmd.r()) > motor_rad_max) ? motor_rad_max / wheelrad_cmd.r() : 1.0);
+    auto left_scale = ((std::fabs(wheelrad_cmd.l()) > motor_rad_max) ? motor_rad_max / wheelrad_cmd.l() : 1.0);
+    auto right_scale = ((std::fabs(wheelrad_cmd.r()) > motor_rad_max) ? motor_rad_max / wheelrad_cmd.r() : 1.0);
     auto scale = (std::fabs(left_scale) < std::fabs(right_scale) ? left_scale : right_scale);
-    RCLCPP_DEBUG_STREAM(get_logger(), "Scales: " << left_scale << ", " << right_scale);
-    RCLCPP_DEBUG_STREAM(get_logger(), "Scale: " << scale);
-    RCLCPP_DEBUG_STREAM(get_logger(), "Initial wheel rads: " << wheelrad_cmd.l() << ", " << wheelrad_cmd.r());
+    RCLCPP_INFO_STREAM(get_logger(), "Scales: " << left_scale << ", " << right_scale);
+    RCLCPP_INFO_STREAM(get_logger(), "Scale: " << scale);
+    RCLCPP_INFO_STREAM(get_logger(), "Initial wheel rads: " << wheelrad_cmd.l() << ", " << wheelrad_cmd.r());
 
     wheelrad_cmd *= scale;
-    RCLCPP_DEBUG_STREAM(get_logger(), "Adjusted wheel rads: " << wheelrad_cmd.l() << ", " << wheelrad_cmd.r());
+    RCLCPP_INFO_STREAM(get_logger(), "Adjusted wheel rads: " << wheelrad_cmd.l() << ", " << wheelrad_cmd.r());
 
     auto wheeltick_cmd = nuturtlebot_msgs::msg::WheelCommands();
 
     wheeltick_cmd.left_velocity = static_cast<int>(wheelrad_cmd.l() / motor_cmd_per_rad_sec);
     wheeltick_cmd.right_velocity = static_cast<int>(wheelrad_cmd.r() / motor_cmd_per_rad_sec);
-    RCLCPP_DEBUG_STREAM(get_logger(), "Adjusted wheel cmds: " << wheeltick_cmd.left_velocity << ", " << wheeltick_cmd.right_velocity);
+    RCLCPP_INFO_STREAM(get_logger(), "Adjusted wheel cmds: " << wheeltick_cmd.left_velocity << ", " << wheeltick_cmd.right_velocity);
 
     wheel_cmd_pub_->publish(wheeltick_cmd);
   }

@@ -60,7 +60,6 @@ private:
     [[maybe_unused]] const std::shared_ptr<std_srvs::srv::Empty::Response> response)
   {
     stopped = false;
-    circle_twist.angular.z *= -1;
     circle_twist.linear.x *= -1;
     RCLCPP_INFO_STREAM(get_logger(), "Reversed");
   }
