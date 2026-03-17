@@ -77,7 +77,7 @@ public:
   // TODO: 0228 Update wheel handling
   /// \brief Get wheel speeds
   /// \return a WheelDiff representing the wheelspeeds in rad/sec
-  WheelDiff phidot() const ;
+  WheelDiff phidot() const;
 
   /// \brief Get track width
   /// \return Track width

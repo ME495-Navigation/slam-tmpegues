@@ -12,15 +12,15 @@ namespace turtlelib
 
 Transform2D DiffDrive::get_transform() const {return q;}
 
-Wheels DiffDrive::phi() const { return wheels; }
+Wheels DiffDrive::phi() const {return wheels;}
 
-WheelDiff DiffDrive::phidot() const { return wheelspeeds; }
+WheelDiff DiffDrive::phidot() const {return wheelspeeds;}
 
-double DiffDrive::get_track() const { return track; }
+double DiffDrive::get_track() const {return track;}
 
-double DiffDrive::get_radius() const { return radius; }
+double DiffDrive::get_radius() const {return radius;}
 
-Twist2D DiffDrive::get_twist() const { return body_vel; }
+Twist2D DiffDrive::get_twist() const {return body_vel;}
 
 DiffDrive::DiffDrive() {}
 
@@ -94,7 +94,7 @@ WheelDiff DiffDrive::ik(Twist2D body_tw) const
     auto left = (body_tw.x - body_tw.omega * track / 2) / radius;
     auto right = (body_tw.x + body_tw.omega * track / 2) / radius;
 
-    return WheelDiff(left, right).normalize();
+    return WheelDiff(left, right);
   }
 }
 

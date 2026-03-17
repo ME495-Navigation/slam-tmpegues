@@ -48,7 +48,7 @@ private:
     if (request->radius == 0.0) {
       circle_twist.linear.x = 0;
     } else {
-      circle_twist.linear.x = request->velocity*request->radius;
+      circle_twist.linear.x = request->velocity * request->radius;
     }
 
     response->result_twist = circle_twist;
@@ -56,12 +56,12 @@ private:
   }
 
   void reverse_cb_(
-     const std::shared_ptr<std_srvs::srv::Empty::Request>,
-     const std::shared_ptr<std_srvs::srv::Empty::Response>)
+    const std::shared_ptr<std_srvs::srv::Empty::Request>,
+    const std::shared_ptr<std_srvs::srv::Empty::Response>)
   {
     stopped = false;
     circle_twist.linear.x *= -1;
-    circle_twist.angular.z  *= -1;
+    circle_twist.angular.z *= -1;
     RCLCPP_INFO_STREAM(get_logger(), "Reversed");
   }
 
@@ -74,7 +74,9 @@ private:
 
   void timer_cb_()
   {
-    RCLCPP_INFO_STREAM(get_logger(), "Circle twist: " << circle_twist.angular.z << ", " << circle_twist.linear.x);
+    RCLCPP_DEBUG_STREAM(get_logger(),
+                        "Circle twist (in timer): " << circle_twist.angular.z << ", " <<
+      circle_twist.linear.x);
 
     if (stopped) {
       cmd_vel_pub_->publish(geometry_msgs::msg::Twist());

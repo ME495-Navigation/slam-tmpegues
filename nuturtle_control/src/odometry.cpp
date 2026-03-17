@@ -124,7 +124,8 @@ private:
     // FK to get position and velocity based on received wheel positions
 
     dd_calc.fk(turtlelib::Wheels(msg->position.at(0), msg->position.at(1)));
-    odom_tf_file << dd_calc.get_transform().translation() << ", " << dd_calc.get_transform().rotation() << "\n";
+    odom_tf_file << dd_calc.get_transform().translation() << ", " <<
+      dd_calc.get_transform().rotation() << "\n";
     odom_wheel_file << dd_calc.phi().l() << ", " << dd_calc.phi().r() << "\n";
   }
 

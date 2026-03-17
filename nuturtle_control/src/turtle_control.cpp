@@ -38,7 +38,7 @@ public:
     track_width = get_parameter("track_width").as_double();
     motor_cmd_max = get_parameter("motor_cmd_max").as_int();
     motor_cmd_per_rad_sec = get_parameter("motor_cmd_per_rad_sec").as_double();
-    motor_rad_max = motor_cmd_max*motor_cmd_per_rad_sec;
+    motor_rad_max = motor_cmd_max * motor_cmd_per_rad_sec;
     encoder_ticks_per_rad = get_parameter("encoder_ticks_per_rad").as_double();
     collision_radius = get_parameter("collision_radius").as_double();
     dd_calc = turtlelib::DiffDrive(
@@ -71,7 +71,8 @@ private:
 
   void cmd_vel_cb_(const std::shared_ptr<geometry_msgs::msg::Twist> msg)
   {
-    RCLCPP_DEBUG_STREAM(get_logger(), "Twist received: " << msg);
+    RCLCPP_DEBUG_STREAM(get_logger(),
+      "Twist received (angular z, linear x): " << msg->angular.z << ", " << msg->linear.x);
     if (msg->angular.x or msg->angular.y or msg->linear.z) {
       RCLCPP_ERROR_STREAM(get_logger(), "Please provide a twist in the x-y plane.");
       return;
@@ -87,28 +88,35 @@ private:
       return;
     }
 
-    auto left_scale = ((std::fabs(wheelrad_cmd.l()) > motor_rad_max) ? motor_rad_max / wheelrad_cmd.l() : 1.0);
-    auto right_scale = ((std::fabs(wheelrad_cmd.r()) > motor_rad_max) ? motor_rad_max / wheelrad_cmd.r() : 1.0);
-    auto scale = (std::fabs(left_scale) < std::fabs(right_scale) ? left_scale : right_scale);
-    RCLCPP_INFO_STREAM(get_logger(), "Scales: " << left_scale << ", " << right_scale);
-    RCLCPP_INFO_STREAM(get_logger(), "Scale: " << scale);
-    RCLCPP_INFO_STREAM(get_logger(), "Initial wheel rads: " << wheelrad_cmd.l() << ", " << wheelrad_cmd.r());
+    auto left_scale = ((std::fabs(wheelrad_cmd.l()) >
+      motor_rad_max) ? std::fabs(motor_rad_max / wheelrad_cmd.l()) : 1.0);
+    auto right_scale = ((std::fabs(wheelrad_cmd.r()) >
+      motor_rad_max) ? std::fabs(motor_rad_max / wheelrad_cmd.r()) : 1.0);
+    auto scale = (left_scale < right_scale ? left_scale : right_scale);
+    RCLCPP_DEBUG_STREAM(get_logger(), "Scales: " << left_scale << ", " << right_scale);
+    RCLCPP_DEBUG_STREAM(get_logger(), "Scale: " << scale);
+    RCLCPP_DEBUG_STREAM(get_logger(),
+                        "Initial wheel rads: " << wheelrad_cmd.l() << ", " << wheelrad_cmd.r());
 
-    // wheelrad_cmd *= scale;
-    RCLCPP_INFO_STREAM(get_logger(), "Adjusted wheel rads: " << wheelrad_cmd.l() << ", " << wheelrad_cmd.r());
+    wheelrad_cmd *= scale;
+    RCLCPP_DEBUG_STREAM(get_logger(),
+                        "Adjusted wheel rads: " << wheelrad_cmd.l() << ", " << wheelrad_cmd.r());
 
     auto wheeltick_cmd = nuturtlebot_msgs::msg::WheelCommands();
 
     wheeltick_cmd.left_velocity = static_cast<int>(wheelrad_cmd.l() / motor_cmd_per_rad_sec);
     wheeltick_cmd.right_velocity = static_cast<int>(wheelrad_cmd.r() / motor_cmd_per_rad_sec);
-    RCLCPP_INFO_STREAM(get_logger(), "Adjusted wheel cmds: " << wheeltick_cmd.left_velocity << ", " << wheeltick_cmd.right_velocity);
+    RCLCPP_DEBUG_STREAM(get_logger(),
+                        "Adjusted wheel cmds: " << wheeltick_cmd.left_velocity << ", " <<
+      wheeltick_cmd.right_velocity);
 
     wheel_cmd_pub_->publish(wheeltick_cmd);
   }
 
   void sensor_data_cb_(const std::shared_ptr<nuturtlebot_msgs::msg::SensorData> msg)
   {
-    RCLCPP_DEBUG_STREAM(get_logger(), "SensorData received: " << msg->left_encoder << ", " << msg->right_encoder);
+    RCLCPP_DEBUG_STREAM(get_logger(),
+      "SensorData received: " << msg->left_encoder << ", " << msg->right_encoder);
 
     dd_calc.fk(turtlelib::Wheels(msg->left_encoder / encoder_ticks_per_rad,
       msg->right_encoder / encoder_ticks_per_rad));
