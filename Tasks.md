@@ -49,20 +49,15 @@ Task C.8 begun
 
 Task D.1 (DiffDrive class)
 Task D.2 (DiffDrive test)
-* Need to add multiuple wheel radii and track widths
 Task D.3 (Documentation)
-* I'm going to rewrite my math to be more readable to myself and others
 
 Task E.1 (Turtle interface)
 Task E.2 (Odometry Node)
-    Uncertain how to catch the issue of not providing parameters.
 Task E.3 (Circle node)
 Task E.4 (ROS API testing)
 Task E.5 (Launchfile)
 
 Task F.1 (Turtlebot Setup)
-* Not started
 Task F.2 (Cross-compilation)
-* Not started
 Task F.3 (Physical Testing)
-* Not started
+* Not completed
