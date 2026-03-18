@@ -78,14 +78,6 @@ public:
     motor_cmd_per_rad_sec = get_parameter("motor_cmd_per_rad_sec").as_double();
     encoder_ticks_per_rad = get_parameter("encoder_ticks_per_rad").as_double();
 
-    // auto initial_pose_rq = std::make_shared<nuturtle_control_interfaces::srv::InitialPose::Request>();
-    // initial_pose_rq->x0 = x;
-    // initial_pose_rq->y0 = y;
-    // initial_pose_rq->theta0 = theta;
-    // auto result_future = initial_pose_srv_cli_->async_send_request(initial_pose_rq, std::bind(&nusim_node::initial_pose_response_cb_,
-    //                                                                                           this, std::placeholders::_1));
-    // rclcpp::spin_until_future_complete(get_node_base_interface(), result_future);
-
     red_dd = turtlelib::DiffDrive(track_width, wheel_radius,
       turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta));
 
@@ -165,11 +157,6 @@ private:
       msg->right_velocity * motor_cmd_per_rad_sec));
   }
 
-  // void initial_pose_response_cb_(rclcpp::Client<nuturtle_control_interfaces::srv::InitialPose>::SharedFuture future)
-  // {
-  //   auto service_response_ = future.get();
-  //   RCLCPP_INFO_STREAM(get_logger(), "Service response");
-  // }
 
   void create_walls()
   {  // The following section creates wall marker array and sets all variables that don't change
