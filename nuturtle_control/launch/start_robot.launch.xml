@@ -63,12 +63,14 @@
                 <remap from="joint_states" to="red/joint_states"/>
             </node>
 
+            <node if="$(var use_rviz)" pkg="rviz2" exec="rviz2" on_exit="shutdown" args="-d $(find-pkg-share nuturtle_control)/config/sim_odom.rviz"/>
+
+
         </group>
 
-        <!-- If robot == none, then no extra stuff is launched-->
+        <!-- If robot == none, then no 'extra' stuff is launched-->
 
-        <!-- Rviz with a blue robot is launched no matter if robot is nusim or none -->
-        <node if="$(var use_rviz)" pkg="rviz2" exec="rviz2" on_exit="shutdown" args="-d $(find-pkg-share nuturtle_control)/config/$(var robot).rviz"/>
+        <node if="$($(var use_rviz) and equals $(var robot) none)" pkg="rviz2" exec="rviz2" on_exit="shutdown" args="-d $(find-pkg-share nuturtle_control)/config/real_odom.rviz"/>
         <include file="$(find-pkg-share nuturtle_description)/launch/load_one.launch.xml">
             <arg name="use_rviz" value="False"/>
             <arg name="color" value="blue"/>

@@ -1,13 +1,15 @@
-#include "rclcpp/rclcpp.hpp"
-#include "sensor_msgs/msg/joint_state.hpp"
-#include "nav_msgs/msg/odometry.hpp"
-#include "tf2/LinearMath/Quaternion.hpp"
-#include "tf2_ros/transform_broadcaster.h"
+#include "geometry_msgs/msg/pose_stamped.hpp"
 #include "geometry_msgs/msg/pose.hpp"
 #include "geometry_msgs/msg/twist.hpp"
+#include "nav_msgs/msg/odometry.hpp"
+#include "nav_msgs/msg/path.hpp"
 #include "nuturtle_control_interfaces/srv/initial_pose.hpp"
-#include "turtlelib/wheels.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "sensor_msgs/msg/joint_state.hpp"
+#include "tf2_ros/transform_broadcaster.h"
+#include "tf2/LinearMath/Quaternion.hpp"
 #include "turtlelib/diff_drive.hpp"
+#include "turtlelib/wheels.hpp"
 
 #include <fstream>
 
@@ -50,6 +52,8 @@ public:
     odom_state.header.frame_id = odom_id;
     odom_state.child_frame_id = body_id;
 
+    path.header.frame_id = odom_id;
+
     timer_ = create_wall_timer(std::chrono::milliseconds(1000 / 100),
                                      std::bind(&odometry::timer_cb_, this));
 
@@ -61,16 +65,18 @@ public:
     std::bind(&odometry::joint_state_cb_, this, std::placeholders::_1));
 
     odom_pub_ = create_publisher<nav_msgs::msg::Odometry>("odom", 10);
+    path_pub_ = create_publisher<nav_msgs::msg::Path>("path", 10);
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
   }
 
 private:
-  rclcpp::TimerBase::SharedPtr timer_;
-  rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr joint_state_sub_;
   rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
-  std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
+  rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr path_pub_;
   rclcpp::Service<nuturtle_control_interfaces::srv::InitialPose>::SharedPtr initial_pose_service_;
+  rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr joint_state_sub_;
+  rclcpp::TimerBase::SharedPtr timer_;
+  std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
   builtin_interfaces::msg::Time last_time{};
 
@@ -85,6 +91,7 @@ private:
   turtlelib::DiffDrive dd_calc{track_width, wheel_radius};
 
   nav_msgs::msg::Odometry odom_state = nav_msgs::msg::Odometry();
+  nav_msgs::msg::Path path = nav_msgs::msg::Path();
 
   std::ofstream odom_tf_file{"odom_tf.txt"};
   std::ofstream odom_wheel_file{"odom_phi.txt"};
@@ -140,6 +147,18 @@ private:
     odom_state.header.stamp = this->get_clock()->now();
 
     odom_pub_->publish(odom_state);
+
+    // Add pose to path at lower freq?
+    static int timestep = 0;
+    if (timestep >= 10)
+    {
+      geometry_msgs::msg::PoseStamped p{};
+      p.header.stamp = get_clock()->now();
+      p.header.frame_id = "nusim/world";
+      p.pose = turtlelib_transform_to_pose(dd_calc.get_transform());
+      path.poses.push_back(p);
+      path_pub_->publish(path);
+    }
   }
 
   geometry_msgs::msg::Pose turtlelib_transform_to_pose(
