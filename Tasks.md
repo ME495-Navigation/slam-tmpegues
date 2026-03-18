@@ -63,3 +63,13 @@ Task F.3 (Physical Testing)
 * Not completed
 Task F.6 (Laser Scanner in launch)
 * Added, untested
+
+
+Task V.1 (nusim standalone rviz)
+* Rvis update done, need to update node
+Task V.2 (odom sim rviz)
+* Not started
+Task V.3 (odom real rviz)
+* Not started
+Task V.4 (sim slam rviz)
+* Not started
