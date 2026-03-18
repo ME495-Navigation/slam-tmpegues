@@ -61,3 +61,5 @@ Task F.1 (Turtlebot Setup)
 Task F.2 (Cross-compilation)
 Task F.3 (Physical Testing)
 * Not completed
+Task F.6 (Laser Scanner in launch)
+* Added, untested
