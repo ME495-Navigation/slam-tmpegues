@@ -66,7 +66,9 @@ Task F.6 (Laser Scanner in launch)
 
 
 Task V.1 (nusim standalone rviz)
-* Rvis update done, need to update node
+* Added Path to rviz and node.
+* Added LaserScan to rviz
+* Not added MarkerArray
 Task V.2 (odom sim rviz)
 * Not started
 Task V.3 (odom real rviz)

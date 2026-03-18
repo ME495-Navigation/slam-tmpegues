@@ -102,8 +102,9 @@ public:
         timestep.data++;
 
       // Add pose to path at 1 Hz?
-        if (timestep.data %= 1000) {
-          path.poses.push_back(tf2d_to_posestamped(red_dd.get_transform()));
+        if (timestep.data % 10 == 0) {
+          auto p = tf2d_to_posestamped(red_dd.get_transform());
+          path.poses.push_back(p);
           path_pub_->publish(path);
         }
 

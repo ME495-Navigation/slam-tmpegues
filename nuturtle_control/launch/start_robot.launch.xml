@@ -26,7 +26,7 @@
             <param name="body_id" value="'blue/base_footprint'"/>
         </node>
 
-        <include file="$(find-pkg_share hls_lfcd_lds_driver)/launch/hlds_laser.launch.py">
+        <include file="$(find-pkg-share hls_lfcd_lds_driver)/launch/hlds_laser.launch.py">
             <arg name="port" value="/dev/ttyUSB0"/>
             <arg name="frame_id" value="laser"/> <!-- 'laser' is default-->
         </include>
@@ -45,7 +45,6 @@
             <include file="$(find-pkg-share nusim)/launch/nusim.launch.xml">
                 <arg name="use_rviz" value="false"/>
                 <arg name="use_jsp" value="false"/>
-
             </include>
 
             <node pkg="nuturtle_control" exec="odometry">
