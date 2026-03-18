@@ -23,6 +23,7 @@ find_package(ament_cmake REQUIRED)
   find_package(visualization_msgs REQUIRED)
   find_package(geometry_msgs REQUIRED)
   find_package(turtlelib REQUIRED)
+  find_package(nav_msgs REQUIRED)
   find_package(nuturtlebot_msgs REQUIRED)
   find_package(nuturtle_control_interfaces REQUIRED)
 
@@ -34,6 +35,7 @@ find_package(ament_cmake REQUIRED)
                         tf2::tf2
                         tf2_ros::tf2_ros
                         turtlelib::turtlelib
+                        ${nav_msgs_TARGETS}
                         ${nuturtle_control_interfaces_TARGETS}
                         ${nuturtlebot_msgs_TARGETS}
                         ${std_srvs_TARGETS}
