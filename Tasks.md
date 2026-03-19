@@ -45,7 +45,8 @@ Task C.5
 * Node does not exit when lists aren't the same size
 Task C.6
 Task C.7
-Task C.8 begun
+Task C.8
+Task C.9
 
 Task D.1 (DiffDrive class)
 Task D.2 (DiffDrive test)

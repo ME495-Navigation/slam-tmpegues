@@ -15,17 +15,17 @@
 #include "visualization_msgs/msg/marker_array.hpp"
 #include "visualization_msgs/msg/marker.hpp"
 
+#include <armadillo>
+
 class nusim_node : public rclcpp::Node
 {
 public:
   nusim_node()
   : Node("nusim")
   {
-    // Create all parameters
     declare_parameter("draw_only", false);
-    draw_only = get_parameter("draw_only").as_bool();
 
-    switch (draw_only) {
+    switch (get_parameter("draw_only").as_bool()) {
       case false:
         {
           declare_parameter("rate", 100);
@@ -41,12 +41,14 @@ public:
           declare_parameter("track_width", 0.16);
           declare_parameter("encoder_ticks_per_rad", 651.89864);
 
-        // Create all publishers/broadcasters
+          declare_parameter("input_noise", 0.0);
+          declare_parameter("slip_fraction", 0.0);
+
+
+          // Create all publishers/broadcasters
           wheel_cmd_sub_ =
-            create_subscription<nuturtlebot_msgs::msg::WheelCommands>("red/wheel_cmd",
-                                                                                   10,
-                                                                                   std::bind(
-          &nusim_node::wheel_cmd_cb_, this, std::placeholders::_1));
+            create_subscription<nuturtlebot_msgs::msg::WheelCommands>("red/wheel_cmd", 10,
+          std::bind(&nusim_node::wheel_cmd_cb_, this, std::placeholders::_1));
           tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
           rclcpp::QoS marker_qos_ = rclcpp::QoS(rclcpp::KeepLast(10)).transient_local();
           wall_pub_ =
@@ -54,13 +56,13 @@ public:
           obs_pub_ =
             create_publisher<visualization_msgs::msg::MarkerArray>("~/real_obstacles", marker_qos_);
           reset_service_ = create_service<std_srvs::srv::Empty>(
-            "~/reset",
-            std::bind(&nusim_node::reset_cb_, this, std::placeholders::_1, std::placeholders::_2));
+          "~/reset",
+          std::bind(&nusim_node::reset_cb_, this, std::placeholders::_1, std::placeholders::_2));
           timestep_pub_ = create_publisher<std_msgs::msg::UInt64>("~/timestep", 10);
           sensor_pub_ = create_publisher<nuturtlebot_msgs::msg::SensorData>("red/sensor_data", 10);
           path_pub_ = create_publisher<nav_msgs::msg::Path>("~/path", 10);
 
-        // Define all variables
+          // Define all variables
           timestep.data = 0;
           rate = get_parameter("rate").as_int();
           timer_period = 1000 / rate;
@@ -77,33 +79,36 @@ public:
           motor_cmd_per_rad_sec = get_parameter("motor_cmd_per_rad_sec").as_double();
           encoder_ticks_per_rad = get_parameter("encoder_ticks_per_rad").as_double();
 
+          noise_sd = std::sqrt(get_parameter("input_noise").as_double());
+          slip_fraction = get_parameter("slip_fraciton").as_double();
+
           red_dd = turtlelib::DiffDrive(track_width, wheel_radius,
-                                      turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta));
+                                    turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta));
 
           last_time = get_clock()->now();
 
           path.header.frame_id = "nusim/world";
 
-        // Define functions
+          // Define functions
           auto timer_callback = [this]()
             -> void
             {
               red_dd.fk(1.0 / (1000.0 / float(timer_period))); // timer_period is in milliseconds, but I need it in seconds
 
-          // Publish SensorData
+            // Publish SensorData
               auto sensor_msg = nuturtlebot_msgs::msg::SensorData();
               sensor_msg.stamp = get_clock()->now();
               sensor_msg.left_encoder = red_dd.phi().l() * encoder_ticks_per_rad;
               sensor_msg.right_encoder = red_dd.phi().r() * encoder_ticks_per_rad;
               sensor_pub_->publish(sensor_msg);
 
-          // Publish robot's TF
+               // Publish robot's TF
               auto t = tf2d_to_tfstamped(red_dd.get_transform());
               tf_broadcaster_->sendTransform(t);
               timestep_pub_->publish(timestep);
               timestep.data++;
 
-          // Add pose to path at lower freq?
+              // Add pose to path at lower freq?
               if (timestep.data % 10 == 0) {
                 auto p = tf2d_to_posestamped(red_dd.get_transform());
                 path.poses.push_back(p);
@@ -114,12 +119,12 @@ public:
           timer_ = create_wall_timer(std::chrono::milliseconds(timer_period), timer_callback);
           RCLCPP_INFO_STREAM(get_logger(), "timer: " << std::chrono::milliseconds(timer_period));
 
-        // Use setup functions
+         // Use setup functions
           create_walls();
 
-        // No break, I do want the landmarks in both cases
         }
-        [[fallthrough]];
+        [[fallthrough]]; // No break, I do want the landmarks in both cases
+
       case true: // All that's needed when in draw_only mode is the landmark publisher
         {
           obs_pub_ =
@@ -136,7 +141,6 @@ public:
           break;
         }
     }
-
   }
 
 private:
@@ -173,12 +177,25 @@ private:
   double motor_cmd_per_rad_sec{0.0};
   double encoder_ticks_per_rad{0.0};
 
+  double noise_sd{0.0};
+  double slip_fraction{0.0};
+
       // Timer rate
   int rate{};
   int timer_period{};
 
   std_msgs::msg::UInt64 timestep;
   nav_msgs::msg::Path path;
+
+  double cmd_noise()
+  {
+    return arma::randn(arma::distr_param(0.0, noise_sd));
+  }
+
+  auto wheel_slip()
+  {
+    return arma::randu(2, arma::distr_param(-slip_fraction, slip_fraction));
+  }
 
   void wheel_cmd_cb_(const std::shared_ptr<nuturtlebot_msgs::msg::WheelCommands> msg)
   {

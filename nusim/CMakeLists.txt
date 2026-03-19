@@ -15,34 +15,36 @@ find_package(ament_cmake REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
+  find_package(Armadillo REQUIRED)
+  find_package(geometry_msgs REQUIRED)
+  find_package(nav_msgs REQUIRED)
+  find_package(nuturtle_control_interfaces REQUIRED)
+  find_package(nuturtlebot_msgs REQUIRED)
   find_package(rclcpp REQUIRED)
+  find_package(std_msgs REQUIRED)
+  find_package(std_srvs REQUIRED)
   find_package(tf2 REQUIRED)
   find_package(tf2_ros REQUIRED)
-  find_package(std_srvs REQUIRED)
-  find_package(std_msgs REQUIRED)
-  find_package(visualization_msgs REQUIRED)
-  find_package(geometry_msgs REQUIRED)
   find_package(turtlelib REQUIRED)
-  find_package(nav_msgs REQUIRED)
-  find_package(nuturtlebot_msgs REQUIRED)
-  find_package(nuturtle_control_interfaces REQUIRED)
-
+  find_package(visualization_msgs REQUIRED)
 
   add_executable(nusim src/nusim.cpp)
   target_link_libraries(nusim
                         PUBLIC
+                        ${ARMADILLO_LIBRARIES} #TODO: cite Theo
                         rclcpp::rclcpp
-                        tf2::tf2
                         tf2_ros::tf2_ros
+                        tf2::tf2
                         turtlelib::turtlelib
                         ${nav_msgs_TARGETS}
+                        ${geometry_msgs_TARGETS}
                         ${nuturtle_control_interfaces_TARGETS}
                         ${nuturtlebot_msgs_TARGETS}
-                        ${std_srvs_TARGETS}
+                        ${sensor_msgs_TARGETS}
                         ${std_msgs_TARGETS}
+                        ${std_srvs_TARGETS}
                         ${visualization_msgs_TARGETS}
-                        ${geometry_msgs_TARGETS}
-                        ${sensor_msgs_TARGETS})
+                        )
 
 install(TARGETS
   nusim
