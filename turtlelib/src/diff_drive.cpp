@@ -52,7 +52,7 @@ void DiffDrive::collide(std::pair<Vector2D, double> obs, double rad)
   // The line that connects the centers of the obstacle and the DD center coincides with the vector of obs location
   // The direction that the DD gets pushed is the opposite direction, with magnitude sum of radii
   auto push_dir = normalize(-1.0 * obs.first);
-  auto push_dist = center_dist - magnitude(obs.first);
+  auto push_dist = center_dist;
   // Those are both in robot frame
 
   // Robot center in robot frame
@@ -63,6 +63,7 @@ void DiffDrive::collide(std::pair<Vector2D, double> obs, double rad)
   center = center + (push_dir*push_dist);
   // Transform center point to world frame
   center = q(center);
+
   q = Transform2D(Vector2D(center.x, center.y), q.rotation());
 }
 

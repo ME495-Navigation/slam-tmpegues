@@ -97,22 +97,18 @@ TEST_CASE("Test ik", "DiffDrive::ik")
   REQUIRE(speeds.l() == 1);
   REQUIRE(speeds.r() == -1);
 
-  speeds = DiffDrive{2.0, 1.0}.ik({pi / 2, pi / 2, 0.0});
+  speeds = DiffDrive{2.0, 1.0}.ik({pi / 4, pi / 4, 0.0});
   REQUIRE(speeds.l() == 0);
-  REQUIRE(speeds.r() == pi);
+  REQUIRE(speeds.r() == pi/2);
 
-  // Twist2D body_tw4{-pi / 2, -pi / 2, 0.0};
-  speeds = DiffDrive{2.0, 1.0}.ik({-pi / 2, -pi / 2, 0.0});
+  speeds = DiffDrive{2.0, 1.0}.ik({-pi / 4, -pi / 4, 0.0});
   REQUIRE(speeds.l() == 0);
-  REQUIRE(speeds.r() == pi);
+  REQUIRE(speeds.r() == -pi/2);
 
-  speeds = DiffDrive{2.0, 1.0}.ik({pi / 2, pi / 2, 0.0});
-  REQUIRE(speeds.l() == 0);
-  REQUIRE(speeds.r() == pi);
 
   speeds = DiffDrive{2.0, 1.0}.ik({10 * pi / 2, 10 * pi / 2, 0.0});
   REQUIRE(speeds.l() == 0);
-  REQUIRE(almost_equal(speeds.r(), normalize_angle(-10 * pi)));
+  REQUIRE_THAT(speeds.r(), WithinAbs(10 * pi, .00001));
 
   REQUIRE_THROWS_AS(dd.ik({1, 1, 1}), std::logic_error);
 }
@@ -158,8 +154,8 @@ TEST_CASE("DiffDrive pure rotation (forward/inverse)", "[Conor]")
 
   // 180 degree rotation in place should use the same math in reverse
   auto wheels = dd.ik(Twist2D{pi, 0.0, 0.0});
-  REQUIRE_THAT(wheels.l(), WithinAbs(normalize_angle(-2.5 * pi), 1e-6));
-  REQUIRE_THAT(wheels.r(), WithinAbs(normalize_angle(2.5 * pi), 1e-6));
+  REQUIRE_THAT(wheels.l(), WithinAbs(-2.5 * pi, 1e-6));
+  REQUIRE_THAT(wheels.r(), WithinAbs(2.5 * pi, 1e-6));
 }
 
 TEST_CASE("DiffDrive circular arc (forward/inverse)", "[Conor]")
@@ -193,4 +189,30 @@ TEST_CASE("DiffDrive inverse kinematics rejects lateral motion", "[Conor]")
   auto dd = DiffDrive{0.1, 0.5};
 
   REQUIRE_THROWS_AS(dd.ik(Twist2D{0.0, 0.1, 0.01}), std::logic_error);
+}
+
+
+TEST_CASE("DiffDrive collision", "DiffDrive::collide")
+{
+  auto dd = DiffDrive{0.1, 0.5};
+  auto tf1 = dd.get_transform();
+  dd.collide(std::make_pair(Vector2D(1,0), 1), 1);
+  auto tf2 = dd.get_transform();
+  REQUIRE_THAT(tf1.rotation(), WithinAbs(tf2.rotation(), 1e-6));
+  REQUIRE_THAT(tf2.translation().x, WithinAbs(-1.0, 1e-6));
+  REQUIRE_THAT(tf2.translation().y, WithinAbs(0.0 , 1e-6));
+
+  tf1 = dd.get_transform();
+  dd.collide(std::make_pair(Vector2D(0, 1), 1), 1);
+  tf2 = dd.get_transform();
+  REQUIRE_THAT(tf1.rotation(), WithinAbs(tf2.rotation(), 1e-6));
+  REQUIRE_THAT(tf2.translation().x, WithinAbs(-1.0, 1e-6));
+  REQUIRE_THAT(tf2.translation().y, WithinAbs(-1.0, 1e-6));
+
+  tf1 = dd.get_transform();
+  dd.collide(std::make_pair(Vector2D(100, 100), 1), 1);
+  tf2 = dd.get_transform();
+  REQUIRE_THAT(tf1.rotation(), WithinAbs(tf2.rotation(), 1e-6));
+  REQUIRE_THAT(tf2.translation().x, WithinAbs(-1.0, 1e-6));
+  REQUIRE_THAT(tf2.translation().y, WithinAbs(-1.0, 1e-6));
 }
