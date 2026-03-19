@@ -67,12 +67,21 @@ Wheels operator+(Wheels position, WheelDiff & rotation)
   return position += rotation;
 }
 
-// Operations to be used in kinematics
+// Operations to be used in kinematics and simulation
 
 WheelDiff Wheels::get_diff(Wheels new_wheels)
 {
   auto diff = new_wheels - *this;
 
   return diff;
+}
+
+WheelDiff WheelDiff::noise(WheelDiff cmd_noise, WheelDiff slip)
+{
+  // Add execution noise only if motors are commanded to stop
+  auto l { (left == 0) ? 0 : (left + cmd_noise.l())*(1+slip.l())};
+  auto r { (right == 0) ? 0 : (right + cmd_noise.r())*(1+slip.r())};
+
+  return WheelDiff(l, r);
 }
 }

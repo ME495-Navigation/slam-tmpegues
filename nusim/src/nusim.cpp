@@ -93,7 +93,9 @@ public:
           auto timer_callback = [this]()
               -> void
           {
-            red_dd.fk(wheel_speeds); // timer_period is in milliseconds, but I need it in seconds
+            auto noised_speed = wheel_speeds.noise(cmd_noise(), wheel_slip());
+
+            red_dd.fk(noised_speed*(double(timer_period)/1000.0)); // timer_period is in milliseconds, but I need it in seconds
 
             // Publish SensorData
             auto sensor_msg = nuturtlebot_msgs::msg::SensorData();
@@ -188,15 +190,28 @@ private:
   std_msgs::msg::UInt64 timestep;
   nav_msgs::msg::Path path;
 
-  double cmd_noise()
+  turtlelib::WheelDiff cmd_noise()
   {
-    return arma::randn(arma::distr_param(0.0, noise_sd));
+    if (noise_sd == 0)
+    {
+      return turtlelib::WheelDiff();
+    }
+    else
+    {
+      return turtlelib::WheelDiff(arma::randn(arma::distr_param(0.0, noise_sd)), arma::randn(arma::distr_param(0.0, noise_sd)));
+    }
   }
 
-  auto wheel_slip()
+  turtlelib::WheelDiff wheel_slip()
   {
-    return arma::randu(2, arma::distr_param(-slip_fraction, slip_fraction));
+    if (slip_fraction == 0.0)
+    {return turtlelib::WheelDiff();}
+    else
+    {
+    return turtlelib::WheelDiff(arma::randu(arma::distr_param(-slip_fraction, slip_fraction)), arma::randu(arma::distr_param(-slip_fraction, slip_fraction)));
+    }
   }
+
 
   void wheel_cmd_cb_(const std::shared_ptr<nuturtlebot_msgs::msg::WheelCommands> msg)
   {

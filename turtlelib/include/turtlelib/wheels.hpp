@@ -30,19 +30,18 @@ public:
   /// \param right_rot The rotation of the right wheel
   explicit WheelDiff(double left_rot, double right_rot);
 
-    // Scale by scalar/time
-    // get
-    /// \brief Get the left wheel rotation
-    /// \return The left wheel rotation
+
+  /// \brief Get the left wheel rotation
+  /// \return The left wheel rotation
   double l();
 
-    /// \brief Get the right wheel rotation
-    /// \return The right wheel rotation
+  /// \brief Get the right wheel rotation
+  /// \return The right wheel rotation
   double r();
 
-    /// \brief Scale a wheel difference (speed) by a scalar (time)
-    /// \param rhs The scalar (time) to scale the diff (speed) by
-    /// \return a reference to the scaled diff
+  /// \brief Scale a wheel difference (speed) by a scalar (time)
+  /// \param rhs The scalar (time) to scale the diff (speed) by
+  /// \return a reference to the scaled diff
   template<typename T>
   WheelDiff & operator*=(const T & rhs)
   {
@@ -51,6 +50,10 @@ public:
 
     return *this;
   }
+  /// \brief Simulate noise, both in motor execution and wheel slip
+  /// \param cmd_noise What's the difference between the commanded WheelDiff and executed?
+  /// \param slip What fraction of the executed velocity gets turned into slip?
+  WheelDiff noise(WheelDiff cmd_noise, WheelDiff slip);
 
   friend class Wheels;
 
