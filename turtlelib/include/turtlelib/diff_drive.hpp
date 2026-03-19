@@ -90,6 +90,11 @@ public:
   /// \brief Get current body twist
   /// \return Current body twist
   Twist2D get_twist() const;
+
+  /// \brief Update the tf if the DiffDrive's circular footprint overlaps with the footprint of an obstacle
+  /// \param obs std::pair<Vector2D, double> of the obstacle's location relative to DiffDrive and radius
+  /// \param rad The DiffDrive's collision radius
+  void collide(std::pair<Vector2D, double> obs, double rad);
 };
 }  // namespace turtlelib
 

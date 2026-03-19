@@ -41,6 +41,30 @@ void DiffDrive::set_speeds(WheelDiff speed)
 {
   wheelspeeds = speed;
 }
+void DiffDrive::collide(std::pair<Vector2D, double> obs, double rad)
+{
+  // If distance to the object is greater than the sum of radii, exit early
+  auto center_dist = obs.second + rad;
+  if (magnitude(obs.first) > (obs.second + rad))
+  {
+    return;
+  }
+  // The line that connects the centers of the obstacle and the DD center coincides with the vector of obs location
+  // The direction that the DD gets pushed is the opposite direction, with magnitude sum of radii
+  auto push_dir = normalize(-1.0 * obs.first);
+  auto push_dist = center_dist - magnitude(obs.first);
+  // Those are both in robot frame
+
+  // Robot center in robot frame
+  auto center = Point2D();
+  // Move robot center to the center of the obstacle
+  center = center + obs.first;
+  // Move robot center to position where the edges of the collision circles touch
+  center = center + (push_dir*push_dist);
+  // Transform center point to world frame
+  center = q(center);
+  q = Transform2D(Vector2D(center.x, center.y), q.rotation());
+}
 
 void DiffDrive::fk(Wheels wheels2)
 {

@@ -125,7 +125,7 @@ public:
               sensor_pub_->publish(sensor_msg);
 
               // Check for collision on Slipped DD
-
+              slipped_dd.collide(closest_obs(), collision_radius);
 
               // Publish robot's TF based on Slipped DD (true location knows slip)
               auto t = tf2d_to_tfstamped(slipped_dd.get_transform());
@@ -282,6 +282,23 @@ private:
     }
     fake_sensor_pub_ -> publish(marker_array);
   }
+
+  std::pair<turtlelib::Vector2D, double> closest_obs()
+  {
+    auto dist {turtlelib::Vector2D(1000, 1000)};
+    for (unsigned int i = 0; i <= obs_x.size() - 1; i++)
+    {
+      turtlelib::Transform2D world_to_obs {turtlelib::Vector2D(obs_x[i], obs_y[i])};
+      auto rob_to_obs {slipped_dd.get_transform().inv()*world_to_obs};
+      auto new_dist = rob_to_obs.translation();
+      if (turtlelib::magnitude(new_dist) < turtlelib::magnitude(dist))
+      {
+        dist = new_dist;
+      }
+    }
+    return std::make_pair(dist, obs_r);
+  }
+
 
   void wheel_cmd_cb_(const std::shared_ptr<nuturtlebot_msgs::msg::WheelCommands> msg)
   {
