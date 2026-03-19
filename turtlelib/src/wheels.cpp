@@ -79,8 +79,8 @@ WheelDiff Wheels::get_diff(Wheels new_wheels)
 WheelDiff WheelDiff::slip(WheelDiff slip)
 {
   // Add execution noise only if motors are commanded to stop
-  auto l {left * (1.0+slip.l())};
-  auto r {right * (1.0+slip.r())};
+  auto l {left * (1.0 + slip.l())};
+  auto r {right * (1.0 + slip.r())};
 
   return WheelDiff(l, r);
 }

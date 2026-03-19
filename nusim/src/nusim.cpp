@@ -59,7 +59,7 @@ public:
           obs_pub_ =
             create_publisher<visualization_msgs::msg::MarkerArray>("~/real_obstacles", marker_qos_);
           fake_sensor_pub_ =
-              create_publisher<visualization_msgs::msg::MarkerArray>("~/fake_sensor", marker_qos_);
+            create_publisher<visualization_msgs::msg::MarkerArray>("~/fake_sensor", marker_qos_);
           reset_service_ = create_service<std_srvs::srv::Empty>(
           "~/reset",
           std::bind(&nusim_node::reset_cb_, this, std::placeholders::_1, std::placeholders::_2));
@@ -223,7 +223,6 @@ private:
 
   void fake_sensor()
   {
-    ;
   }
 
 
