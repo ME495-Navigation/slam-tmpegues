@@ -71,7 +71,7 @@ public:
           // Define all variables
           timestep.data = 0;
           rate = get_parameter("rate").as_int();
-          timer_period = 1000 / rate;
+          timer_period = 1000 / rate; // Period in milliseconds
 
           arena_x_length = get_parameter("arena_x_length").as_double();
           arena_y_length = get_parameter("arena_y_length").as_double();
@@ -89,6 +89,8 @@ public:
           noise_sd = std::sqrt(get_parameter("input_noise").as_double());
           slip_fraction = get_parameter("slip_fraction").as_double();
 
+          basic_sensor_sd = std::sqrt(get_parameter("basic_sensor_variance").as_double());
+
           unslipped_dd = turtlelib::DiffDrive(track_width, wheel_radius,
                                     turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta));
           slipped_dd = turtlelib::DiffDrive(track_width, wheel_radius,
@@ -103,6 +105,11 @@ public:
           auto timer_callback = [this]()
             -> void
             {
+              // Basic Sensor markers and Lidar publish at 5 Hz
+              if ((get_clock()->now() - last_time).nanoseconds() >= 200000000) // 2*10^8 nanoseconds
+              {
+                basic_sensor();
+              }
               auto noised_speed = wheel_speeds.noise(cmd_noise());
 
               unslipped_dd.fk(noised_speed * (double(timer_period) / 1000.0)); // timer_period is in milliseconds, but I need it in seconds
@@ -201,7 +208,9 @@ private:
   double noise_sd{0.0};
   double slip_fraction{0.0};
 
-      // Timer rate
+  double basic_sensor_sd {0.0};
+
+  // Timer rate
   int rate{};
   int timer_period{};
 
@@ -227,10 +236,46 @@ private:
     }
   }
 
-  void fake_sensor()
+  void basic_sensor()
   {
-  }
+    auto marker_array = visualization_msgs::msg::MarkerArray();
+    auto marker = visualization_msgs::msg::Marker();
+    marker.header.stamp = rclcpp::Clock().now();
+    marker.header.frame_id = "red_base_footprint";
+    //marker.ns = "red";
 
+    marker.type = visualization_msgs::msg::Marker::CYLINDER;
+    marker.color.r = 1.0;
+    marker.color.a = 0.75;
+    marker.scale.x = obs_r / 2.0;
+    marker.scale.y = obs_r / 2.0;
+
+    marker.scale.z = 0.25;
+    for (unsigned int i = 0; i <= obs_x.size() - 1; i++)
+    {
+      marker.id = i;
+      if (basic_sensor_sd == 0.0)
+        {
+          marker.pose.position.x = obs_x[i];
+          marker.pose.position.y = obs_y[i];
+        }
+      else
+        {
+          marker.pose.position.x = obs_x[i] + arma::randn(arma::distr_param(0.0, basic_sensor_sd));
+          marker.pose.position.y = obs_y[i] + arma::randn(arma::distr_param(0.0, basic_sensor_sd));
+        }
+
+      marker.pose.position.z = .25 / 2.0;
+      if (true) // If distance between obstacle and dd < max_range
+
+      {marker.action = 0;} // 0 = ADD
+      if (false)
+      {marker.action = 2;} // 2 = DELETE
+
+
+      marker_array.markers.push_back(marker);
+    }
+  }
 
   void wheel_cmd_cb_(const std::shared_ptr<nuturtlebot_msgs::msg::WheelCommands> msg)
   {
