@@ -3,7 +3,10 @@ Panels:
     Help Height: 70
     Name: Displays
     Property Tree Widget:
-      Expanded: ~
+      Expanded:
+        - /Fake Sensor Obstacles1
+        - /Fake Sensor Obstacles1/Topic1
+        - /Fake Sensor Obstacles1/Namespaces1
       Splitter Ratio: 0.5
     Tree Height: 866
   - Class: rviz_common/Selection
@@ -284,6 +287,18 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /blue/path
       Value: true
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: Fake Sensor Obstacles
+      Namespaces:
+        "": true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /nusim/fake_sensor
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -330,16 +345,16 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/XYOrbit
-      Distance: 3.1698014736175537
+      Distance: 3.69804048538208
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0
-        Y: 0
-        Z: 0
+        X: 0.1636655330657959
+        Y: -1.321669101715088
+        Z: 9.5367431640625e-07
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
@@ -366,5 +381,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1532
-  X: 2313
-  Y: 427
+  X: 2295
+  Y: 24

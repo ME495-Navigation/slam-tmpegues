@@ -12,6 +12,7 @@
 #include "turtlelib/diff_drive.hpp"
 #include "turtlelib/se2d.hpp"
 #include "turtlelib/wheels.hpp"
+#include "turtlelib/geometry2d.hpp"
 #include "visualization_msgs/msg/marker_array.hpp"
 #include "visualization_msgs/msg/marker.hpp"
 
@@ -242,35 +243,37 @@ private:
     auto marker_array = visualization_msgs::msg::MarkerArray();
     auto marker = visualization_msgs::msg::Marker();
     marker.header.stamp = rclcpp::Clock().now();
-    marker.header.frame_id = "red_base_footprint";
+    marker.header.frame_id = "red/base_footprint";
     //marker.ns = "red";
 
     marker.type = visualization_msgs::msg::Marker::CYLINDER;
     marker.color.r = 1.0;
+    marker.color.g = 1.0;
     marker.color.a = 0.75;
-    marker.scale.x = obs_r / 2.0;
-    marker.scale.y = obs_r / 2.0;
+    marker.scale.x = obs_r * 2.0;
+    marker.scale.y = obs_r * 2.0;
 
     marker.scale.z = 0.25;
     for (unsigned int i = 0; i <= obs_x.size() - 1; i++) {
       marker.id = i;
-      turtlelib::Vector2D obs_position << obs_x[i] << obs_y[i];
+      turtlelib::Transform2D obs_tf_relative {turtlelib::Vector2D(obs_x[i], obs_y[i])};
+      obs_tf_relative *= slipped_dd.get_transform().inv();
 
       if (basic_sensor_sd == 0.0) {
-        marker.pose.position.x = obs_x[i];
-        marker.pose.position.y = obs_y[i];
+        marker.pose.position.x = obs_tf_relative.translation().x;
+        marker.pose.position.y = obs_tf_relative.translation().y;
       } else {
-        marker.pose.position.x = obs_x[i] + arma::randn(arma::distr_param(0.0, basic_sensor_sd));
-        marker.pose.position.y = obs_y[i] + arma::randn(arma::distr_param(0.0, basic_sensor_sd));
+        marker.pose.position.x = obs_tf_relative.translation().x + arma::randn(arma::distr_param(0.0, basic_sensor_sd));
+        marker.pose.position.y = obs_tf_relative.translation().y + arma::randn(arma::distr_param(0.0, basic_sensor_sd));
       }
 
       marker.pose.position.z = .25 / 2.0;
-      if (turtlelib::magnitude(obs_position - slipped_dd.get_transform().translation()) <
-        max_range)                                                                                   // If distance between obstacle and dd < max_range
+      auto dist = obs_tf_relative.translation();
+      if (turtlelib::magnitude(dist) < max_range) // If distance between obstacle and dd < max_range
       {
-        marker.action = 0; // 0 = ADD
+        marker.action = visualization_msgs::msg::Marker::ADD; // 0 = ADD
       } else {
-        marker.action = 2; // 2 = DELETE
+        marker.action = visualization_msgs::msg::Marker::DELETE; // 2 = DELETE
       }
 
       marker_array.markers.push_back(marker);
@@ -353,8 +356,8 @@ private:
       marker.type = visualization_msgs::msg::Marker::CYLINDER;
       marker.color.r = 1.0;
       marker.color.a = 0.75;
-      marker.scale.x = obs_r / 2.0;
-      marker.scale.y = obs_r / 2.0;
+      marker.scale.x = obs_r * 2.0;
+      marker.scale.y = obs_r * 2.0;
 
       marker.scale.z = 0.25;
 
