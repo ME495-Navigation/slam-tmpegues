@@ -99,11 +99,11 @@ TEST_CASE("Test ik", "DiffDrive::ik")
 
   speeds = DiffDrive{2.0, 1.0}.ik({pi / 4, pi / 4, 0.0});
   REQUIRE(speeds.l() == 0);
-  REQUIRE(speeds.r() == pi/2);
+  REQUIRE(speeds.r() == pi / 2);
 
   speeds = DiffDrive{2.0, 1.0}.ik({-pi / 4, -pi / 4, 0.0});
   REQUIRE(speeds.l() == 0);
-  REQUIRE(speeds.r() == -pi/2);
+  REQUIRE(speeds.r() == -pi / 2);
 
 
   speeds = DiffDrive{2.0, 1.0}.ik({10 * pi / 2, 10 * pi / 2, 0.0});
@@ -196,11 +196,11 @@ TEST_CASE("DiffDrive collision", "DiffDrive::collide")
 {
   auto dd = DiffDrive{0.1, 0.5};
   auto tf1 = dd.get_transform();
-  dd.collide(std::make_pair(Vector2D(1,0), 1), 1);
+  dd.collide(std::make_pair(Vector2D(1, 0), 1), 1);
   auto tf2 = dd.get_transform();
   REQUIRE_THAT(tf1.rotation(), WithinAbs(tf2.rotation(), 1e-6));
   REQUIRE_THAT(tf2.translation().x, WithinAbs(-1.0, 1e-6));
-  REQUIRE_THAT(tf2.translation().y, WithinAbs(0.0 , 1e-6));
+  REQUIRE_THAT(tf2.translation().y, WithinAbs(0.0, 1e-6));
 
   tf1 = dd.get_transform();
   dd.collide(std::make_pair(Vector2D(0, 1), 1), 1);

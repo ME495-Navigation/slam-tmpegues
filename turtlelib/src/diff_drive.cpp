@@ -45,8 +45,7 @@ void DiffDrive::collide(std::pair<Vector2D, double> obs, double rad)
 {
   // If distance to the object is greater than the sum of radii, exit early
   auto center_dist = obs.second + rad;
-  if (magnitude(obs.first) > (obs.second + rad))
-  {
+  if (magnitude(obs.first) > (obs.second + rad)) {
     return;
   }
   // The line that connects the centers of the obstacle and the DD center coincides with the vector of obs location
@@ -60,7 +59,7 @@ void DiffDrive::collide(std::pair<Vector2D, double> obs, double rad)
   // Move robot center to the center of the obstacle
   center = center + obs.first;
   // Move robot center to position where the edges of the collision circles touch
-  center = center + (push_dir*push_dist);
+  center = center + (push_dir * push_dist);
   // Transform center point to world frame
   center = q(center);
 

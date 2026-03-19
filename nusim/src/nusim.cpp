@@ -259,20 +259,21 @@ private:
       marker.id = i;
 
       turtlelib::Transform2D world_to_obs {turtlelib::Vector2D(obs_x[i], obs_y[i])};
-      auto rob_to_obs {slipped_dd.get_transform().inv()*world_to_obs};
+      auto rob_to_obs {slipped_dd.get_transform().inv() * world_to_obs};
 
       if (basic_sensor_sd == 0.0) {
         marker.pose.position.x = rob_to_obs.translation().x;
         marker.pose.position.y = rob_to_obs.translation().y;
       } else {
-        marker.pose.position.x = rob_to_obs.translation().x + arma::randn(arma::distr_param(0.0, basic_sensor_sd));
-        marker.pose.position.y = rob_to_obs.translation().y + arma::randn(arma::distr_param(0.0, basic_sensor_sd));
+        marker.pose.position.x = rob_to_obs.translation().x + arma::randn(arma::distr_param(0.0,
+          basic_sensor_sd));
+        marker.pose.position.y = rob_to_obs.translation().y + arma::randn(arma::distr_param(0.0,
+          basic_sensor_sd));
       }
 
       marker.pose.position.z = .25 / 2.0;
       auto dist = rob_to_obs.translation();
-      if (turtlelib::magnitude(dist) < max_range) // If distance between obstacle and dd < max_range
-      {
+      if (turtlelib::magnitude(dist) < max_range) { // If distance between obstacle and dd < max_range
         marker.action = visualization_msgs::msg::Marker::ADD; // 0 = ADD
       } else {
         marker.action = visualization_msgs::msg::Marker::DELETE; // 2 = DELETE
@@ -280,19 +281,17 @@ private:
 
       marker_array.markers.push_back(marker);
     }
-    fake_sensor_pub_ -> publish(marker_array);
+    fake_sensor_pub_->publish(marker_array);
   }
 
   std::pair<turtlelib::Vector2D, double> closest_obs()
   {
     auto dist {turtlelib::Vector2D(1000, 1000)};
-    for (unsigned int i = 0; i <= obs_x.size() - 1; i++)
-    {
+    for (unsigned int i = 0; i <= obs_x.size() - 1; i++) {
       turtlelib::Transform2D world_to_obs {turtlelib::Vector2D(obs_x[i], obs_y[i])};
-      auto rob_to_obs {slipped_dd.get_transform().inv()*world_to_obs};
+      auto rob_to_obs {slipped_dd.get_transform().inv() * world_to_obs};
       auto new_dist = rob_to_obs.translation();
-      if (turtlelib::magnitude(new_dist) < turtlelib::magnitude(dist))
-      {
+      if (turtlelib::magnitude(new_dist) < turtlelib::magnitude(dist)) {
         dist = new_dist;
       }
     }
