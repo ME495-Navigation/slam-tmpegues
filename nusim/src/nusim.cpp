@@ -41,8 +41,11 @@ public:
           declare_parameter("track_width", 0.16);
           declare_parameter("encoder_ticks_per_rad", 651.89864);
 
-          declare_parameter("input_noise", 0);
-          declare_parameter("slip_fraction", 0);
+          declare_parameter("input_noise", 0.0);
+          declare_parameter("slip_fraction", 0.0);
+
+          declare_parameter("basic_sensor_variance", 0.0);
+          declare_parameter("max_range", 5.0);
 
 
           // Create all publishers/broadcasters
@@ -55,6 +58,8 @@ public:
             create_publisher<visualization_msgs::msg::MarkerArray>("~/real_walls", marker_qos_);
           obs_pub_ =
             create_publisher<visualization_msgs::msg::MarkerArray>("~/real_obstacles", marker_qos_);
+          fake_sensor_pub_ =
+              create_publisher<visualization_msgs::msg::MarkerArray>("~/fake_sensor", marker_qos_);
           reset_service_ = create_service<std_srvs::srv::Empty>(
           "~/reset",
           std::bind(&nusim_node::reset_cb_, this, std::placeholders::_1, std::placeholders::_2));
@@ -101,14 +106,14 @@ public:
               unslipped_dd.fk(noised_speed * (double(timer_period) / 1000.0)); // timer_period is in milliseconds, but I need it in seconds
               slipped_dd.fk(noised_speed.slip(wheel_slip()) * (double(timer_period) / 1000.0));
 
-              // Publish SensorData
+              // Publish SensorData based on Noised DD
               auto sensor_msg = nuturtlebot_msgs::msg::SensorData();
               sensor_msg.stamp = get_clock()->now();
               sensor_msg.left_encoder = unslipped_dd.phi().l() * encoder_ticks_per_rad;
               sensor_msg.right_encoder = unslipped_dd.phi().r() * encoder_ticks_per_rad;
               sensor_pub_->publish(sensor_msg);
 
-            // Publish robot's TF
+            // Publish robot's TF based on Slipped DD
               auto t = tf2d_to_tfstamped(slipped_dd.get_transform());
               tf_broadcaster_->sendTransform(t);
               timestep_pub_->publish(timestep);
@@ -159,6 +164,7 @@ private:
   rclcpp::Publisher<std_msgs::msg::UInt64>::SharedPtr timestep_pub_;
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr obs_pub_;
   rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr wall_pub_;
+  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr fake_sensor_pub_;
   rclcpp::Service<std_srvs::srv::Empty>::SharedPtr reset_service_;
   std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
@@ -213,6 +219,11 @@ private:
       return turtlelib::WheelDiff(arma::randu(arma::distr_param(-slip_fraction, slip_fraction)),
         arma::randu(arma::distr_param(-slip_fraction, slip_fraction)));
     }
+  }
+
+  void fake_sensor()
+  {
+    ;
   }
 
 
