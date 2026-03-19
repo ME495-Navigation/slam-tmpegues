@@ -76,12 +76,20 @@ WheelDiff Wheels::get_diff(Wheels new_wheels)
   return diff;
 }
 
-WheelDiff WheelDiff::noise(WheelDiff cmd_noise, WheelDiff slip)
+WheelDiff WheelDiff::slip(WheelDiff slip)
 {
   // Add execution noise only if motors are commanded to stop
-  auto l { (left == 0) ? 0 : (left + cmd_noise.l())*(1+slip.l())};
-  auto r { (right == 0) ? 0 : (right + cmd_noise.r())*(1+slip.r())};
+  auto l {left * (1.0+slip.l())};
+  auto r {right * (1.0+slip.r())};
 
+  return WheelDiff(l, r);
+}
+
+WheelDiff WheelDiff::noise(WheelDiff noise)
+{
+  // Add execution noise only if motors are commanded to stop
+  auto l{(left == 0) ? 0 : left + noise.l()};
+  auto r{(right == 0) ? 0 : right + noise.r()};
   return WheelDiff(l, r);
 }
 }

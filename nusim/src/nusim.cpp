@@ -41,8 +41,8 @@ public:
           declare_parameter("track_width", 0.16);
           declare_parameter("encoder_ticks_per_rad", 651.89864);
 
-          declare_parameter("input_noise", 0.0);
-          declare_parameter("slip_fraction", 0.0);
+          declare_parameter("input_noise", 0);
+          declare_parameter("slip_fraction", 0);
 
 
           // Create all publishers/broadcasters
@@ -82,8 +82,11 @@ public:
           noise_sd = std::sqrt(get_parameter("input_noise").as_double());
           slip_fraction = get_parameter("slip_fraction").as_double();
 
-          red_dd = turtlelib::DiffDrive(track_width, wheel_radius,
+          unslipped_dd = turtlelib::DiffDrive(track_width, wheel_radius,
                                     turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta));
+          slipped_dd = turtlelib::DiffDrive(track_width, wheel_radius,
+                                              turtlelib::Transform2D(turtlelib::Vector2D{x, y},
+          theta));
 
           last_time = get_clock()->now();
 
@@ -91,33 +94,33 @@ public:
 
           // Define functions
           auto timer_callback = [this]()
-              -> void
-          {
-            auto noised_speed = wheel_speeds.noise(cmd_noise(), wheel_slip());
+            -> void
+            {
+              auto noised_speed = wheel_speeds.noise(cmd_noise());
 
-            red_dd.fk(noised_speed*(double(timer_period)/1000.0)); // timer_period is in milliseconds, but I need it in seconds
+              unslipped_dd.fk(noised_speed * (double(timer_period) / 1000.0)); // timer_period is in milliseconds, but I need it in seconds
+              slipped_dd.fk(noised_speed.slip(wheel_slip()) * (double(timer_period) / 1000.0));
 
-            // Publish SensorData
-            auto sensor_msg = nuturtlebot_msgs::msg::SensorData();
-            sensor_msg.stamp = get_clock()->now();
-            sensor_msg.left_encoder = red_dd.phi().l() * encoder_ticks_per_rad;
-            sensor_msg.right_encoder = red_dd.phi().r() * encoder_ticks_per_rad;
-            sensor_pub_->publish(sensor_msg);
+              // Publish SensorData
+              auto sensor_msg = nuturtlebot_msgs::msg::SensorData();
+              sensor_msg.stamp = get_clock()->now();
+              sensor_msg.left_encoder = unslipped_dd.phi().l() * encoder_ticks_per_rad;
+              sensor_msg.right_encoder = unslipped_dd.phi().r() * encoder_ticks_per_rad;
+              sensor_pub_->publish(sensor_msg);
 
             // Publish robot's TF
-            auto t = tf2d_to_tfstamped(red_dd.get_transform());
-            tf_broadcaster_->sendTransform(t);
-            timestep_pub_->publish(timestep);
-            timestep.data++;
+              auto t = tf2d_to_tfstamped(slipped_dd.get_transform());
+              tf_broadcaster_->sendTransform(t);
+              timestep_pub_->publish(timestep);
+              timestep.data++;
 
             // Add pose to path at lower freq?
-            if (timestep.data % 10 == 0)
-            {
-              auto p = tf2d_to_posestamped(red_dd.get_transform());
-              path.poses.push_back(p);
-              path_pub_->publish(path);
-            }
-          };
+              if (timestep.data % 10 == 0) {
+                auto p = tf2d_to_posestamped(slipped_dd.get_transform());
+                path.poses.push_back(p);
+                path_pub_->publish(path);
+              }
+            };
 
           timer_ = create_wall_timer(std::chrono::milliseconds(timer_period), timer_callback);
           RCLCPP_INFO_STREAM(get_logger(), "timer: " << std::chrono::milliseconds(timer_period));
@@ -173,7 +176,10 @@ private:
       // Red robot info
   double wheel_radius{0.0};
   double track_width{0.0};
-  turtlelib::DiffDrive red_dd{
+  turtlelib::DiffDrive unslipped_dd{
+    track_width,
+    wheel_radius};
+  turtlelib::DiffDrive slipped_dd{
     track_width,
     wheel_radius};
   double motor_cmd_per_rad_sec{0.0};
@@ -192,23 +198,20 @@ private:
 
   turtlelib::WheelDiff cmd_noise()
   {
-    if (noise_sd == 0)
-    {
+    if (noise_sd == 0) {
       return turtlelib::WheelDiff();
-    }
-    else
-    {
-      return turtlelib::WheelDiff(arma::randn(arma::distr_param(0.0, noise_sd)), arma::randn(arma::distr_param(0.0, noise_sd)));
+    } else {
+      return turtlelib::WheelDiff(arma::randn(arma::distr_param(0.0, noise_sd)),
+        arma::randn(arma::distr_param(0.0, noise_sd)));
     }
   }
 
   turtlelib::WheelDiff wheel_slip()
   {
     if (slip_fraction == 0.0)
-    {return turtlelib::WheelDiff();}
-    else
-    {
-    return turtlelib::WheelDiff(arma::randu(arma::distr_param(-slip_fraction, slip_fraction)), arma::randu(arma::distr_param(-slip_fraction, slip_fraction)));
+    {return turtlelib::WheelDiff();} else {
+      return turtlelib::WheelDiff(arma::randu(arma::distr_param(-slip_fraction, slip_fraction)),
+        arma::randu(arma::distr_param(-slip_fraction, slip_fraction)));
     }
   }
 
@@ -218,7 +221,6 @@ private:
     // 0301 When a wheel command is received, it gets saved as the speed in the DiffDrive
     wheel_speeds = turtlelib::WheelDiff(msg->left_velocity * motor_cmd_per_rad_sec,
                                         msg->right_velocity * motor_cmd_per_rad_sec);
-    red_dd.set_speeds(wheel_speeds);
   }
 
   void create_walls()
@@ -359,8 +361,10 @@ private:
     auto y = get_parameter("y0").as_double();
     auto theta = get_parameter("theta0").as_double();
 
-    red_dd = turtlelib::DiffDrive(track_width, wheel_radius,
+    unslipped_dd = turtlelib::DiffDrive(track_width, wheel_radius,
                                       turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta));
+    slipped_dd = turtlelib::DiffDrive(track_width, wheel_radius,
+                                        turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta));
   }
 };
 

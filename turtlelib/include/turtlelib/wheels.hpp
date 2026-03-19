@@ -50,10 +50,14 @@ public:
 
     return *this;
   }
-  /// \brief Simulate noise, both in motor execution and wheel slip
-  /// \param cmd_noise What's the difference between the commanded WheelDiff and executed?
+
+  /// \brief Simulate wheel slip
   /// \param slip What fraction of the executed velocity gets turned into slip?
-  WheelDiff noise(WheelDiff cmd_noise, WheelDiff slip);
+  WheelDiff slip(WheelDiff slip);
+
+  /// \brief Simulate motor execution noise
+  /// \param slip Execution noise on each wheel
+  WheelDiff noise(WheelDiff noise);
 
   friend class Wheels;
 
