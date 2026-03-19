@@ -50,7 +50,6 @@ Task C.9
 * I'm putting noise in the timer instead of "whenever the simulator receives a wheel_cmd" due to the way I am doing FK
 * Slip in the timer will work, but noise should probably go in the cmd callback. This it not a probalem for now though
 Task C.10
-* Created publisher that currently doesn't do anything. I don't have *measured* obstacles yet
 Task C.11
 *Coming back to it later, I'm unsure if I'm reading the instructions properly
 

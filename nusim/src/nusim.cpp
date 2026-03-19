@@ -109,6 +109,7 @@ public:
             {
               // Basic Sensor markers and Lidar publish at 5 Hz
               if ((get_clock()->now() - last_time).nanoseconds() >= 200000000) { // 2*10^8 nanoseconds
+                last_time = get_clock()->now();
                 basic_sensor();
               }
               auto noised_speed = wheel_speeds.noise(cmd_noise());
@@ -264,7 +265,7 @@ private:
         marker.pose.position.x = rob_to_obs.translation().x;
         marker.pose.position.y = rob_to_obs.translation().y;
       } else {
-        marker.pose.position.x = rob_to_obs.translation().x e+ arma::randn(arma::distr_param(0.0, basic_sensor_sd));
+        marker.pose.position.x = rob_to_obs.translation().x + arma::randn(arma::distr_param(0.0, basic_sensor_sd));
         marker.pose.position.y = rob_to_obs.translation().y + arma::randn(arma::distr_param(0.0, basic_sensor_sd));
       }
 
