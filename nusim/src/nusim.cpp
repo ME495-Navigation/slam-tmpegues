@@ -40,6 +40,7 @@ public:
           declare_parameter("wheel_radius", 0.033);
           declare_parameter("track_width", 0.16);
           declare_parameter("encoder_ticks_per_rad", 651.89864);
+          declare_parameter("collision_radius", 0.11);
 
           declare_parameter("input_noise", 0.0);
           declare_parameter("slip_fraction", 0.0);
@@ -83,6 +84,7 @@ public:
           track_width = get_parameter("track_width").as_double();
           motor_cmd_per_rad_sec = get_parameter("motor_cmd_per_rad_sec").as_double();
           encoder_ticks_per_rad = get_parameter("encoder_ticks_per_rad").as_double();
+          collision_radius = get_parameter("collision_radius").as_double();
 
           noise_sd = std::sqrt(get_parameter("input_noise").as_double());
           slip_fraction = get_parameter("slip_fraction").as_double();
@@ -106,25 +108,28 @@ public:
               unslipped_dd.fk(noised_speed * (double(timer_period) / 1000.0)); // timer_period is in milliseconds, but I need it in seconds
               slipped_dd.fk(noised_speed.slip(wheel_slip()) * (double(timer_period) / 1000.0));
 
-              // Publish SensorData based on Noised DD
+              // Publish SensorData based on Noised DD (encoders read the true executed movement, but doesn't know about slip)
               auto sensor_msg = nuturtlebot_msgs::msg::SensorData();
               sensor_msg.stamp = get_clock()->now();
               sensor_msg.left_encoder = unslipped_dd.phi().l() * encoder_ticks_per_rad;
               sensor_msg.right_encoder = unslipped_dd.phi().r() * encoder_ticks_per_rad;
               sensor_pub_->publish(sensor_msg);
 
-            // Publish robot's TF based on Slipped DD
+              // Check for collision on Slipped DD
+
+
+              // Publish robot's TF based on Slipped DD (true location knows slip)
               auto t = tf2d_to_tfstamped(slipped_dd.get_transform());
               tf_broadcaster_->sendTransform(t);
               timestep_pub_->publish(timestep);
-              timestep.data++;
 
-            // Add pose to path at lower freq?
+              // Add pose to path at lower freq?
               if (timestep.data % 10 == 0) {
                 auto p = tf2d_to_posestamped(slipped_dd.get_transform());
                 path.poses.push_back(p);
                 path_pub_->publish(path);
               }
+              timestep.data++;
             };
 
           timer_ = create_wall_timer(std::chrono::milliseconds(timer_period), timer_callback);
@@ -182,6 +187,7 @@ private:
       // Red robot info
   double wheel_radius{0.0};
   double track_width{0.0};
+  double collision_radius{0.0};
   turtlelib::DiffDrive unslipped_dd{
     track_width,
     wheel_radius};
