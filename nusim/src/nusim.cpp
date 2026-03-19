@@ -257,20 +257,20 @@ private:
     for (unsigned int i = 0; i <= obs_x.size() - 1; i++) {
       marker.id = i;
 
-      turtlelib::Vector2D world_to_obs {obs_x[i], obs_y[i]};
-      turtlelib::Vector2D rob_to_obs {slipped_dd.get_transform().inv()(world_to_obs)};
-      // obs_tf_relative *= slipped_dd.get_transform().inv();
+      turtlelib::Transform2D world_to_obs {turtlelib::Vector2D(obs_x[i], obs_y[i])};
+      auto rob_to_obs {slipped_dd.get_transform().inv()*world_to_obs};
 
       if (basic_sensor_sd == 0.0) {
-        marker.pose.position.x = rob_to_obs.x;
-        marker.pose.position.y = rob_to_obs.y;
+        marker.pose.position.x = rob_to_obs.translation().x;
+        marker.pose.position.y = rob_to_obs.translation().y;
       } else {
-        marker.pose.position.x = rob_to_obs.x + arma::randn(arma::distr_param(0.0, basic_sensor_sd));
-        marker.pose.position.y = rob_to_obs.y + arma::randn(arma::distr_param(0.0, basic_sensor_sd));
+        marker.pose.position.x = rob_to_obs.translation().x e+ arma::randn(arma::distr_param(0.0, basic_sensor_sd));
+        marker.pose.position.y = rob_to_obs.translation().y + arma::randn(arma::distr_param(0.0, basic_sensor_sd));
       }
 
       marker.pose.position.z = .25 / 2.0;
-      if (turtlelib::magnitude(rob_to_obs) < max_range) // If distance between obstacle and dd < max_range
+      auto dist = rob_to_obs.translation();
+      if (turtlelib::magnitude(dist) < max_range) // If distance between obstacle and dd < max_range
       {
         marker.action = visualization_msgs::msg::Marker::ADD; // 0 = ADD
       } else {
