@@ -149,9 +149,11 @@ private:
     odom_pub_->publish(odom_state);
 
     // Add pose to path at lower freq?
-    static int timestep = 0;
+    static int timestep = 10;
+    timestep++;
     if (timestep >= 10)
     {
+      timestep = 0;
       geometry_msgs::msg::PoseStamped p{};
       p.header.stamp = get_clock()->now();
       p.header.frame_id = "nusim/world";
