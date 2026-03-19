@@ -57,7 +57,7 @@ public:
   void fk(WheelDiff wheeldiffs);
 
   /// \brief Update the state of the robot based on how long it has been traveling with the current wheelspeeds
-  /// \param duration The duration of travel
+  /// \param time The duration of travel
   void fk(double time);
 
   // TODO: 0228 Update wheel handling

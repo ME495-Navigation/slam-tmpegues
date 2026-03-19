@@ -47,6 +47,7 @@ Task C.6
 Task C.7
 Task C.8
 Task C.9
+* I'm putting noise in the timer instead of "whenever the simulator receives a wheel_cmd" due to the way I am doing FK
 
 Task D.1 (DiffDrive class)
 Task D.2 (DiffDrive test)
