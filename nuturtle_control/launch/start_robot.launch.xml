@@ -71,6 +71,11 @@
 
         <group if="$(equals $(var robot) none)">
             <node pkg="rviz2" exec="rviz2" on_exit="shutdown" args="-d $(find-pkg-share nuturtle_control)/config/real_odom.rviz"/>
+            <include file="$(find-pkg-share nusim)/launch/nusim.launch.xml">
+                <arg name="use_rviz" value="false"/>
+                <arg name="use_jsp" value="false"/>
+                <arg name="draw_only" value="true"/>
+            </include>
         </group>
 
         <!-- If robot == none, then no 'extra' stuff is launched-->
