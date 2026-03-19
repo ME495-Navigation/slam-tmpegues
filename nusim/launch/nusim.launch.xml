@@ -6,7 +6,13 @@
     <arg name="draw_only" default="false" description="(bool): False runs full simulator, true only publishes landmark markers."/>
 
 
-    <node pkg="nusim" exec="nusim">
+    <node pkg="nusim" exec="nusim" unless="$(var draw_only)">
+        <param from="$(find-pkg-share nusim)/config/$(var config_file)"/>
+        <param name="external_jsp" value="$(var use_jsp)"/>
+        <param name="draw_only" value="$(var draw_only)"/>
+    </node>
+
+    <node pkg="nusim" exec="nusim" name="nuwalls" if="$(var draw_only)">
         <param from="$(find-pkg-share nusim)/config/$(var config_file)"/>
         <param name="external_jsp" value="$(var use_jsp)"/>
         <param name="draw_only" value="$(var draw_only)"/>
