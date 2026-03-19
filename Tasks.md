@@ -71,7 +71,6 @@ Task V.1 (nusim standalone rviz)
 * Not added MarkerArray
 Task V.2 (odom sim rviz)
 Task V.3 (odom real rviz)
-* Not added landmarks
-* Not added walls
+* Not checked laser
 Task V.4 (sim slam rviz)
 * Not started
