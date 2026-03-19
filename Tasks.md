@@ -51,8 +51,8 @@ Task C.9
 * Slip in the timer will work, but noise should probably go in the cmd callback. This it not a probalem for now though
 Task C.10
 * Created publisher that currently doesn't do anything. I don't have *measured* obstacles yet
-Task C11
-*Starting
+Task C.11
+*Coming back to it later, I'm unsure if I'm reading the instructions properly
 
 
 Task D.1 (DiffDrive class)

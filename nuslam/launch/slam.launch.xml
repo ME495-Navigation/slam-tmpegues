@@ -1,0 +1,15 @@
+<launch>
+    <arg name="robot" default="none" description="nusim will launch a simulated robot, 'localhost' should be used to run this launchfile on the turtlebot. 'none' will not launch any robot nodes.">
+        <choice value="nusim"/>
+        <choice value="localhost"/>
+        <choice value="none"/>
+    </arg>
+    <arg name="cmd_src" default="none" description="launch circle node, turtlebot3_teleop teleop_twist_keyboard, or no control node">
+        <choice value="circle"/>
+        <choice value="teleop"/>
+        <choice value="none"/>
+    </arg>
+
+
+
+</launch>
