@@ -124,6 +124,7 @@ public:
         { // 2*10^8 nanoseconds
           last_time = get_clock()->now();
           fake_scan();
+          fake_laser();
         }
         auto noised_speed = wheel_speeds.noise(cmd_noise());
 
@@ -291,7 +292,6 @@ private:
         angle += arma::randu(arma::distr_param(-laser_angle_res, laser_angle_res));
       }
       auto laser_near = turtlelib::Transform2D(angle)(turtlelib::Vector2D(min_range));
-      auto laser_far = turtlelib::Transform2D(angle)(turtlelib::Vector2D(max_range));
       auto laser_unit_vector = turtlelib::normalize(laser_near);
 
       for (unsigned int o = 0; !angle_has_hit && o <= obs_x.size() - 1; o++)
@@ -306,11 +306,15 @@ private:
         if (dist_to_point > min_range && dist_to_point < max_range)
           {// If intersect, set dist to point as the range on the laser message
             if (laser_sd != 0)
-              {dist_to_point += arma::randn(arma::distr_param(0,laser_sd));}
+              {dist_to_point += arma::randn(arma::distr_param(0.0,laser_sd));}
             laser_msg.ranges.push_back(dist_to_point);
             angle_has_hit = true;
           }
       } // End obs loop
+      if (!angle_has_hit)
+      {
+        laser_msg.ranges.push_back(max_range);
+      }
       // Skipping walls for now
     } // End angle loop
     fake_laser_pub_ -> publish(laser_msg);
