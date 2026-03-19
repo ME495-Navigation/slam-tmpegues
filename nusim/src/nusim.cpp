@@ -46,7 +46,7 @@ public:
           declare_parameter("slip_fraction", 0.0);
 
           declare_parameter("basic_sensor_variance", 0.0);
-          declare_parameter("max_range", 5.0);
+          declare_parameter("max_range", 100.0);
 
 
           // Create all publishers/broadcasters
@@ -90,6 +90,7 @@ public:
           slip_fraction = get_parameter("slip_fraction").as_double();
 
           basic_sensor_sd = std::sqrt(get_parameter("basic_sensor_variance").as_double());
+          max_range = get_parameter("max_range").as_double();
 
           unslipped_dd = turtlelib::DiffDrive(track_width, wheel_radius,
                                     turtlelib::Transform2D(turtlelib::Vector2D{x, y}, theta));
@@ -106,8 +107,7 @@ public:
             -> void
             {
               // Basic Sensor markers and Lidar publish at 5 Hz
-              if ((get_clock()->now() - last_time).nanoseconds() >= 200000000) // 2*10^8 nanoseconds
-              {
+              if ((get_clock()->now() - last_time).nanoseconds() >= 200000000) { // 2*10^8 nanoseconds
                 basic_sensor();
               }
               auto noised_speed = wheel_speeds.noise(cmd_noise());
@@ -209,6 +209,7 @@ private:
   double slip_fraction{0.0};
 
   double basic_sensor_sd {0.0};
+  double max_range {100.0};
 
   // Timer rate
   int rate{};
@@ -251,30 +252,30 @@ private:
     marker.scale.y = obs_r / 2.0;
 
     marker.scale.z = 0.25;
-    for (unsigned int i = 0; i <= obs_x.size() - 1; i++)
-    {
+    for (unsigned int i = 0; i <= obs_x.size() - 1; i++) {
       marker.id = i;
-      if (basic_sensor_sd == 0.0)
-        {
-          marker.pose.position.x = obs_x[i];
-          marker.pose.position.y = obs_y[i];
-        }
-      else
-        {
-          marker.pose.position.x = obs_x[i] + arma::randn(arma::distr_param(0.0, basic_sensor_sd));
-          marker.pose.position.y = obs_y[i] + arma::randn(arma::distr_param(0.0, basic_sensor_sd));
-        }
+      turtlelib::Vector2D obs_position << obs_x[i] << obs_y[i];
+
+      if (basic_sensor_sd == 0.0) {
+        marker.pose.position.x = obs_x[i];
+        marker.pose.position.y = obs_y[i];
+      } else {
+        marker.pose.position.x = obs_x[i] + arma::randn(arma::distr_param(0.0, basic_sensor_sd));
+        marker.pose.position.y = obs_y[i] + arma::randn(arma::distr_param(0.0, basic_sensor_sd));
+      }
 
       marker.pose.position.z = .25 / 2.0;
-      if (true) // If distance between obstacle and dd < max_range
-
-      {marker.action = 0;} // 0 = ADD
-      if (false)
-      {marker.action = 2;} // 2 = DELETE
-
+      if (turtlelib::magnitude(obs_position - slipped_dd.get_transform().translation()) <
+        max_range)                                                                                   // If distance between obstacle and dd < max_range
+      {
+        marker.action = 0; // 0 = ADD
+      } else {
+        marker.action = 2; // 2 = DELETE
+      }
 
       marker_array.markers.push_back(marker);
     }
+    fake_sensor_pub_ -> publish(marker_array);
   }
 
   void wheel_cmd_cb_(const std::shared_ptr<nuturtlebot_msgs::msg::WheelCommands> msg)
