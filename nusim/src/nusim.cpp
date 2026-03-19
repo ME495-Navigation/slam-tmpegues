@@ -279,8 +279,8 @@ private:
     laser_msg.range_max = max_range;
 
     // Outer loop: measurement angles
-    // Mid loop: obstacles
-    // Inner loop: walls
+    // 1st inner loop: obstacles
+    // 2nd inner loop: walls (not doing right now)
 
     for (unsigned int a = 0; a * angle_increment + laser_msg.angle_min <= laser_msg.angle_max; a++)
     {
@@ -294,7 +294,7 @@ private:
       auto laser_far = turtlelib::Transform2D(angle)(turtlelib::Vector2D(max_range));
       auto laser_unit_vector = turtlelib::normalize(laser_near);
 
-      for (unsigned int o = 0; o <= obs_x.size() - 1; o++)
+      for (unsigned int o = 0; !angle_has_hit && o <= obs_x.size() - 1; o++)
       {
         turtlelib::Transform2D world_to_obs{turtlelib::Vector2D(obs_x[o], obs_y[o])};
         auto rob_to_obs{slipped_dd.get_transform().inv() * world_to_obs};
@@ -306,14 +306,14 @@ private:
         if (dist_to_point > min_range && dist_to_point < max_range)
           {// If intersect, set dist to point as the range on the laser message
             if (laser_sd != 0)
-            {
-              dist_to_point += arma::randn(arma::distr_param(0,laser_sd));
-              laser_msg.ranges.push_back(dist_to_point);
-            }
+              {dist_to_point += arma::randn(arma::distr_param(0,laser_sd));}
+            laser_msg.ranges.push_back(dist_to_point);
+            angle_has_hit = true;
           }
       } // End obs loop
-
+      // Skipping walls for now
     } // End angle loop
+    fake_laser_pub_ -> publish(laser_msg);
   }
 
   void fake_scan()
