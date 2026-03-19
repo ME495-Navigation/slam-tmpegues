@@ -5,5 +5,5 @@
     min_range: .12
     angle_increment: 0.0174532925
     laser_samples: 359
-    laser_angle_res: 0 # Angluar variation
-    laser_sd: 0 # Distance variation
+    laser_angle_res: 0.0 # Angluar variation
+    laser_sd: 0.0 # Distance variation

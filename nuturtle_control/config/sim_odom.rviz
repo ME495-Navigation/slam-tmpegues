@@ -4,9 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /LaserScan1
         - /LaserScan1/Autocompute Value Bounds1
-        - /Fake Sensor Obstacles1
         - /Fake Sensor Obstacles1/Topic1
         - /Fake Sensor Obstacles1/Namespaces1
       Splitter Ratio: 0.5
@@ -356,7 +354,7 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 238.83868408203125
+      Scale: 279.4660949707031
       Target Frame: <Fixed Frame>
       Value: TopDownOrtho (rviz_default_plugins)
       X: 0.05899236723780632
@@ -378,5 +376,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1532
-  X: 2295
-  Y: 24
+  X: 2203
+  Y: 140
