@@ -93,7 +93,7 @@ public:
           auto timer_callback = [this]()
               -> void
           {
-            red_dd.fk(float(timer_period)/1000.0); // timer_period is in milliseconds, but I need it in seconds
+            red_dd.fk(wheel_speeds); // timer_period is in milliseconds, but I need it in seconds
 
             // Publish SensorData
             auto sensor_msg = nuturtlebot_msgs::msg::SensorData();
@@ -136,7 +136,6 @@ public:
           obs_x = get_parameter("obstacles.x").as_double_array();
           obs_y = get_parameter("obstacles.y").as_double_array();
           obs_r = get_parameter("obstacles.r").as_double();
-          RCLCPP_INFO_STREAM(get_logger(), "out of func obs_x.at(0): " << obs_x.at(0));
 
           publish_obstacles();
           break;
@@ -265,7 +264,6 @@ private:
               get_logger(), "Obstacle coordinate list lengths do not match:"
                                 << obs_x.size() << " and " << obs_y.size());
     } else {
-      RCLCPP_INFO_STREAM(get_logger(), "in func obs_x.at(0): " << obs_x.at(0));
 
       auto marker_array = visualization_msgs::msg::MarkerArray();
       auto marker = visualization_msgs::msg::Marker();
