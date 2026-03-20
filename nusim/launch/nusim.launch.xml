@@ -2,9 +2,18 @@
 <launch>
     <arg name="config_file" default="basic_world.yaml" description="What yaml file to load obstacle and turtlebot initial positions from."/>
     <arg name="sensor_config" default="sensor.yaml" description="What yaml file to load sensor parameters from?"/>
-    <arg name="use_rviz" default="true" description="(bool): Do you want to launch rviz?"/>
-    <arg name="use_jsp" default="true" description="(bool): Do you want to launch the joint_state_publisher?"/>
-    <arg name="draw_only" default="false" description="(bool): False runs full simulator, true only publishes landmark markers."/>
+    <arg name="use_rviz" default="true" description="Do you want to launch rviz?">
+        <choice value="true"/>
+        <choice value="false"/>
+    </arg>
+    <arg name="use_jsp" default="true" description="(bool): Do you want to launch the joint_state_publisher?">
+        <choice value="true"/>
+        <choice value="false"/>
+    </arg>
+    <arg name="draw_only" default="false" description="(bool): false runs full simulator, true only publishes landmark markers.">
+        <choice value="true"/>
+        <choice value="false"/>
+    </arg>
 
     <node pkg="nusim" exec="nusim" unless="$(var draw_only)">
         <param from="$(find-pkg-share nusim)/config/$(var config_file)"/>
@@ -24,7 +33,7 @@
     <!-- Need to load in a red turtlebot -->
     <include file="$(find-pkg-share nuturtle_description)/launch/load_one.launch.xml">
         <arg name="use_jsp" value="$(var use_jsp)"/>
-        <arg name="use_rviz" value="False"/>
+        <arg name="use_rviz" value="false"/>
         <arg name="color" value="red"/>
     </include>
 

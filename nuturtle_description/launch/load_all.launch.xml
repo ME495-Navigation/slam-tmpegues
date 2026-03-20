@@ -1,5 +1,8 @@
 <launch>
-    <arg name="use_rviz" default="True" description="True will open rviz, False will not open rviz"/>
+    <arg name="use_rviz" default="true" description="true will open rviz, talse will not open rviz">
+        <choice value="true"/>
+        <choice value="false"/>
+    </arg>
 
     <!-- ##### Begin_Citation [4] ##### -->
          <!-- Citation is only for the on_exit="shutdown", for I simply could not find how to do that -->
