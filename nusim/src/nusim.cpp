@@ -309,45 +309,7 @@ private:
       {
         turtlelib::Transform2D T_w_obs{turtlelib::Vector2D(obs_x[o], obs_y[o])};
         auto T_rob_obs{slipped_dd.get_transform().inv() * T_w_obs};
-        // Now with obstacle locations in robot frame, do circle line intersection to find if the laser hits a particular object
-        // Using wolfram circle line. x1 = near laser point, x2 = far laser point TODO: cite
-        // Poln = coordinates of laser minimum measure point in object frame
-        // Polf = cordinates of laser maximum measure point in object frame
-        auto Poln = T_rob_obs.inv()(laser_near);
-        auto Polf = T_rob_obs.inv()(laser_far);
-        auto d = turtlelib::Vector2D(Polf.x-Poln.x, Polf.y-Poln.y);
-        auto D = Poln.x*Polf.y - Polf.x*Poln.y;
-        auto delta = std::pow(obs_r,2) * std::pow(turtlelib::magnitude(d),2) - std::pow(D, 2);
-
-        if (delta < 0)
-        {;} // angle_has_hit remains false
-        else
-        {
-          angle_has_hit = true;
-          auto p1 = turtlelib::Point2D();
-          auto p2 = turtlelib::Point2D();
-          auto sgn = (d.y < 0 ? -1.0 : 1.0);
-          p1.x = (D * d.y + sgn * d.x * sqrt(delta)) / turtlelib::magnitude(d);
-          p2.x = (D * d.y - sgn * d.x * sqrt(delta)) / turtlelib::magnitude(d);
-
-          p1.y = (-D * d.x + fabs(d.y) * sqrt(delta)) / turtlelib::magnitude(d);
-          p2.y = (-D * d.x - fabs(d.y) * sqrt(delta)) / turtlelib::magnitude(d);
-
-          // Calculate which one is closer to Poln, as the point closer to the laser is the one that will be read
-          auto Vn1 = p1-Poln;
-          auto Vn2 = p2-Poln;
-          auto P_ohit = ((turtlelib::magnitude(Vn1) <= turtlelib::magnitude(Vn2)) ? p1 : p2);
-
-          //Transform hit_point back into the robot frame
-          auto P_rhit = T_rob_obs(P_ohit);
-          auto V_rhit =turtlelib::Vector2D(P_rhit.x, P_rhit.y);
-          laser_msg.ranges.push_back(turtlelib::magnitude(V_rhit));
-          RCLCPP_INFO_STREAM(get_logger(), "\nHit at angle, obs: " << angle*360/(2*std::numbers::pi) << ", " << o);
-          RCLCPP_INFO_STREAM(get_logger(), "Laser near, far (r frame): " << laser_near << ", " << laser_far);
-          RCLCPP_INFO_STREAM(get_logger(), "Laser near, far (o frame): " << Poln << ", " << Polf);
-          RCLCPP_INFO_STREAM(get_logger(), "Contact points 1, 2, chosen (o frame): " << p1 << ", " << p2 << ", " << P_ohit);
-          RCLCPP_INFO_STREAM(get_logger(), "Contact points 1, 2, chosen (r frame): " << T_rob_obs(p1) << ", " << T_rob_obs(p2) << ", " << T_rob_obs(P_ohit));
-        }
+        turtlelib::laser_obs(angle, T_rob_obs, obs_r);
 
       } // End obs loop
       if (!angle_has_hit)
