@@ -157,8 +157,8 @@ public:
           fake_laser();
       };
 
-      // main_timer_ = create_wall_timer(std::chrono::milliseconds(timer_period), timer_callback);
-      slow_timer_ = create_wall_timer(std::chrono::milliseconds(2000), slow_timer_callback);
+      main_timer_ = create_wall_timer(std::chrono::milliseconds(timer_period), timer_callback);
+      slow_timer_ = create_wall_timer(std::chrono::milliseconds(200), slow_timer_callback);
 
       RCLCPP_INFO_STREAM(get_logger(), "timer: " << std::chrono::milliseconds(timer_period));
 
@@ -315,7 +315,7 @@ private:
         // Polf = cordinates of laser maximum measure point in object frame
         auto Poln = T_rob_obs.inv()(laser_near);
         auto Polf = T_rob_obs.inv()(laser_far);
-        auto d = Polf - Poln;
+        auto d = turtlelib::Vector2D(Polf.x-Poln.x, Polf.y-Poln.y);
         auto D = Poln.x*Polf.y - Polf.x*Poln.y;
         auto delta = std::pow(obs_r,2) * std::pow(turtlelib::magnitude(d),2) - std::pow(D, 2);
 
@@ -336,7 +336,7 @@ private:
           // Calculate which one is closer to Poln, as the point closer to the laser is the one that will be read
           auto Vn1 = p1-Poln;
           auto Vn2 = p2-Poln;
-          auto P_ohit = ((turtlelib::magnitude(Vn1) >= turtlelib::magnitude(Vn2)) ? p1 : p2);
+          auto P_ohit = ((turtlelib::magnitude(Vn1) <= turtlelib::magnitude(Vn2)) ? p1 : p2);
 
           //Transform hit_point back into the robot frame
           auto P_rhit = T_rob_obs(P_ohit);
@@ -345,7 +345,8 @@ private:
           RCLCPP_INFO_STREAM(get_logger(), "\nHit at angle, obs: " << angle*360/(2*std::numbers::pi) << ", " << o);
           RCLCPP_INFO_STREAM(get_logger(), "Laser near, far (r frame): " << laser_near << ", " << laser_far);
           RCLCPP_INFO_STREAM(get_logger(), "Laser near, far (o frame): " << Poln << ", " << Polf);
-          RCLCPP_INFO_STREAM(get_logger(), "Contact points 1, 2, chosen (o frame): " << p1 << ", " << p1 << ", " << ", " << P_ohit);
+          RCLCPP_INFO_STREAM(get_logger(), "Contact points 1, 2, chosen (o frame): " << p1 << ", " << p2 << ", " << P_ohit);
+          RCLCPP_INFO_STREAM(get_logger(), "Contact points 1, 2, chosen (r frame): " << T_rob_obs(p1) << ", " << T_rob_obs(p2) << ", " << T_rob_obs(P_ohit));
         }
 
       } // End obs loop
