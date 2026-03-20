@@ -1,7 +1,19 @@
+/// \file
+/// \brief circle node publishes cmd_vel corresponding to requested circular paths.
+///
+/// PARAMETERS:
+///     frequency (double): (Hz) The frequency of cmd_vel publishing
+/// PUBLISHES:
+///     cmd_vel (geometry_msgs/msg/Twist): The body twist that the robot should follow
+/// SERVERS:
+///     control (nuturtle_control_interfaces/srv/Control): Takes a requested angular velocity and circle radius, responds with the coresponding twist that the node will publish.
+///     reverse (std_srvs/srv/Empty): Calling reverse will reverse the direction of cmd_vel along the same circle.
+///     stop (std_srvs/srv/Empty): Calling stop will change the published cmd_vel to 0.
+
 #include "geometry_msgs/msg/twist.hpp"
+#include "nuturtle_control_interfaces/srv/control.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "std_srvs/srv/empty.hpp"
-#include "nuturtle_control_interfaces/srv/control.hpp"
 
 class circle : public rclcpp::Node
 {

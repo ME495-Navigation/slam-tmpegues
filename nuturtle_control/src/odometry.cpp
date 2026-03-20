@@ -1,3 +1,23 @@
+/// \file
+/// \brief odometry node calculates an estimated Turtlebot position based on recieved wheel encoder positions.
+///
+/// PARAMETERS:
+///     "body_id" (string): The base frame of the robot that will be published with estimated odometry position.
+///     "odom_id" (string): The frame that odometry will be published relative to.
+///     "wheel_left" (string): The frame corresponding to the postion of the left wheel
+///     "wheel_right" (string): The frame corresponding to the postion of the right wheel
+///     "wheel_radius" (double): (meters) The radius of the Turtlebot tires
+///     "track_width" (double): (meters) The distance between the tire center lines
+/// PUBLISHES:
+///     odom (nav_msgs/msg/Odometry): The estimated odometry pose.
+///     path (nav_msgs/msg/Path): The history of estimated odometry poses.
+///     tf broadcaster (tf2_ros TransformBroadcaster): The current odometry pose
+/// SUBSCRIBES:
+///     joint_states (sensor_msg/msgs/JointState): The joint states of the robot that are used for odometry calculations
+/// SERVERS:
+///     initial_pose (nuturtle_control_interfaces/srv/InitialPose): This service will reset the odometry estimate and history to the provided pose.
+
+
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include "geometry_msgs/msg/pose.hpp"
 #include "geometry_msgs/msg/twist.hpp"

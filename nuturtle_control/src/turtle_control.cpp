@@ -1,11 +1,28 @@
+/// \file
+/// \brief turtle_contol node acts as an interface between general robot commands (like cmd_vel) and Turtlebot specific details (like wheel tick publishing)
+///
+/// PARAMETERS:
+///     wheel_radius (double): (meters) The radius of the tires.
+///     track_width (double): (meters) The distance between the tire centerlines.
+///     motor_cmd_max (int): The highest absolute value of rotation that the motors can execute in a single action.
+///     motor_cmd_per_rad_sec (double): The conversion factor between radians/second and motor ticks.
+///     encoder_ticks_per_rad (double): The conversion factor between motor encoder ticks and radians
+///     collision_radius (double): (meters) The minimum allowed distance from the Turtlebot's base frame to any obstacle
+/// PUBLISHES:
+///     wheel_cmd (nuturtlebot_msgs/msg/WheelCommands): cmd_vel is converted into wheel commands and published on wheel_cmd.
+///     joint_states (sensor_msgs/msg/JointState): Wheel encoder positions are converted to radians and published on joint_states
+/// SUBSCRIBES:
+///     cmd_vel (geometry_msgs/msg/Twist): The twist that the robot is being commanded to follow.
+///     sensor_data (nuturtlebot_msgs/msg/SensorData): The wheel conder positions are recieved in this topic
+
 #include "geometry_msgs/msg/twist.hpp"
 #include "nuturtlebot_msgs/msg/sensor_data.hpp"
 #include "nuturtlebot_msgs/msg/wheel_commands.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/joint_state.hpp"
-#include "turtlelib/wheels.hpp"
 #include "turtlelib/diff_drive.hpp"
 #include "turtlelib/se2d.hpp"
+#include "turtlelib/wheels.hpp"
 #include <cmath>
 
 class turtle_control : public rclcpp::Node
