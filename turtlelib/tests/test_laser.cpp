@@ -17,6 +17,5 @@ TEST_CASE("Check a basic laser-obstacle hit and a miss", "laser_obs")
 
     auto check_result = laser.obs_check(0.0, T_rob_obs, 1);
     REQUIRE(check_result.first == true);
-    REQUIRE(check_result.second.x == 10.0);
-    REQUIRE(check_result.second.y == 0.0);
+    REQUIRE(check_result.second == 10.0);
 }

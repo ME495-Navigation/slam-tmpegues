@@ -16,7 +16,7 @@ namespace turtlelib
 
     public:
         /// \brief Determine if a laser at this angle will hit the obstacle
-        std::pair<bool, Point2D> obs_check(double angle, Transform2D T_rob_obs, double radius);
+        std::pair<bool, double> obs_check(double angle, Transform2D T_rob_obs, double radius);
 
         explicit Laser(double min_range, double max_range);
     };

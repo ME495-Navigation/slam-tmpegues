@@ -16,6 +16,7 @@
 #include "visualization_msgs/msg/marker_array.hpp"
 #include "visualization_msgs/msg/marker.hpp"
 #include "sensor_msgs/msg/laser_scan.hpp"
+#include "turtlelib/laser.hpp"
 
 #include <armadillo>
 
@@ -100,6 +101,7 @@ public:
       basic_sensor_sd = std::sqrt(get_parameter("basic_sensor_variance").as_double());
       max_range = get_parameter("max_range").as_double();
       min_range = get_parameter("min_range").as_double();
+      laser_calc = turtlelib::Laser(min_range, max_range);
       angle_increment = get_parameter("angle_increment").as_double();
       laser_samples = get_parameter("laser_samples").as_int();
       laser_angle_res = get_parameter("laser_angle_res").as_double();
@@ -238,6 +240,8 @@ private:
   double laser_angle_res{0.0};
   double laser_sd{0.0};
 
+  turtlelib::Laser laser_calc = turtlelib::Laser(0.0 ,0.0);
+
   // Timer rate
   int rate{};
   int timer_period{};
@@ -273,7 +277,6 @@ private:
 
   void fake_laser()
   {
-    RCLCPP_INFO_STREAM(get_logger(), "\nStart Laser");
 
     auto laser_msg = sensor_msgs::msg::LaserScan();
     laser_msg.header.stamp = rclcpp::Clock().now();
@@ -299,18 +302,18 @@ private:
       {
         angle += arma::randu(arma::distr_param(-laser_angle_res, laser_angle_res));
       }
-      // These points are in robot frame
-      auto laser_near = turtlelib::Transform2D(angle)(turtlelib::Point2D(min_range, 0.0));
-      auto laser_far = turtlelib::Transform2D(angle)(turtlelib::Point2D(max_range, 0.0));
-
-      // auto laser_unit_vector = turtlelib::normalize(laser_near);
 
       for (unsigned int o = 0; !angle_has_hit && o <= obs_x.size() - 1; o++)
       {
         turtlelib::Transform2D T_w_obs{turtlelib::Vector2D(obs_x[o], obs_y[o])};
         auto T_rob_obs{slipped_dd.get_transform().inv() * T_w_obs};
-        turtlelib::laser_obs(angle, T_rob_obs, obs_r);
-
+        auto laser_result = laser_calc.obs_check(angle, T_rob_obs, obs_r);
+        angle_has_hit = laser_result.first;
+        if (laser_result.first)
+        {
+          angle_has_hit = true;
+          laser_msg.ranges.push_back(laser_result.second);
+        }
       } // End obs loop
       if (!angle_has_hit)
       { // I'm putting a point down right inside of the range right now so I can see the full scan width
