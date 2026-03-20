@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(turtlelib) # TODO
-
+project(turtlelib)
 find_package(Doxygen)
 
 # Building documentation should be optional.

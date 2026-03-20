@@ -175,7 +175,6 @@ TEST_CASE("Transform vector [1, 1]", "Transform2D")
   REQUIRE_THAT(vc5.y, WithinAbs(std::sqrt(2), 0.00001));
 }
 
-// TODO: need test for transforming a Twist2D
 TEST_CASE("Transform a twist", "Transform2D::operator(Twist2D)")
 {
   // Identity transform of twist with omega, x, and y

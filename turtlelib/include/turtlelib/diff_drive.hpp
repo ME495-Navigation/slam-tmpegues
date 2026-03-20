@@ -60,7 +60,6 @@ public:
   /// \param time The duration of travel
   void fk(double time);
 
-  // TODO: 0228 Update wheel handling
   /// \brief Calculate wheel velocities needed to achive the provided twist
   /// \param tw The desired twist
   /// \return phirdot, phildot: the right and left wheel velocities
@@ -74,7 +73,6 @@ public:
   /// \return The current wheel positions
   Wheels phi() const;
 
-  // TODO: 0228 Update wheel handling
   /// \brief Get wheel speeds
   /// \return a WheelDiff representing the wheelspeeds in rad/sec
   WheelDiff phidot() const;

@@ -248,6 +248,6 @@ TEST_CASE("Test 0 encoder to 0 joint_state", "[integration]")
     rclcpp::spin_some(node);
   }
 
-  REQUIRE_THAT(received_msg5->position.at(0), WithinAbs(0.0, 0.01));  // TODO: Ask Matt if this reduced accuracy is a mistake
+  REQUIRE_THAT(received_msg5->position.at(0), WithinAbs(0.0, 0.01));
   REQUIRE_THAT(received_msg5->position.at(1), WithinAbs(std::numbers::pi / 2, 0.01));
 }

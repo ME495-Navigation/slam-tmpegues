@@ -2,5 +2,8 @@
 [2] ROBOTIS. "TurtleBot3." emanual.robotis.com. Accessed 6 Jan 26. [Online]. Available: https://emanual.robotis.com/docs/en/platform/turtlebot3/features/
 [3] I. Paunovic. "test_arg.py." github.com. Accessed 6 Jan 26. [Online]. Available: https://github.com/ros2/launch/blob/082e64087b97decf8e66f77f96b0fe10c195e354/launch_xml/test/launch_xml/test_arg.py#L15
 [4] M. Elwin. "Let XML executables/nodes be 'required' (like in ROS 1)." github.com. Accessed 6 Jan 26. [Online]. Available: https://github.com/ros2/launch/pull/751
-[5] C. Hayes, private communication, Jan. 2022
+[5] C. Hayes, private communication, Jan. 2026
     Conor was extremely helpful in getting general C++ formatting and general C++ knowledge for the initial creation of the nusim package.
+[6] T. Coulson, private communication, Feb. 2026
+[7] T. Coulson, private communication, Mar. 2026
+[8] "Circle-Line Intersection" mathworld.wolfram.com. Accessed 19 Mar 26. [Online]. Available: https://mathworld.wolfram.com/Circle-LineIntersection.html

@@ -17,7 +17,6 @@ Laser::Laser(double min_range, double max_range)
 std::pair<bool, double> Laser::obs_check(double angle, Transform2D T_rob_obs, double radius)
 {
   // Now with obstacle locations in robot frame, do circle line intersection to find if the laser hits a particular object
-  // Using wolfram circle line. x1 = near laser point, x2 = far laser point TODO: cite
   // Poln = coordinates of laser minimum measure point in object frame
   // Polf = cordinates of laser maximum measure point in object frame
   auto prln = Transform2D(angle)(near_point);
@@ -25,6 +24,9 @@ std::pair<bool, double> Laser::obs_check(double angle, Transform2D T_rob_obs, do
 
   auto Poln = T_rob_obs.inv()(prln);
   auto Polf = T_rob_obs.inv()(prlf);
+
+  // ##### Begin_Citation [8] #####
+  // x1 = near laser point, x2 = far laser point
   auto d = turtlelib::Vector2D(Polf.x - Poln.x, Polf.y - Poln.y);
   auto D = Poln.x * Polf.y - Polf.x * Poln.y;
   auto delta = std::pow(radius, 2) * std::pow(turtlelib::magnitude(d), 2) - std::pow(D, 2);
@@ -40,13 +42,14 @@ std::pair<bool, double> Laser::obs_check(double angle, Transform2D T_rob_obs, do
 
     p1.y = (-D * d.x + fabs(d.y) * sqrt(delta)) / std::pow(turtlelib::magnitude(d), 2);
     p2.y = (-D * d.x - fabs(d.y) * sqrt(delta)) / std::pow(turtlelib::magnitude(d), 2);
+  // ##### End_Citation [8] #####
 
-            // Calculate which one is closer to Poln, as the point closer to the laser is the one that will be read
+    // Calculate which one is closer to Poln, as the point closer to the laser is the one that will be read
     auto Vn1 = p1 - Poln;
     auto Vn2 = p2 - Poln;
     auto P_ohit = ((turtlelib::magnitude(Vn1) <= turtlelib::magnitude(Vn2)) ? p1 : p2);
 
-            // Transform hit_point back into the robot frame
+    // Transform hit_point back into the robot frame
     auto P_rhit = T_rob_obs(P_ohit);
     if ((normalize_angle(angle) >= 0 && P_rhit.y >= 0) ||
       (normalize_angle(angle) < 0 && P_rhit.y <= 0))

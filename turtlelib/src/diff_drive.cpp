@@ -108,7 +108,6 @@ void DiffDrive::fk(WheelDiff diff)
   twb_file << q.translation() << ", " << q.rotation() << "\n";
 }
 
-// TODO: 0228 Update wheel handling
 WheelDiff DiffDrive::ik(Twist2D body_tw) const
 {
   // Do not allow twists with a y component

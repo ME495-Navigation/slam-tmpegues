@@ -32,7 +32,9 @@ find_package(ament_cmake REQUIRED)
   add_executable(nusim src/nusim.cpp)
   target_link_libraries(nusim
                         PUBLIC
-                        ${ARMADILLO_LIBRARIES} #TODO: cite Theo
+                        ##### Begin_Citation [7] #####
+                        ${ARMADILLO_LIBRARIES}
+                        ##### End_Citation [7] #####
                         rclcpp::rclcpp
                         tf2_ros::tf2_ros
                         tf2::tf2

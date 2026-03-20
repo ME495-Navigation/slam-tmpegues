@@ -155,8 +155,8 @@ Vector2D Transform2D::translation() const {return pos;}
 double Transform2D::rotation() const {return theta;}
 
 Transform2D integrate_twist(const Twist2D & twist)
-{  // TODO: Cite Theo
-  if (std::abs(twist.omega) < 1e-9) {
+{ // ##### Begin_Citation [6] #####
+    if (std::abs(twist.omega) < 1e-9) {
     return Transform2D(Vector2D{twist.x, twist.y}, 0.0);
   }
 
@@ -165,7 +165,7 @@ Transform2D integrate_twist(const Twist2D & twist)
 
   auto x = (twist.x * sinom + twist.y * (1.0 - cosom)) / twist.omega;
   auto y = (-twist.y * sinom + twist.x * (1.0 - cosom)) / twist.omega;
-
+  // ##### End_Citation [6] #####
   Transform2D tf(Vector2D{x, y}, twist.omega);
   return tf;
 }
