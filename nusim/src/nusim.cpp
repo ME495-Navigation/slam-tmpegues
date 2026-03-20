@@ -291,10 +291,11 @@ private:
       {
         angle += arma::randu(arma::distr_param(-laser_angle_res, laser_angle_res));
       }
-      auto laser_near = turtlelib::Transform2D(angle)(turtlelib::Vector2D(min_range, 0.0));
-      auto laser_far = turtlelib::Transform2D(angle)(turtlelib::Vector2D(max_range, 0.0));
+      // These points are in robot frame
+      auto laser_near = turtlelib::Transform2D(angle)(turtlelib::Point2D(min_range, 0.0));
+      auto laser_far = turtlelib::Transform2D(angle)(turtlelib::Point2D(max_range, 0.0));
 
-      auto laser_unit_vector = turtlelib::normalize(laser_near);
+      // auto laser_unit_vector = turtlelib::normalize(laser_near);
 
       for (unsigned int o = 0; !angle_has_hit && o <= obs_x.size() - 1; o++)
       {
@@ -302,11 +303,43 @@ private:
         auto rob_to_obs{slipped_dd.get_transform().inv() * world_to_obs};
         // Now with obstacle locations in robot frame, do circle line intersection to find if the laser hits a particular object
         // Using wolfram circle line. x1 = near laser point, x2 = far laser point TODO: cite
+        // Poln = coordinates of laser minimum measure point in object frame
+        // Polf = cordinates of laser maximum measure point in object frame
+        auto Poln = rob_to_obs.inv()(laser_near);
+        auto Polf = rob_to_obs.inv()(laser_far);
+        auto d = Polf - Poln;
+        auto D = Poln.x*Polf.y - Polf.x*Poln.y;
+        auto delta = std::pow(obs_r,2) * std::pow(turtlelib::magnitude(d),2) - std::pow(D, 2);
+
+        if (delta < 0)
+        {;} // angle_has_hit remains false
+        else
+        {
+          angle_has_hit = true;
+          auto p1 = turtlelib::Point2D();
+          auto p2 = turtlelib::Point2D();
+          auto sgn = (d.y < 0 ? -1.0 : 1.0);
+          p1.x = (D * d.y + sgn * d.x * sqrt(delta)) / turtlelib::magnitude(d);
+          p2.x = (D * d.y - sgn * d.x * sqrt(delta)) / turtlelib::magnitude(d);
+
+          p1.y = (-D * d.x + fabs(d.y) * sqrt(delta)) / turtlelib::magnitude(d);
+          p2.y = (-D * d.x - fabs(d.y) * sqrt(delta)) / turtlelib::magnitude(d);
+
+          // Calculate which one is closer to Poln, as the point closer to the laser is the one that will be read
+          auto Pn1 = p1-Poln;
+          auto Pn2 = p2-Poln;
+          auto V_ohit = ((turtlelib::magnitude(Pn1) <= turtlelib::magnitude(Pn2)) ? Pn1 : Pn2);
+
+          //Transform hit_point back into the robot frame
+          auto P_rhit = rob_to_obs(turtlelib::Point2D(V_ohit.x, V_ohit.y));
+          auto V_rhit =turtlelib::Vector2D(P_rhit.x, P_rhit.y);
+          laser_msg.ranges.push_back(turtlelib::magnitude(V_rhit));
+        }
 
       } // End obs loop
       if (!angle_has_hit)
-      {
-        laser_msg.ranges.push_back(max_range);
+      { // I'm putting a point down right inside of the range right now so I can see the full scan width
+        laser_msg.ranges.push_back(max_range-.01);
       }
       // Skipping walls for now
     } // End angle loop
