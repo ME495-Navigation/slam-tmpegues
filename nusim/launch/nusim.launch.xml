@@ -1,7 +1,7 @@
 
 <launch>
     <arg name="config_file" default="basic_world.yaml" description="What yaml file to load obstacle and turtlebot initial positions from."/>
-    <arg name="sensor_config" default="sensor.yaml" description="What yaml file to load sensor parameters from?"/>
+    <arg name="sensor_config" default="no_noise_sensor.yaml" description="What yaml file to load sensor parameters from?"/>
     <arg name="use_rviz" default="true" description="Do you want to launch rviz?">
         <choice value="true"/>
         <choice value="false"/>
