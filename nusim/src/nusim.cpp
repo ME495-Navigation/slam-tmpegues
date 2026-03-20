@@ -119,13 +119,6 @@ public:
       auto timer_callback = [this]()
           -> void
       {
-        // Basic Sensor markers and Lidar publish at 5 Hz
-        if ((get_clock()->now() - last_time).nanoseconds() >= 2000000000) //TODO: Change laser frequency back to .2 instaed of 2 seconds
-        { // 2*10^8 nanoseconds
-          last_time = get_clock()->now();
-          fake_scan();
-          fake_laser();
-        }
         auto noised_speed = wheel_speeds.noise(cmd_noise());
 
         unslipped_dd.fk(noised_speed * (double(timer_period) / 1000.0)); // timer_period is in milliseconds, but I need it in seconds
@@ -156,7 +149,17 @@ public:
         timestep.data++;
       };
 
-      timer_ = create_wall_timer(std::chrono::milliseconds(timer_period), timer_callback);
+      auto slow_timer_callback = [this]()
+          -> void
+      {
+        // Basic Sensor markers and Lidar publish at 5 Hz
+          fake_scan();
+          fake_laser();
+      };
+
+      // main_timer_ = create_wall_timer(std::chrono::milliseconds(timer_period), timer_callback);
+      slow_timer_ = create_wall_timer(std::chrono::milliseconds(2000), slow_timer_callback);
+
       RCLCPP_INFO_STREAM(get_logger(), "timer: " << std::chrono::milliseconds(timer_period));
 
       // Use setup functions
@@ -182,7 +185,9 @@ public:
   }
 
 private:
-  rclcpp::TimerBase::SharedPtr timer_;
+  rclcpp::TimerBase::SharedPtr main_timer_;
+  rclcpp::TimerBase::SharedPtr slow_timer_;
+
   rclcpp::Time last_time{};
 
   rclcpp::QoS marker_qos_ = rclcpp::QoS(rclcpp::KeepLast(10)).transient_local();
@@ -268,6 +273,8 @@ private:
 
   void fake_laser()
   {
+    RCLCPP_INFO_STREAM(get_logger(), "\nStart Laser");
+
     auto laser_msg = sensor_msgs::msg::LaserScan();
     laser_msg.header.stamp = rclcpp::Clock().now();
     laser_msg.header.frame_id = "red/base_scan";
@@ -285,6 +292,7 @@ private:
 
     for (unsigned int a = 0; a * angle_increment + laser_msg.angle_min <= laser_msg.angle_max; a++)
     {
+
       auto angle_has_hit {false};
       auto angle = laser_msg.angle_min + a * angle_increment;
       if (laser_angle_res != 0.0)
@@ -328,13 +336,16 @@ private:
           // Calculate which one is closer to Poln, as the point closer to the laser is the one that will be read
           auto Vn1 = p1-Poln;
           auto Vn2 = p2-Poln;
-          auto V_ohit = ((turtlelib::magnitude(Vn1) >= turtlelib::magnitude(Vn2)) ? Vn1 : Vn2);
+          auto P_ohit = ((turtlelib::magnitude(Vn1) >= turtlelib::magnitude(Vn2)) ? p1 : p2);
 
           //Transform hit_point back into the robot frame
-          auto P_rhit = T_rob_obs(turtlelib::Point2D(V_ohit.x, V_ohit.y));
+          auto P_rhit = T_rob_obs(P_ohit);
           auto V_rhit =turtlelib::Vector2D(P_rhit.x, P_rhit.y);
           laser_msg.ranges.push_back(turtlelib::magnitude(V_rhit));
-          RCLCPP_INFO_STREAM(get_logger(), "Hit at angle: " << angle*2*std::numbers::pi/360);
+          RCLCPP_INFO_STREAM(get_logger(), "\nHit at angle, obs: " << angle*360/(2*std::numbers::pi) << ", " << o);
+          RCLCPP_INFO_STREAM(get_logger(), "Laser near, far (r frame): " << laser_near << ", " << laser_far);
+          RCLCPP_INFO_STREAM(get_logger(), "Laser near, far (o frame): " << Poln << ", " << Polf);
+          RCLCPP_INFO_STREAM(get_logger(), "Contact points 1, 2, chosen (o frame): " << p1 << ", " << p1 << ", " << ", " << P_ohit);
         }
 
       } // End obs loop
