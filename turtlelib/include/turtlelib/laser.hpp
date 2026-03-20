@@ -18,7 +18,7 @@ private:
   Point2D far_point;
 
 public:
-  explicit Laser(double min_range, double max_range);
+  Laser(double min_range, double max_range);
 
   /// \brief Determine if a laser at this angle will hit a circular obstacle
   /// \param angle The angle of the laser relative to the laser/robot base

@@ -1,10 +1,12 @@
 #include <cmath>
+#include <iostream>
 
 #include "turtlelib/laser.hpp"
 #include "turtlelib/geometry2d.hpp"
 #include "turtlelib/se2d.hpp"
 #include "turtlelib/angle.hpp"
-#include <iostream>
+
+
 namespace turtlelib
 {
 Laser::Laser(double min_range, double max_range)
@@ -14,10 +16,10 @@ Laser::Laser(double min_range, double max_range)
 }
 std::pair<bool, double> Laser::obs_check(double angle, Transform2D T_rob_obs, double radius)
 {
-        // Now with obstacle locations in robot frame, do circle line intersection to find if the laser hits a particular object
-        // Using wolfram circle line. x1 = near laser point, x2 = far laser point TODO: cite
-        // Poln = coordinates of laser minimum measure point in object frame
-        // Polf = cordinates of laser maximum measure point in object frame
+  // Now with obstacle locations in robot frame, do circle line intersection to find if the laser hits a particular object
+  // Using wolfram circle line. x1 = near laser point, x2 = far laser point TODO: cite
+  // Poln = coordinates of laser minimum measure point in object frame
+  // Polf = cordinates of laser maximum measure point in object frame
   auto prln = Transform2D(angle)(near_point);
   auto prlf = Transform2D(angle)(far_point);
 
@@ -51,12 +53,14 @@ std::pair<bool, double> Laser::obs_check(double angle, Transform2D T_rob_obs, do
     {
       auto V_rhit = turtlelib::Vector2D(P_rhit.x, P_rhit.y);
 
-                // std::cout << "Hit at angle, obs: " << angle * 360 / (2 * std::numbers::pi) << "\n";
-                // std::cout << "rob_obs, obs_rob: " << T_rob_obs.translation() << ", " << T_rob_obs.inv().translation() << "\n";
-                // std::cout << "Laser near, far (r frame): " << near_point << ", " << far_point << "\n";
-                // std::cout << "Laser near, far (o frame): " << Poln << ", " << Polf << "\n";
-                // std::cout << "Contact points 1, 2, chosen (o frame): " << p1 << ", " << p2 << ", " << P_ohit << "\n";
-                // std::cout << "Contact points 1, 2, chosen (r frame): " << T_rob_obs(p1) << ", " << T_rob_obs(p2) << ", " << T_rob_obs(P_ohit) << "\n";
+      // The following couts are very useful for debugging, but can't be switched to ROS debugging.
+      // I'd like to keep them in case they're needed in the future, so comments they become
+      std::cout << "Hit at angle, obs: " << angle * 360 / (2 * std::numbers::pi) << "\n";
+      std::cout << "rob_obs, obs_rob: " << T_rob_obs.translation() << ", " << T_rob_obs.inv().translation() << "\n";
+      std::cout << "Laser near, far (r frame): " << near_point << ", " << far_point << "\n";
+      std::cout << "Laser near, far (o frame): " << Poln << ", " << Polf << "\n";
+      std::cout << "Contact points 1, 2, chosen (o frame): " << p1 << ", " << p2 << ", " << P_ohit << "\n";
+      std::cout << "Contact points 1, 2, chosen (r frame): " << T_rob_obs(p1) << ", " << T_rob_obs(p2) << ", " << T_rob_obs(P_ohit) << "\n";
 
       return std::make_pair(true, magnitude(V_rhit));
     } else {

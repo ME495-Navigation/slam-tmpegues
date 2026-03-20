@@ -28,7 +28,7 @@ public:
   /// \brief Create WheelDiff with specific rotations on both wheels
   /// \param left_rot The rotation of the left wheel
   /// \param right_rot The rotation of the right wheel
-  explicit WheelDiff(double left_rot, double right_rot);
+  WheelDiff(double left_rot, double right_rot);
 
 
   /// \brief Get the left wheel rotation
@@ -83,7 +83,7 @@ public:
     /// \brief Create Wheels with both wheels at specific orientations.
     /// \param left_pos The left wheel position
     /// \param right_pos The right wheel position
-  explicit Wheels(double left_pos, double right_pos);
+   Wheels(double left_pos, double right_pos);
 
     /// \brief Get the left wheel position
     /// \return The left wheel position
