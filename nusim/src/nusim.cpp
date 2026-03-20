@@ -120,7 +120,7 @@ public:
           -> void
       {
         // Basic Sensor markers and Lidar publish at 5 Hz
-        if ((get_clock()->now() - last_time).nanoseconds() >= 200000000)
+        if ((get_clock()->now() - last_time).nanoseconds() >= 2000000000) //TODO: Change laser frequency back to .2 instaed of 2 seconds
         { // 2*10^8 nanoseconds
           last_time = get_clock()->now();
           fake_scan();
@@ -326,14 +326,15 @@ private:
           p2.y = (-D * d.x - fabs(d.y) * sqrt(delta)) / turtlelib::magnitude(d);
 
           // Calculate which one is closer to Poln, as the point closer to the laser is the one that will be read
-          auto Pn1 = p1-Poln;
-          auto Pn2 = p2-Poln;
-          auto V_ohit = ((turtlelib::magnitude(Pn1) >= turtlelib::magnitude(Pn2)) ? Pn1 : Pn2);
+          auto Vn1 = p1-Poln;
+          auto Vn2 = p2-Poln;
+          auto V_ohit = ((turtlelib::magnitude(Vn1) >= turtlelib::magnitude(Vn2)) ? Vn1 : Vn2);
 
           //Transform hit_point back into the robot frame
           auto P_rhit = T_rob_obs(turtlelib::Point2D(V_ohit.x, V_ohit.y));
           auto V_rhit =turtlelib::Vector2D(P_rhit.x, P_rhit.y);
           laser_msg.ranges.push_back(turtlelib::magnitude(V_rhit));
+          RCLCPP_INFO_STREAM(get_logger(), "Hit at angle: " << angle*2*std::numbers::pi/360);
         }
 
       } // End obs loop
