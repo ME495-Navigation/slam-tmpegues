@@ -8,18 +8,18 @@
 
 namespace turtlelib
 {
-    class Laser
-    {
-    private:
-        Point2D near_point;
-        Point2D far_point;
+class Laser
+{
+private:
+  Point2D near_point;
+  Point2D far_point;
 
-    public:
+public:
         /// \brief Determine if a laser at this angle will hit the obstacle
-        std::pair<bool, double> obs_check(double angle, Transform2D T_rob_obs, double radius);
+  std::pair<bool, double> obs_check(double angle, Transform2D T_rob_obs, double radius);
 
-        explicit Laser(double min_range, double max_range);
-    };
+  explicit Laser(double min_range, double max_range);
+};
 
 }
 #endif

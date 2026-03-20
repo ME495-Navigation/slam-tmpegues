@@ -1,7 +1,7 @@
 
 <launch>
-    <arg name="config_file" default="test_world.yaml" description="What yaml file to load obstacle and turtlebot initial positions from."/>
-    <arg name="sensor_config" default="no_noise_sensor.yaml" description="What yaml file to load sensor parameters from?"/>
+    <arg name="config_file" default="basic_world.yaml" description="What yaml file to load obstacle and turtlebot initial positions from."/>
+    <arg name="sensor_config" default="sensor.yaml" description="What yaml file to load sensor parameters from?"/>
     <arg name="use_rviz" default="true" description="(bool): Do you want to launch rviz?"/>
     <arg name="use_jsp" default="true" description="(bool): Do you want to launch the joint_state_publisher?"/>
     <arg name="draw_only" default="false" description="(bool): False runs full simulator, true only publishes landmark markers."/>

@@ -52,7 +52,6 @@ Task C.9
 Task C.10
 Task C.11
 Task C.12
-* Going to need to come back and correct the parameters
 
 
 Task D.1 (DiffDrive class)
