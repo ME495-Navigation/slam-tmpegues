@@ -291,7 +291,9 @@ private:
       {
         angle += arma::randu(arma::distr_param(-laser_angle_res, laser_angle_res));
       }
-      auto laser_near = turtlelib::Transform2D(angle)(turtlelib::Vector2D(min_range));
+      auto laser_near = turtlelib::Transform2D(angle)(turtlelib::Vector2D(min_range, 0.0));
+      auto laser_far = turtlelib::Transform2D(angle)(turtlelib::Vector2D(max_range, 0.0));
+
       auto laser_unit_vector = turtlelib::normalize(laser_near);
 
       for (unsigned int o = 0; !angle_has_hit && o <= obs_x.size() - 1; o++)
@@ -299,17 +301,8 @@ private:
         turtlelib::Transform2D world_to_obs{turtlelib::Vector2D(obs_x[o], obs_y[o])};
         auto rob_to_obs{slipped_dd.get_transform().inv() * world_to_obs};
         // Now with obstacle locations in robot frame, do circle line intersection to find if the laser hits a particular object
-        auto w = rob_to_obs.translation() - laser_near;
-        auto dot_prod = turtlelib::dot(laser_unit_vector, w);
-        auto nearest_point = laser_unit_vector* dot_prod + laser_near;
-        auto dist_to_point = turtlelib::magnitude(nearest_point);
-        if (dist_to_point > min_range && dist_to_point < max_range)
-          {// If intersect, set dist to point as the range on the laser message
-            if (laser_sd != 0)
-              {dist_to_point += arma::randn(arma::distr_param(0.0,laser_sd));}
-            laser_msg.ranges.push_back(dist_to_point);
-            angle_has_hit = true;
-          }
+        // Using wolfram circle line. x1 = near laser point, x2 = far laser point TODO: cite
+
       } // End obs loop
       if (!angle_has_hit)
       {
