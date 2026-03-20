@@ -83,7 +83,7 @@ public:
     /// \brief Create Wheels with both wheels at specific orientations.
     /// \param left_pos The left wheel position
     /// \param right_pos The right wheel position
-   Wheels(double left_pos, double right_pos);
+  Wheels(double left_pos, double right_pos);
 
     /// \brief Get the left wheel position
     /// \return The left wheel position
