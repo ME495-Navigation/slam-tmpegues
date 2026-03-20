@@ -3,7 +3,7 @@
 
 /// \file
 /// \brief Representations of diff drive wheel positions, differences, and speeds
-// Wheel positions and wheelspeeds/wheeldifferences are largely analogous to 2D cartesian points, except for angle wrapping behavior
+/// Wheel positions and wheelspeeds/wheeldifferences are largely analogous to 2D cartesian points, except for angle wrapping behavior
 
 namespace turtlelib
 {
@@ -12,9 +12,9 @@ namespace turtlelib
 class WheelDiff
 {
 private:
-    /// \brief the left wheel difference
+    // The left wheel difference
   double left{0.0};
-    /// \brief the right wheel difference
+    // The right wheel difference
   double right{0.0};
 
 public:
@@ -67,13 +67,13 @@ public:
 class Wheels
 {
 private:
-    /// \brief The left wheel position
+    // The left wheel position
   double left {0.0};
-    /// \brief The right wheel position
+    // The right wheel position
   double right {0.0};
 
-    /// \brief Wrap wheel angles to (-pi, pi] and store the result in this object
-    /// \returns A reference to the Wheels object with wrapped angles
+    // Wrap wheel angles to (-pi, pi] and store the result in this object
+    // Returns a reference to the Wheels object with wrapped angles
   Wheels & normalize();
 
 public:

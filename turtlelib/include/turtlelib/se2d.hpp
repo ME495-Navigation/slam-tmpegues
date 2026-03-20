@@ -58,8 +58,8 @@ private:
   double costh{1.0};
   double sinth{0.0};
 
-  /// \brief Update angle of the transform, along with the saved sine and cosine values
-  /// \param new_theta - The new angle
+  // Update angle of the transform, along with the saved sine and cosine values
+  // new_theta - The new angle
   void update_theta(double new_theta);
 
 public:
