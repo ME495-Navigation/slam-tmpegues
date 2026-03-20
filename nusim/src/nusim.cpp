@@ -1,3 +1,42 @@
+/// \file
+/// \brief nusim simulates a Turtlebot in an enclosure with cylindrical obstacles.
+///
+/// PARAMETERS:
+///     draw_only (bool): If true, nusim will only publish obstacle locations. No other functions are used.
+///     rate (int): (Hz) The frequency of the main simulation loop.
+///     arena_x_length (double): (meters) The inner width of the simulated arena.
+///     arena_y_length (double): (meters) The inner length of the simulated arena.
+///     x0 (double): (meters) The initial x coordinate of the Turtlebot.
+///     y0 (double): (meters) The initial y coordinate of the Turtlebot.
+///     theta0 (double): (radians) The initial angle of the Turtlebot.
+///     motor_cmd_per_rad_sec (double): The conversion factor between radians/second and motor ticks.
+///     wheel_radius (double): (meters) The radius of the tires.
+///     track_width (double): (meters) The distance between the tire centerlines.
+///     encoder_ticks_per_rad (double): The conversion factor between motor encoder ticks and radians
+///     collision_radius (double): (meters) The minimum allowed distance from the Turtlebot's base frame to any obstacle
+///     input_noise (double): The variance of the noise between wheel commands and executed wheel rotations.
+///     slip_fraction (double): The amount of slip between executed wheel rotation and actual movement (actual movement = fk(executed rotation * (1+slip_fraction)).
+///     basic_sensor_variance (double): The variance of the the detected obstacle locations.
+///     max_range (double): (meters) The maximum range of the simulated LIDAR.
+///     min_range (double): (meters) The minimum range of the simulated LIDAR.
+///     angle_increment (double): (radians) How far the LIDAR rotates between each range measurement.
+///     laser_samples (int): How many ranges the LIDAR collects before publishing them all in a single message.
+///     laser_angle_res (double): (radians) The resolution of the LIDAR's encoder. Actual LIDAR angle is within +-laser_angle_res of the reported angle.
+///     laser_sd (double): The standard deviation of the  laser range measurements.
+/// PUBLISHES:
+///     tf broadcaster (tf2_ros TransformBroadcaster): The location of the simulated Turtlebot is broadcast
+///     ~/real_walls (visualization_msgs/msg/MarkerArray): The arena walls are published once upon node initialization
+///     ~/real_obstacles (visualization_msgs/msg/MarkerArray): The true locations of the obstacles are published once upon node initialization
+///     ~/fake_sensor (visualization_msgs/msg/MarkerArray): The simulated "detected" obstacles.
+///     ~/fake_laser (sensor_msgs/msg/LaserScan): The simulated LIDAR data.
+///     ~/timestep (std_msgs/msg/UInt64): The number of simulated time steps since the simulation began (or since reset).
+///     red/sensor_data (nuturtlebot_msgs/msg/SensorData): Simulated wheel encoder positions are published in this topic.
+///     ~/path (nav_msgs/msg/Path): The path showing the pose history of the simulated Turtlebot.
+/// SUBSCRIBES:
+///     red/wheel_cmd (nuturtlebot_msgs/msg/WheelCommands): The desired wheel rotations to simulate.
+/// SERVERS:
+///     ~/reset (std_srvs/srv/Empty): When called, the Turtlebot will be reset to its original position and timestep will be reset to 0.
+
 #include "geometry_msgs/msg/point.hpp"
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include "geometry_msgs/msg/transform_stamped.hpp"
@@ -5,18 +44,18 @@
 #include "nuturtlebot_msgs/msg/sensor_data.hpp"
 #include "nuturtlebot_msgs/msg/wheel_commands.hpp"
 #include "rclcpp/rclcpp.hpp"
+#include "sensor_msgs/msg/laser_scan.hpp"
 #include "std_msgs/msg/u_int64.hpp"
 #include "std_srvs/srv/empty.hpp"
 #include "tf2_ros/transform_broadcaster.h"
 #include "tf2/LinearMath/Quaternion.hpp"
 #include "turtlelib/diff_drive.hpp"
+#include "turtlelib/geometry2d.hpp"
+#include "turtlelib/laser.hpp"
 #include "turtlelib/se2d.hpp"
 #include "turtlelib/wheels.hpp"
-#include "turtlelib/geometry2d.hpp"
 #include "visualization_msgs/msg/marker_array.hpp"
 #include "visualization_msgs/msg/marker.hpp"
-#include "sensor_msgs/msg/laser_scan.hpp"
-#include "turtlelib/laser.hpp"
 
 #include <armadillo>
 
@@ -59,19 +98,17 @@ public:
       // Create all publishers/broadcasters
           wheel_cmd_sub_ =
             create_subscription<nuturtlebot_msgs::msg::WheelCommands>("red/wheel_cmd", 10,
-                                                                    std::bind(
-          &nusim_node::wheel_cmd_cb_, this, std::placeholders::_1));
+          std::bind(&nusim_node::wheel_cmd_cb_, this, std::placeholders::_1));
           tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
           rclcpp::QoS marker_qos_ = rclcpp::QoS(rclcpp::KeepLast(10)).transient_local();
-          wall_pub_ =
-            create_publisher<visualization_msgs::msg::MarkerArray>("~/real_walls", marker_qos_);
-          obs_pub_ =
-            create_publisher<visualization_msgs::msg::MarkerArray>("~/real_obstacles", marker_qos_);
-          fake_sensor_pub_ =
-            create_publisher<visualization_msgs::msg::MarkerArray>("~/fake_sensor", marker_qos_);
+          wall_pub_ = create_publisher<visualization_msgs::msg::MarkerArray>("~/real_walls",
+          marker_qos_);
+          obs_pub_ = create_publisher<visualization_msgs::msg::MarkerArray>("~/real_obstacles",
+          marker_qos_);
+          fake_sensor_pub_ = create_publisher<visualization_msgs::msg::MarkerArray>("~/fake_sensor",
+          marker_qos_);
           fake_laser_pub_ = create_publisher<sensor_msgs::msg::LaserScan>("~/fake_laser", 10);
-          reset_service_ = create_service<std_srvs::srv::Empty>(
-          "~/reset",
+          reset_service_ = create_service<std_srvs::srv::Empty>("~/reset",
           std::bind(&nusim_node::reset_cb_, this, std::placeholders::_1, std::placeholders::_2));
           timestep_pub_ = create_publisher<std_msgs::msg::UInt64>("~/timestep", 10);
           sensor_pub_ = create_publisher<nuturtlebot_msgs::msg::SensorData>("red/sensor_data", 10);
@@ -290,7 +327,7 @@ private:
       a++)
     {
 
-      auto angle_has_hit {false};
+      auto angle_has_hit{false};
       auto angle = laser_msg.angle_min + a * angle_increment;
       if (laser_angle_res != 0.0) {
         angle += arma::randu(arma::distr_param(-laser_angle_res, laser_angle_res));
