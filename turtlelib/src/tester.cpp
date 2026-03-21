@@ -28,6 +28,7 @@ int main()
   tester_file << track_width << ", " << wheel_radius << ", " << motor_cmd_per_rad_sec << "\n";
   tester_file << time_diff << "\n";
 
+  printf("point, %f", dd.get_transform().translation() )
   int i = 0;
 
 

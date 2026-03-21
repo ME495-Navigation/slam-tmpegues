@@ -176,29 +176,28 @@ double magnitude(Vector2D & vect);
 double angle(Vector2D & vect1, Vector2D & vect2);
 }  // namespace turtlelib
 
-/// \brief A Formatter for 2D points
-/// The output is "(x, y)"
-/// All floating-point format specifiers are honored and applied to both x and y.
-template<class CharT>
-class std::formatter<turtlelib::Point2D, CharT>
-{
-  // static_assert(std::formattable<turtlelib::Point2D>);
-  // constexpr auto parse(auto &parse_ctx);
+// /// \brief A Formatter for 2D points
+// /// The output is "(x, y)"
+// /// All floating-point format specifiers are honored and applied to both x and y.
+// template<class CharT>
+// class std::formatter<turtlelib::Point2D, CharT> : std::formatter<float>
+// {
+//   auto format(const turtlelib::Point2D &pt, std::format_context &ctx) const
+//   {
+//     return formatter<float>::format(
+//       std::format("({}, {})", pt.x, pt.y), ctx);
+//   }
+// };
 
-  // auto format(const MyType &t, auto &fmt_ctx) const;
-
-  // std::formatter<T, CharT> T_formatter; // Member variable
-  // constexpr auto parse(auto &parse_ctx)
-  // {
-  //     return T_formatter.parse(parse_ctx);
-  // }
-};
-
-/// \brief A formatter for Vector2D
-/// All double format-spec specifiers apply to each number in the vector
-/// The vector is output as [x, y]
-template<class CharT>
-class std::formatter<turtlelib::Vector2D, CharT>
-{
-};
+// /// \brief A formatter for Vector2D
+// /// All double format-spec specifiers apply to each number in the vector
+// /// The vector is output as [x, y]
+// template <class CharT>
+// class std::formatter<turtlelib::Vector2D, CharT> : std::formatter<float> {
+//     auto format(turtlelib::Vector2D vec, std::format_context &ctx) const {
+//         return formatter<float>::format(
+//             std::format("({}, {})", vec.x, vec.y), ctx);
+// }
+// }
+// ;
 #endif
