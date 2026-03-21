@@ -1,9 +1,12 @@
 /**:
   ros__parameters:
-    basic_sensor_variance: 0.0
+    basic_sensor_variance: 0.001
     max_range: 3.5
     min_range: .12
     angle_increment: 0.0174532925
     laser_samples: 359
     laser_angle_res: 0.0174532925 # Angluar variation
     laser_sd: .0425 # Distance variation
+
+    input_noise: .25
+    slip_fraction: .25

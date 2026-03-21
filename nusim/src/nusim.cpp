@@ -85,10 +85,10 @@ public:
       declare_parameter("encoder_ticks_per_rad", 651.89864);
       declare_parameter("collision_radius", 0.11);
 
-      declare_parameter("input_noise", 0.0);
-      declare_parameter("slip_fraction", 0.0);
+      declare_parameter("input_noise", 0.15);
+      declare_parameter("slip_fraction", 0.1);
 
-      declare_parameter("basic_sensor_variance", 0.0);
+      declare_parameter("basic_sensor_variance", 0.1);
       declare_parameter("max_range", 3.5);
       declare_parameter("min_range", .1199);
       declare_parameter("angle_increment", 2.0 * std::numbers::pi / 360.0);
@@ -334,7 +334,7 @@ private:
     laser_msg.angle_min = 0.0;
     laser_msg.angle_max = 6.27;
     laser_msg.angle_increment = angle_increment;
-    laser_msg.time_increment = .0055;
+    laser_msg.time_increment = .0;
     laser_msg.scan_time = .2;
     laser_msg.range_min = min_range;
     laser_msg.range_max = max_range;
