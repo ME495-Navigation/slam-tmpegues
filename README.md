@@ -17,10 +17,13 @@ https://github.com/user-attachments/assets/3722678f-b899-4d1a-a516-6c3166d8bda0
 
 While I have not completed actual SLAM, a solid simulation framework is in place. The video below shows the following features.
 * A simulated red Turtlebot can be driven using any `cmd_vel` source, such as `teleop_twist_keyboard`.
-* Simulated LIDAR that scans the flat walls of the arena, along with cylindrical obstacles.
+* The red Turtlebot has collision and cannot pass through obstacles. 
+* Simulated LIDAR that scans the flat walls of the arena, along with cylindrical obstacles. Simulated LIDAR has noise on both range and bearing.
+* Separate from LIDAR, there are noisy "detected" obstacles shown as yellow cylinders
 * Odometry, shown as the blue Turtlebot, calculated from simulated wheel encoder data.
 * Execution of commanded twists are subject to noise, along with the addition of physical wheel slip.
 
-INSERT VIDEO
+
+https://github.com/user-attachments/assets/b2b31ecd-0e40-4675-ad0b-d1d75be26413
 
 To experience this yourself, run `ros2 launch nuturtle_control start_robot.launch.xml robot:=nusim`, then in another terminal, run `ros2 run teleop_twist_keyboard teleop_twist_keyboard`
